@@ -2,7 +2,7 @@ package com.youtube.hempfest.clans.util.events;
 
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
-import com.youtube.hempfest.clans.util.construct.ClanClaim;
+import com.youtube.hempfest.clans.util.construct.ClaimUtil;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -45,9 +45,9 @@ public class ClaimBuildEvent extends Event {
     }
 
     public void handleCheck() {
-        ClanClaim clanClaim = new ClanClaim();
-        if (clanClaim.isInClaim(location)) {
-            Claim claim = new Claim(clanClaim.getClaimID(location), p);
+        ClaimUtil claimUtil = new ClaimUtil();
+        if (claimUtil.isInClaim(location)) {
+            Claim claim = new Claim(claimUtil.getClaimID(location), p);
             ClanUtil clanUtil = new ClanUtil();
             if (clanUtil.getClan(p) != null) {
                 if (!claim.getOwner().equals(clanUtil.getClan(p))) {

@@ -179,11 +179,11 @@ public class Clan {
     }
 
     public String[] getOwnedClaims() {
-        ClanClaim clanClaim = new ClanClaim();
+        ClaimUtil claimUtil = new ClaimUtil();
         DataManager dm = new DataManager("Regions", "Configuration");
         Config regions = dm.getFile(ConfigType.MISC_FILE);
         List<String> array = new ArrayList<>();
-        for (String clan : clanClaim.getAllClaims()) {
+        for (String clan : claimUtil.getAllClaims()) {
             for (String claim : regions.getConfig().getConfigurationSection(clan + ".Claims").getKeys(false)) {
                 if (clan.equals(clanID))
                     array.add(claim);

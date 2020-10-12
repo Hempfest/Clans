@@ -13,7 +13,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
-public class ClanClaim extends StringLibrary {
+public class ClaimUtil extends StringLibrary {
 
     DataManager dm = new DataManager("Regions", "Configuration");
     Config regions = dm.getFile(ConfigType.MISC_FILE);

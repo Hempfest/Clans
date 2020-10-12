@@ -1,7 +1,7 @@
 package com.youtube.hempfest.clans.util.events;
 
 import com.youtube.hempfest.clans.util.construct.Claim;
-import com.youtube.hempfest.clans.util.construct.ClanClaim;
+import com.youtube.hempfest.clans.util.construct.ClaimUtil;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
@@ -116,9 +116,9 @@ public class ClaimResidentEvent extends Event implements Cancellable {
     }
 
     public boolean isWild() {
-        ClanClaim clanClaim = new ClanClaim();
+        ClaimUtil claimUtil = new ClaimUtil();
         boolean result = true;
-        if (clanClaim.isInClaim(p.getLocation()))
+        if (claimUtil.isInClaim(p.getLocation()))
             result = false;
         return result;
     }
@@ -163,14 +163,14 @@ public class ClaimResidentEvent extends Event implements Cancellable {
     }
 
     public void handleUpdate() {
-        ClanClaim clanClaim = new ClanClaim();
-        Claim claim = new Claim(clanClaim.getClaimID(p.getLocation()));
-        if (clanClaim.isInClaim(p.getLocation())) {
+        ClaimUtil claimUtil = new ClaimUtil();
+        Claim claim = new Claim(claimUtil.getClaimID(p.getLocation()));
+        if (claimUtil.isInClaim(p.getLocation())) {
             if (!lastKnownExists()) {
-                claimID.put(p, clanClaim.getClaimID(p.getLocation()));
+                claimID.put(p, claimUtil.getClaimID(p.getLocation()));
             }
             if (lastKnownExists()) {
-                if (!claimID.get(p).equals(clanClaim.getClaimID(p.getLocation()))) {
+                if (!claimID.get(p).equals(claimUtil.getClaimID(p.getLocation()))) {
                     if (!Arrays.asList(claim.getClan().getMembers()).contains(p.getName())) {
                         if (!invisibleResident.containsKey(p.getUniqueId())) {
                             invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
@@ -178,7 +178,7 @@ public class ClaimResidentEvent extends Event implements Cancellable {
                         if (residents.contains(p)) {
                             residents.remove(p);
                         }
-                        claimID.put(p, clanClaim.getClaimID(p.getLocation()));
+                        claimID.put(p, claimUtil.getClaimID(p.getLocation()));
                     }
                     if (Arrays.asList(claim.getClan().getMembers()).contains(p.getName())) {
                         if (!invisibleResident.containsKey(p.getUniqueId())) {
@@ -187,7 +187,7 @@ public class ClaimResidentEvent extends Event implements Cancellable {
                         if (residents.contains(p)) {
                             residents.remove(p);
                         }
-                        claimID.put(p, clanClaim.getClaimID(p.getLocation()));
+                        claimID.put(p, claimUtil.getClaimID(p.getLocation()));
                     }
                 }
             }
@@ -201,32 +201,32 @@ public class ClaimResidentEvent extends Event implements Cancellable {
                     color = "&f&o";
                 }
                 if (titlesAllowed) {
-                    p.sendTitle(clanClaim.color(String.format(claimTitle, clanName)), clanClaim.color(String.format(claimSubTitle, color + clanName)), 10, 25, 10);
+                    p.sendTitle(claimUtil.color(String.format(claimTitle, clanName)), claimUtil.color(String.format(claimSubTitle, color + clanName)), 10, 25, 10);
                 }
-                clanClaim.sendMessage(p, "Now entering &a" + color + clanName + "'s&7 land @ &f(&eX:" + color + getClaim().getLocation().getChunk().getX() + " &eZ:" + color + getClaim().getLocation().getChunk().getZ() + "&f)");
+                claimUtil.sendMessage(p, "Now entering &a" + color + clanName + "'s&7 land @ &f(&eX:" + color + getClaim().getLocation().getChunk().getX() + " &eZ:" + color + getClaim().getLocation().getChunk().getZ() + "&f)");
                 residents.add(p);
                 if (!invisibleResident.containsKey(p.getUniqueId())) {
                     invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
                 }
             }
         }
-        if (!clanClaim.isInClaim(p.getLocation())) {
+        if (!claimUtil.isInClaim(p.getLocation())) {
             if (claimID.containsKey(p)) {
                 claimID.remove(p);
             }
             if (!invisibleResident.containsKey(p.getUniqueId())) {
                 invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
                 if (titlesAllowed) {
-                    p.sendTitle(clanClaim.color(wildernessTitle), clanClaim.color(wildernessSubTitle), 10, 25, 10);
+                    p.sendTitle(claimUtil.color(wildernessTitle), claimUtil.color(wildernessSubTitle), 10, 25, 10);
                 }
-                clanClaim.sendMessage(p, "Now entering &4&nWilderness");
+                claimUtil.sendMessage(p, "Now entering &4&nWilderness");
             }
             if (residents.contains(p)) {
                 residents.remove(p);
                 if (titlesAllowed) {
-                    p.sendTitle(clanClaim.color(wildernessTitle), clanClaim.color(wildernessSubTitle), 10, 25, 10);
+                    p.sendTitle(claimUtil.color(wildernessTitle), claimUtil.color(wildernessSubTitle), 10, 25, 10);
                 }
-                clanClaim.sendMessage(p, "Now entering &4&nWilderness");
+                claimUtil.sendMessage(p, "Now entering &4&nWilderness");
             }
         }
     }

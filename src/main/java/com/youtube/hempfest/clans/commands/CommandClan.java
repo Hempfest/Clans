@@ -3,7 +3,7 @@ package com.youtube.hempfest.clans.commands;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Clan;
-import com.youtube.hempfest.clans.util.construct.ClanClaim;
+import com.youtube.hempfest.clans.util.construct.ClaimUtil;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
@@ -133,8 +133,8 @@ public class CommandClan extends BukkitCommand {
                 if (claimingAllowed()) {
                     if (clanUtil.getClan(p) != null) {
                         if (clanUtil.getRankPower(p) >= clanUtil.claimingClearance()) {
-                            ClanClaim clanClaim = new ClanClaim();
-                            clanClaim.obtain(p);
+                            ClaimUtil claimUtil = new ClaimUtil();
+                            claimUtil.obtain(p);
                         } else {
                             lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                             return true;
@@ -154,8 +154,8 @@ public class CommandClan extends BukkitCommand {
                 if (claimingAllowed()) {
                     if (clanUtil.getClan(p) != null) {
                         if (clanUtil.getRankPower(p) >= clanUtil.claimingClearance()) {
-                            ClanClaim clanClaim = new ClanClaim();
-                            clanClaim.remove(p);
+                            ClaimUtil claimUtil = new ClaimUtil();
+                            claimUtil.remove(p);
                         } else {
                             lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                         }
@@ -412,8 +412,8 @@ public class CommandClan extends BukkitCommand {
                         ClanUtil clanUtil = new ClanUtil();
                         if (clanUtil.getClan(p) != null) {
                             if (clanUtil.getRankPower(p) >= clanUtil.unclaimAllClearance()) {
-                                ClanClaim clanClaim = new ClanClaim();
-                                clanClaim.removeAll(p);
+                                ClaimUtil claimUtil = new ClaimUtil();
+                                claimUtil.removeAll(p);
                             } else {
                                 lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                                 return true;
