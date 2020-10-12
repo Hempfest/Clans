@@ -1,0 +1,75 @@
+##############################################
+#|                                          |#
+#|                  OPTIONS                 |#
+#|                                          |#
+##############################################
+## Clearance levels: [Member: 0, Moderator: 1, Admin: 2, Owner:3]
+Clans:
+
+  # Toggle the ability for Clans to hook into vault. (Disables bank usage)
+  check-for-vault: true
+
+  # Turn on or off the use of land claiming.
+  land-claiming:
+    allow: true
+    # Change the minimum clearance level needed to claim land.
+    clearance: 2
+    # Change the minimum clearance level needed to un-claim all owned land.
+    unclaim-all-clearance: 2
+    # Turn on or off titles as players traverse land-scape.
+    send-titles: true
+
+  # Change the minimum clernance required to change the clans name
+  rename-clearance: 3
+
+  # Change the minimum clearance level needed to kick other clan members.
+  kick-clearance: 2
+
+  # Change the minimum clearance needed to promote/demote clan members.
+  position-clearance: 2
+
+  # Change the minimum clearance needed to change the clans password.
+  password-clearance: 2
+
+  # Modify the raid-shield settings
+  raid-shield:
+    allow: true
+    main-world: 'world'
+    up-time: 0
+    down-time: 13000
+    # Decide whether to allow or deny the ability to overpower other clan claims
+    ## while the shield is up.
+    claiming: DENY
+
+  # Change the minimum rank clearance needed to update the clan base.
+  clan-base:
+    # Clearance levels: [Member: 0, Moderator: 1, Admin: 2, Owner:3]
+    clearance: 1
+
+##############################################
+#|                                          |#
+#|              CHAT FORMATTING             |#
+#|                                          |#
+##############################################
+Formatting:
+  allow: true
+  # Change the prefix displayed for the plugin.
+  Prefix: '&7[&6&lClans&7]'
+  # Rank presentation style: [FULL, WORDLESS]
+  Rank-Style: WORDLESS
+  Styles:
+    Full:
+      Member: 'Member'
+      Moderator: 'Moderator'
+      Admin: 'Admin'
+      Owner: 'Owner'
+    Wordless:
+      Member: '❀'
+      Moderator: '❃'
+      Admin: '❁'
+      Owner: '❂'
+
+  # Change the formatting for global chat clan prefix
+  # Two "%s" need placement in order for the formatting to work correctly
+  ### The first one is the clan RANK and the second one is the clan NAME
+  Chat: '&r(&e%s&r) [&6%s&r]'

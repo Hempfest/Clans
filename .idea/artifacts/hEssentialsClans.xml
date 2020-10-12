@@ -1,0 +1,8 @@
+<component name="ArtifactManager">
+  <artifact type="jar" name="hEssentialsClans">
+    <output-path>$PROJECT_DIR$/out/artifacts/</output-path>
+    <root id="archive" name="hEssentialsClans.jar">
+      <element id="module-output" name="TestPlugin" />
+    </root>
+  </artifact>
+</component>
