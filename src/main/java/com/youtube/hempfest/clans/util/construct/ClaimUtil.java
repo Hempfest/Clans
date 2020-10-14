@@ -21,6 +21,11 @@ public class ClaimUtil extends StringLibrary {
 
     public void obtain(Player p) {
         if (!isInClaim(p.getLocation())) {
+            Clan clan = new Clan(clanUtil.getClan(p), p);
+            if (clan.getOwnedClaims().length == maxClaims(p)) {
+                sendMessage(p, "&c&oMax claim limit reached, contact a staff member for more info.");
+                return;
+            }
             int x = p.getLocation().getChunk().getX();
             int z = p.getLocation().getChunk().getZ();
             String world = p.getWorld().getName();
@@ -30,7 +35,6 @@ public class ClaimUtil extends StringLibrary {
             d.set(clanUtil.getClan(p) + ".Claims." + claimID + ".Z", z);
             d.set(clanUtil.getClan(p) + ".Claims." + claimID + ".World", world);
             regions.saveConfig();
-            Clan clan = new Clan(clanUtil.getClan(p), p);
             clan.messageClan("&3&oNew land was claimed @ Chunk position: &7X:&b" + x + " &7Z:&b" + z + " &3&oin world &7" + world);
             chunkBorderHint(p);
         } else {
@@ -130,6 +134,26 @@ public class ClaimUtil extends StringLibrary {
         }
 
         return false;
+    }
+
+    public int maxClaims(Player player) {
+        int returnv = 0;
+        if (player == null)
+            return 0;
+        for (int i = 100; i >= 0; i--) {
+            if (player.hasPermission("clans.claim.infinite")) {
+                returnv = -1;
+                break;
+            }
+            if (player.hasPermission("clans.claim." + i)) {
+                returnv = i;
+                break;
+            }
+        }
+        if (returnv == -1)
+            return 999;
+
+        return returnv;
     }
 
     public String getClaimID(Location loc) {

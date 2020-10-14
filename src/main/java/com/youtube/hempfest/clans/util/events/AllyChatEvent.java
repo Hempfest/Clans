@@ -10,6 +10,8 @@ import org.bukkit.event.Cancellable;
 import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 
 public class AllyChatEvent extends Event implements Cancellable {
@@ -123,25 +125,26 @@ public class AllyChatEvent extends Event implements Cancellable {
         Player p = getChatting();
         for (Player toGet : getReceivers()) {
             if (clanUtil.getClan(toGet) != null) {
+                List<String> clanId = new ArrayList<>();
                 if (clanUtil.getAllies(clanUtil.getClan(toGet)).contains(clanUtil.getClan(p))) {
+                    clanId.add(clanUtil.getClan(toGet));
+                    if (clanId.size() != 0) {
                         if (Bukkit.getServer().getVersion().contains("1.16")) {
                             clanUtil.sendComponent(toGet, Component.textHoverable(static1, String.format(highlight, clanUtil.getClanNickname(p)), static2 + getMessage(), String.format(playerMeta, p.getName())));
                         } else {
                             clanUtil.sendComponent(toGet, ComponentR1_8_1.textHoverable(static1, String.format(highlight, p.getName()), static2 + getMessage(), String.format(playerMeta, p.getName())));
                         }
                         toGet.playSound(toGet.getLocation(), pingSound, 10, 1);
-                    if (Bukkit.getServer().getVersion().contains("1.16")) {
-                        clanUtil.sendComponent(p, Component.textHoverable(static1, String.format(highlight, clanUtil.getClanNickname(p)), static2 + getMessage(), String.format(playerMeta, p.getName())));
-                    } else {
-                        clanUtil.sendComponent(p, ComponentR1_8_1.textHoverable(static1, String.format(highlight, p.getName()), static2 + getMessage(), String.format(playerMeta, p.getName())));
                     }
-                    p.playSound(p.getLocation(), pingSound, 10, 1);
-                } else {
-                    clanUtil.sendMessage(p, "&c&oNo allies online to receive the message.");
-                    p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
                 }
             }
         }
+        if (Bukkit.getServer().getVersion().contains("1.16")) {
+            clanUtil.sendComponent(p, Component.textHoverable(static1, String.format(highlight, clanUtil.getClanNickname(p)), static2 + getMessage(), String.format(playerMeta, p.getName())));
+        } else {
+            clanUtil.sendComponent(p, ComponentR1_8_1.textHoverable(static1, String.format(highlight, p.getName()), static2 + getMessage(), String.format(playerMeta, p.getName())));
+        }
+        p.playSound(p.getLocation(), pingSound, 10, 1);
     }
 
 }

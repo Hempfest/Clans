@@ -225,6 +225,7 @@ public class CommandClan extends BukkitCommand {
             if (args0.equalsIgnoreCase("leave")) {
                 ClanUtil clanUtil = new ClanUtil();
                 clanUtil.leave(p);
+                ClanUtil.chatMode.put(p, "GLOBAL");
                 return true;
             }
             if (args0.equalsIgnoreCase("message")) {
