@@ -130,6 +130,15 @@ public class AllyChatEvent extends Event implements Cancellable {
                             clanUtil.sendComponent(toGet, ComponentR1_8_1.textHoverable(static1, String.format(highlight, p.getName()), static2 + getMessage(), String.format(playerMeta, p.getName())));
                         }
                         toGet.playSound(toGet.getLocation(), pingSound, 10, 1);
+                    if (Bukkit.getServer().getVersion().contains("1.16")) {
+                        clanUtil.sendComponent(p, Component.textHoverable(static1, String.format(highlight, clanUtil.getClanNickname(p)), static2 + getMessage(), String.format(playerMeta, p.getName())));
+                    } else {
+                        clanUtil.sendComponent(p, ComponentR1_8_1.textHoverable(static1, String.format(highlight, p.getName()), static2 + getMessage(), String.format(playerMeta, p.getName())));
+                    }
+                    p.playSound(p.getLocation(), pingSound, 10, 1);
+                } else {
+                    clanUtil.sendMessage(p, "&c&oNo allies online to receive the message.");
+                    p.playSound(p.getLocation(), Sound.ENTITY_VILLAGER_NO, 10, 1);
                 }
             }
         }
