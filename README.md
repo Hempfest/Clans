@@ -18,7 +18,7 @@ public class Utility implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
       public void onClaimUpdate(ClaimResidentEvent event) {
-      event.setClaimTitle("&5Something cool");
+      event.setClaimTitle("&5Something cool", "%s owns this land");
       Player p = event.getResident();
       if (event.lastKnownExists()) {
           Claim claim = event.getClaim();
@@ -40,6 +40,11 @@ public class Utility implements Listener {
 ```
     @EventHandler
     public void onClanChat(ClanChatEvent event) {
+        
+    }
+    
+    @EventHandler
+    public void onAllyChat(AllyChatEvent event) {
         
     }
 
