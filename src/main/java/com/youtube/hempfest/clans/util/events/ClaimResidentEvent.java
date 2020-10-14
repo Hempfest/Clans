@@ -19,25 +19,21 @@ public class ClaimResidentEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private static List<Player> residents = new ArrayList<>();
+    private static final List<String> residents = new ArrayList<>();
 
-    private static HashMap<UUID, Long> invisibleResident = new HashMap<>();
+    private final List<Claim> claimData = new ArrayList<>();
 
-    private static HashMap<Player, String> claimID = new HashMap<>();
+    private static final HashMap<UUID, Long> invisibleResident = new HashMap<>();
 
-    private Player p;
+    private static final HashMap<String, String> claimID = new HashMap<>();
 
-    private String claimTitle = "&3&oClaimed land";
+    private static final HashMap<String, String> titleContext = new HashMap<>();
 
-    private String claimSubTitle = "&7Owned by: &b%s";
+    private final Player p;
 
-    private String wildernessTitle = "&4&nWilderness";
+    private final DataManager dm = new DataManager("Config", "Configuration");
 
-    private String wildernessSubTitle = "&7&oOwned by no-one.";
-
-    private DataManager dm = new DataManager("Config", "Configuration");
-
-    private Config main = dm.getFile(ConfigType.MISC_FILE);
+    private final Config main = dm.getFile(ConfigType.MISC_FILE);
 
     private boolean titlesAllowed = main.getConfig().getBoolean("Clans.land-claiming.send-titles");
 
@@ -45,11 +41,12 @@ public class ClaimResidentEvent extends Event implements Cancellable {
 
     private final boolean isAsync = true;
 
-    private Function<Long, Long> freshResidentJoinTime = s -> s;
+    private final Function<Long, Long> freshResidentJoinTime = s -> s;
 
     public ClaimResidentEvent(Player p, boolean isAsync) {
         super(isAsync);
         this.p = p;
+        getClaimList();
     }
 
     @Override
@@ -66,40 +63,41 @@ public class ClaimResidentEvent extends Event implements Cancellable {
         this.titlesAllowed = b;
     }
 
-    public void setClaimTitle(String claimTitle) {
-        this.claimTitle = claimTitle;
+    public void setClaimTitle(String title, String subtitle) {
+    titleContext.put("TITLE", title);
+    titleContext.put("SUB-TITLE", subtitle);
     }
 
-    public void setClaimSubTitle(String claimSubTitle) {
-        this.claimSubTitle = claimSubTitle;
-    }
-
-    public void setWildernessTitle(String wildernessTitle) {
-        this.wildernessTitle = wildernessTitle;
-    }
-
-    public void setWildernessSubTitle(String wildernessSubTitle) {
-        this.wildernessSubTitle = wildernessSubTitle;
+    public void setWildernessTitle(String title, String subtitle) {
+        titleContext.put("W-TITLE", title);
+        titleContext.put("W-SUB-TITLE", subtitle);
     }
 
     public String getClaimTitle() {
-        return claimTitle;
+        return titleContext.get("TITLE");
     }
 
     public String getClaimSubTitle() {
-        return claimSubTitle;
+        return titleContext.get("SUB-TITLE");
     }
 
     public String getWildernessTitle() {
-        return wildernessTitle;
+        return titleContext.get("W-TITLE");
     }
 
     public String getWildernessSubTitle() {
-        return wildernessSubTitle;
+        return titleContext.get("W-SUB-TITLE");
     }
 
     public Claim getClaim() {
-        return new Claim(claimID.get(p), p);
+        return new Claim(claimID.get(p.getName()), p);
+    }
+
+    public List<Claim> getClaimList() {
+        if (getClaim() != null)
+            if (!claimData.contains(getClaim()))
+            claimData.add(getClaim());
+        return claimData;
     }
 
     @Override
@@ -127,8 +125,18 @@ public class ClaimResidentEvent extends Event implements Cancellable {
         return p;
     }
 
-    public List<Player> getResidents() {
+    public List<String> getResidents() {
         return residents;
+    }
+
+    public String[] getResidents(String claimID) {
+        List<String> values = new ArrayList<>();
+            for (String player : getResidents()) {
+                if (ClaimResidentEvent.claimID.get(player).equals(claimID)) {
+                    values.add(player);
+                }
+            }
+            return values.toArray(new String[0]);
     }
 
     public float freshResidentJoinTime() {
@@ -146,10 +154,10 @@ public class ClaimResidentEvent extends Event implements Cancellable {
 
     public boolean lastKnownExists() {
         boolean result = false;
-        if (!claimID.containsKey(p)) {
+        if (!claimID.containsKey(p.getName())) {
             result = false;
         }
-        if (claimID.get(p) != null) {
+        if (claimID.get(p.getName()) != null) {
             result = true;
         }
         return result;
@@ -158,40 +166,40 @@ public class ClaimResidentEvent extends Event implements Cancellable {
     public String lastKnownClaim() {
         String result = "Wild";
         if (lastKnownExists())
-            result = claimID.get(p);
+            result = claimID.get(p.getName());
         return result;
     }
 
     public void handleUpdate() {
         ClaimUtil claimUtil = new ClaimUtil();
         Claim claim = new Claim(claimUtil.getClaimID(p.getLocation()));
+        titleContext.put("TITLE", "&3&oClaimed land");
+        titleContext.put("SUB-TITLE", "&7Owned by: &b%s");
+        titleContext.put("W-TITLE", "&4&nWilderness");
+        titleContext.put("W-SUB-TITLE", "&7&oOwned by no-one.");
         if (claimUtil.isInClaim(p.getLocation())) {
             if (!lastKnownExists()) {
-                claimID.put(p, claimUtil.getClaimID(p.getLocation()));
+                claimID.put(p.getName(), claimUtil.getClaimID(p.getLocation()));
             }
             if (lastKnownExists()) {
-                if (!claimID.get(p).equals(claimUtil.getClaimID(p.getLocation()))) {
+                if (!claimID.get(p.getName()).equals(claimUtil.getClaimID(p.getLocation()))) {
                     if (!Arrays.asList(claim.getClan().getMembers()).contains(p.getName())) {
                         if (!invisibleResident.containsKey(p.getUniqueId())) {
                             invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
                         }
-                        if (residents.contains(p)) {
-                            residents.remove(p);
-                        }
-                        claimID.put(p, claimUtil.getClaimID(p.getLocation()));
+                        residents.remove(p.getName());
+                        claimID.put(p.getName(), claimUtil.getClaimID(p.getLocation()));
                     }
                     if (Arrays.asList(claim.getClan().getMembers()).contains(p.getName())) {
                         if (!invisibleResident.containsKey(p.getUniqueId())) {
                             invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
                         }
-                        if (residents.contains(p)) {
-                            residents.remove(p);
-                        }
-                        claimID.put(p, claimUtil.getClaimID(p.getLocation()));
+                        residents.remove(p.getName());
+                        claimID.put(p.getName(), claimUtil.getClaimID(p.getLocation()));
                     }
                 }
             }
-            if (!residents.contains(p)) {
+            if (!residents.contains(p.getName())) {
                 ClanUtil clanUtil = new ClanUtil();
                 String clanName = clanUtil.getClanTag(claim.getOwner());
                 String color = "";
@@ -201,30 +209,28 @@ public class ClaimResidentEvent extends Event implements Cancellable {
                     color = "&f&o";
                 }
                 if (titlesAllowed) {
-                    p.sendTitle(claimUtil.color(String.format(claimTitle, clanName)), claimUtil.color(String.format(claimSubTitle, color + clanName)), 10, 25, 10);
+                    p.sendTitle(claimUtil.color(String.format(titleContext.get("TITLE"), clanName)), claimUtil.color(String.format(titleContext.get("SUB-TITLE"), color + clanName)), 10, 25, 10);
                 }
                 claimUtil.sendMessage(p, "Now entering &a" + color + clanName + "'s&7 land @ &f(&eX:" + color + getClaim().getLocation().getChunk().getX() + " &eZ:" + color + getClaim().getLocation().getChunk().getZ() + "&f)");
-                residents.add(p);
+                residents.add(p.getName());
                 if (!invisibleResident.containsKey(p.getUniqueId())) {
                     invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
                 }
             }
         }
         if (!claimUtil.isInClaim(p.getLocation())) {
-            if (claimID.containsKey(p)) {
-                claimID.remove(p);
-            }
+            claimID.remove(p.getName());
             if (!invisibleResident.containsKey(p.getUniqueId())) {
                 invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
                 if (titlesAllowed) {
-                    p.sendTitle(claimUtil.color(wildernessTitle), claimUtil.color(wildernessSubTitle), 10, 25, 10);
+                    p.sendTitle(claimUtil.color(titleContext.get("W-TITLE")), claimUtil.color(titleContext.get("W-SUB-TITLE")), 10, 25, 10);
                 }
                 claimUtil.sendMessage(p, "Now entering &4&nWilderness");
             }
-            if (residents.contains(p)) {
-                residents.remove(p);
+            if (residents.contains(p.getName())) {
+                residents.remove(p.getName());
                 if (titlesAllowed) {
-                    p.sendTitle(claimUtil.color(wildernessTitle), claimUtil.color(wildernessSubTitle), 10, 25, 10);
+                    p.sendTitle(claimUtil.color(titleContext.get("W-TITLE")), claimUtil.color(titleContext.get("W-SUB-TITLE")), 10, 25, 10);
                 }
                 claimUtil.sendMessage(p, "Now entering &4&nWilderness");
             }

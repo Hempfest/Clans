@@ -57,6 +57,7 @@ Formatting:
   Prefix: '&7[&6&lClans&7]'
   # Rank presentation style: [FULL, WORDLESS]
   Rank-Style: WORDLESS
+  
   Styles:
     Full:
       Member: 'Member'

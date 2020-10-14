@@ -7,9 +7,6 @@ import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.clans.util.events.ClaimBuildEvent;
-import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
-import com.youtube.hempfest.clans.util.events.ClanChatEvent;
-import com.youtube.hempfest.clans.util.events.RaidShieldEvent;
 import com.youtube.hempfest.clans.util.timers.AsyncClaimResident;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -44,7 +41,7 @@ public class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPrefixApply(AsyncPlayerChatEvent event) {
-        Player p = (Player) event.getPlayer();
+        Player p = event.getPlayer();
         ClanUtil clanUtil = new ClanUtil();
         DataManager dm = new DataManager("Config", "Configuration");
         if (chatMode(p).equals("GLOBAL")) {
@@ -73,22 +70,13 @@ public class EventListener implements Listener {
             event.setCancelled(true);
             return;
         }
+        if (chatMode(p).equals("ALLY")) {
+            dm.formatAllyChat(p, event.getRecipients(), event.getMessage());
+            event.setCancelled(true);
+            return;
+        }
     }
 
-    @EventHandler
-    public void onClanChat(ClanChatEvent event) {
-        event.setCancelled(false);
-    }
-
-    @EventHandler
-    public void onPlayerMove(ClaimResidentEvent event) {
-        event.setCancelled(false);
-    }
-
-    @EventHandler
-    public void onRaidShieldChange(RaidShieldEvent event) {
-            event.setCancelled(false);
-    }
 
     @EventHandler
     public void onProjectileHit(ProjectileHitEvent event) {

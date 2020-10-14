@@ -31,7 +31,9 @@ public class Claim {
         return new Clan(getOwner(), p);
     }
 
-
+    public String getClaimID() {
+        return claimID;
+    }
 
 
     public String getOwner() {

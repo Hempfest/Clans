@@ -2,6 +2,7 @@ package com.youtube.hempfest.clans.util.data;
 
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.util.events.AllyChatEvent;
 import com.youtube.hempfest.clans.util.events.ClanChatEvent;
 import com.youtube.hempfest.clans.util.timers.AsyncClanStatus;
 import org.bukkit.Bukkit;
@@ -41,11 +42,19 @@ public class DataManager {
         asyncClanStatus.runTaskTimerAsynchronously(HempfestClans.getInstance(), 10L, 10L);
     }
 
-    public void formatClanChat(Player p, Set<Player> recievers, String message) {
-        ClanChatEvent e = new ClanChatEvent(p, recievers, message, true);
+    public void formatClanChat(Player p, Set<Player> receivers, String message) {
+        ClanChatEvent e = new ClanChatEvent(p, receivers, message, true);
         Bukkit.getPluginManager().callEvent(e);
         if (!e.isCancelled()) {
             e.sendClanMessage();
+        }
+    }
+
+    public void formatAllyChat(Player p, Set<Player> receivers, String message) {
+        AllyChatEvent e = new AllyChatEvent(p, receivers, message, true);
+        Bukkit.getPluginManager().callEvent(e);
+        if (!e.isCancelled()) {
+            e.sendAllyMessage();
         }
     }
 

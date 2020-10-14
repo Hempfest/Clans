@@ -2,8 +2,8 @@ package com.youtube.hempfest.clans.commands;
 
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
-import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClaimUtil;
+import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
@@ -174,12 +174,17 @@ public class CommandClan extends BukkitCommand {
                 if (clanUtil.getClan(p) != null) {
                     if (ClanUtil.chatMode.get(p).equals("GLOBAL")) {
                         ClanUtil.chatMode.put(p, "CLAN");
-                        lib.sendMessage(p, "&3&oClan chat activated.");
+                        lib.sendMessage(p, "&7&oSwitched to &3CLAN &7&ochat channel.");
                         return true;
                     }
                     if (ClanUtil.chatMode.get(p).equals("CLAN")) {
+                        ClanUtil.chatMode.put(p, "ALLY");
+                        lib.sendMessage(p, "&7&oSwitched to &aALLY &7&ochat channel.");
+                        return true;
+                    }
+                    if (ClanUtil.chatMode.get(p).equals("ALLY")) {
                         ClanUtil.chatMode.put(p, "GLOBAL");
-                        lib.sendMessage(p, "&7&oClan chat de-activated.");
+                        lib.sendMessage(p, "&7&oSwitched to &fGLOBAL &7&ochat channel.");
                         return true;
                     }
                 }
@@ -698,12 +703,12 @@ public class CommandClan extends BukkitCommand {
             String args0 = args[0];
             StringBuilder rsn = new StringBuilder();
             for (int i = 1; i < args.length; i++)
-                rsn.append(String.valueOf(args[i]) + " ");
+                rsn.append(args[i] + " ");
             int stop = rsn.length() - 1;
             if (args0.equalsIgnoreCase("message")) {
                 ClanUtil clanUtil = new ClanUtil();
                 Clan clan = new Clan(clanUtil.getClan(p), p);
-                clan.messageClan(p.getName() + " say's : " + rsn.toString().substring(0, stop));
+                clan.messageClan(p.getName() + " say's : " + rsn.substring(0, stop));
                 return true;
             }
             lib.sendMessage(p, "Unknown sub-command. Use " + '"' + "/clan" + '"' + " for help.");
