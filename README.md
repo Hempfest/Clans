@@ -7,7 +7,7 @@ https://github.com/Hempfest/Clans/wiki
 
 
 
-
+## Developers
 **Importing** w/ the pom.xml
 ```
 <dependency>
