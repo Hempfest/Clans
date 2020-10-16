@@ -9,33 +9,6 @@
    <systemPath>${project.basedir}/src/main/resources/Clans.jar</systemPath>
 </dependency>
 ```
-
-**Modifying** your first event. (Example, sends a message to the claim owner that a player is in their claim)
-```JAVA
-public class Utility implements Listener {
-
-    List<Player> residents = new ArrayList<>();
-
-    @EventHandler(priority = EventPriority.HIGH)
-      public void onClaimUpdate(ClaimResidentEvent event) {
-      event.setClaimTitle("&5Something cool", "%s owns this land");
-      Player p = event.getResident();
-      if (event.lastKnownExists()) {
-          Claim claim = event.getClaim();
-          if (!Arrays.asList(claim.getClan().getMembers()).contains(p.getName())) {
-              if (!residents.contains(p)) {
-                  residents.add(p);
-                  claim.getClan().messageClan("&4&lBREACH &6> " + p.getName() + " is traversing clan land.");
-              }
-          }
-      } else {
-          if (residents.contains(p))
-              residents.remove(p);
-      }
-     }
-
-}
-```
 **Event List**
 ```
     @EventHandler
