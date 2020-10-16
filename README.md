@@ -1,4 +1,13 @@
 # Getting started
+
+
+
+## WIKI
+https://github.com/Hempfest/Clans/wiki
+
+
+
+
 **Importing** w/ the pom.xml
 ```
 <dependency>
