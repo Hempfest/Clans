@@ -3,7 +3,12 @@
 
 
 ## WIKI
-https://github.com/Hempfest/Clans/wiki
+_**Table of contents:**_
+* [Clan creation](https://github.com/Hempfest/Clans/wiki/Creating-a-clan.)
+* [Clan leaving/disbanding](https://github.com/Hempfest/Clans/wiki/Leaving-a-clan.)
+* [Clan rank management](https://github.com/Hempfest/Clans/wiki/Clan-rank-management.)
+* [Claiming & Raid Shield](https://github.com/Hempfest/Clans/wiki/Claiming-&-Raid-Shield)
+* [Clan Power](https://github.com/Hempfest/Clans/wiki/Clan-Power)
 
 
 
