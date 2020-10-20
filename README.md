@@ -49,6 +49,21 @@ _**Table of contents:**_
     public void onClaimInteract(ClaimBuildEvent event) {
             
     }
+    
+    @EventHandler
+    public void onPlayerKill(PlayerKillPlayerEvent event) {
+            
+    }
+
+    @EventHandler
+    public void onPlayerHit(PlayerPunchPlayerEvent event) {
+            
+    }
+
+    @EventHandler
+    public void onPlayerShoot(PlayerShootPlayerEvent event) {
+            
+    }
 ```
 
 **Know your API**
