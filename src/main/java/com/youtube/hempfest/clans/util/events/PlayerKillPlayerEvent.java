@@ -76,7 +76,6 @@ public class PlayerKillPlayerEvent extends Event{
         }
         if (clanUtil.getClan(killer) == null) {
             if (clanUtil.getClan(victim) != null) {
-                if (!clanUtil.getClan(killer).equals(clanUtil.getClan(victim))) {
                     Clan dead = getClan(clanUtil.getClan(victim), victim);
                     dead.takePower(0.11);
                     DataManager dm2 = new DataManager(victim.getUniqueId().toString(), null);
@@ -84,7 +83,6 @@ public class PlayerKillPlayerEvent extends Event{
                     int deaths = user2.getConfig().getInt("deaths");
                     user2.getConfig().set("deaths", (deaths + 1));
                     user2.saveConfig();
-                }
             }
         }
     }
