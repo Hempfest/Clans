@@ -1,4 +1,18 @@
 # Getting started
+
+
+
+## WIKI
+_**Table of contents:**_
+* [Clan creation](https://github.com/Hempfest/Clans/wiki/Creating-a-clan.)
+* [Clan leaving/disbanding](https://github.com/Hempfest/Clans/wiki/Leaving-a-clan.)
+* [Clan rank management](https://github.com/Hempfest/Clans/wiki/Clan-rank-management.)
+* [Claiming & Raid Shield](https://github.com/Hempfest/Clans/wiki/Claiming-&-Raid-Shield)
+* [Clan Power](https://github.com/Hempfest/Clans/wiki/Clan-Power)
+
+
+
+## Developers
 **Importing** w/ the pom.xml
 ```
 <dependency>
@@ -9,37 +23,15 @@
    <systemPath>${project.basedir}/src/main/resources/Clans.jar</systemPath>
 </dependency>
 ```
-
-**Modifying** your first event. (Example, sends a message to the claim owner that a player is in their claim)
-```JAVA
-public class Utility implements Listener {
-
-    List<Player> residents = new ArrayList<>();
-
-    @EventHandler(priority = EventPriority.HIGH)
-      public void onClaimUpdate(ClaimResidentEvent event) {
-      event.setClaimTitle("&5Something cool");
-      Player p = event.getResident();
-      if (event.lastKnownExists()) {
-          Claim claim = event.getClaim();
-          if (!Arrays.asList(claim.getClan().getMembers()).contains(p.getName())) {
-              if (!residents.contains(p)) {
-                  residents.add(p);
-                  claim.getClan().messageClan("&4&lBREACH &6> " + p.getName() + " is traversing clan land.");
-              }
-          }
-      } else {
-          if (residents.contains(p))
-              residents.remove(p);
-      }
-     }
-
-}
-```
 **Event List**
 ```
     @EventHandler
     public void onClanChat(ClanChatEvent event) {
+        
+    }
+    
+    @EventHandler
+    public void onAllyChat(AllyChatEvent event) {
         
     }
 
