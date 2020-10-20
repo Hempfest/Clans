@@ -3,6 +3,7 @@ package com.youtube.hempfest.clans;
 import com.youtube.hempfest.clans.commands.Command;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
 import com.youtube.hempfest.clans.util.listener.EventListener;
 import com.youtube.hempfest.clans.util.timers.SyncRaidShield;
 import org.bukkit.Bukkit;
@@ -36,10 +37,16 @@ public class HempfestClans extends JavaPlugin {
 		shield.setRaidShield(true);
 		refreshChat();
 		runShieldTimer();
+		log.info(String.format("[%s] - Beginning claim resident event", getDescription().getName()));
+		dm.performResidentEvent();
 	}
 	
 	public void onDisable() {
 		log.info(String.format("[%s] - Goodbye friends...", getDescription().getName()));
+			ClaimResidentEvent.claimID.clear();
+			ClaimResidentEvent.invisibleResident.clear();
+			ClaimResidentEvent.residents.clear();
+			ClaimResidentEvent.tempStorage.clear();
 	}
 
 	private void refreshChat() {

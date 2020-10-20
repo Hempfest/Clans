@@ -31,5 +31,12 @@
 			<version>1.16.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
 		</dependency>
+		<dependency>
+			<groupId>Vaults</groupId>
+			<artifactId>ClanVaults</artifactId>
+			<version>1.0.2</version>
+			<scope>system</scope>
+			<systemPath>${project.basedir}/src/main/resources/Vaults.jar</systemPath>
+		</dependency>
 	</dependencies>
 </project>

@@ -1,5 +1,7 @@
 name: Clans
-version: 2.0.0
+version: 2.0.1
+softdepend:
+  - Vaults
 author: Hempfest
 description: The new re-designed Clans [Free]
 main: com.youtube.hempfest.clans.HempfestClans

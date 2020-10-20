@@ -27,7 +27,6 @@ public class Claim {
     }
 
     public Clan getClan() {
-        ClanUtil clanUtil = new ClanUtil();
         return new Clan(getOwner(), p);
     }
 

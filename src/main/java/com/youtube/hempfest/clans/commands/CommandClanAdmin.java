@@ -1,8 +1,8 @@
 package com.youtube.hempfest.clans.commands;
 
 import com.youtube.hempfest.clans.HempfestClans;
-import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.StringLibrary;
+import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
@@ -33,6 +33,10 @@ public class CommandClanAdmin extends BukkitCommand {
         help.add("&7|&e) &6/clanadmin &fgetid <&7clanNamef>");
         help.add("&7|&e) &6/clanadmin &fidmode");
         return help;
+    }
+    
+    private ClanUtil getUtil() {
+        return new ClanUtil();
     }
 
     @Override
@@ -102,17 +106,17 @@ public class CommandClanAdmin extends BukkitCommand {
             if (args0.equalsIgnoreCase("getid")) {
                 Player target = Bukkit.getPlayer(args1);
                 if (target == null) {
-                    ClanUtil clanUtil = new ClanUtil();
+                    
                     try {
-                        lib.sendMessage(p, "&7#&fID &7of clan " + '"' + args1 + '"' + " is: &e&o" + clanUtil.getClanID(args1));
+                        lib.sendMessage(p, "&7#&fID &7of clan " + '"' + args1 + '"' + " is: &e&o" + getUtil().getClanID(args1));
                     } catch (NullPointerException e) {
                         lib.sendMessage(p, "&c&oUh-oh there was an issue finding the clan.. Check console for errors");
                         HempfestClans.getInstance().getLogger().severe(String.format("[%s] - Illegal use of ID retrieval. Clan directory non-existent.", HempfestClans.getInstance().getDescription().getName()));
                     }
                     return true;
                 }
-                ClanUtil clanUtil = new ClanUtil();
-                lib.sendMessage(p, "&7|&e) &6&l" + target.getName() + "'s &e&oclan ID is &f" + clanUtil.getClan(target));
+                
+                lib.sendMessage(p, "&7|&e) &6&l" + target.getName() + "'s &e&oclan ID is &f" + getUtil().getClan(target));
                 return true;
             }
             if (args0.equalsIgnoreCase("reload")) {

@@ -1,23 +1,23 @@
 package com.youtube.hempfest.clans.util.listener;
 
-import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.clans.util.events.ClaimBuildEvent;
-import com.youtube.hempfest.clans.util.timers.AsyncClaimResident;
+import com.youtube.hempfest.clans.util.events.*;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.block.Chest;
-import org.bukkit.block.DoubleChest;
 import org.bukkit.entity.Player;
+import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.*;
 
@@ -30,9 +30,17 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
+        ClanUtil.updateUsername(p);
         ClanUtil.chatMode.put(p, "GLOBAL");
-        AsyncClaimResident asyncClaimResident = new AsyncClaimResident(p);
-        asyncClaimResident.runTaskTimerAsynchronously(HempfestClans.getInstance(), 2L, 20L);
+    }
+
+    @EventHandler
+    public void onPlayerLeave(PlayerQuitEvent e) {
+        Player p = e.getPlayer();
+        ClaimResidentEvent.claimID.remove(p.getName());
+        ClaimResidentEvent.invisibleResident.remove(p.getUniqueId());
+        ClaimResidentEvent.residents.remove(p.getName());
+        ClaimResidentEvent.tempStorage.remove(p.getUniqueId());
     }
 
     private String chatMode(Player p) {
@@ -107,14 +115,13 @@ public class EventListener implements Listener {
         event.setCancelled(e.isCancelled());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockInteract(PlayerInteractEvent event) {
-        if (event.getClickedBlock() instanceof DoubleChest
-        || event.getClickedBlock() instanceof Chest) {
-            ClaimBuildEvent e = new ClaimBuildEvent(event.getPlayer(), event.getClickedBlock().getLocation());
-            Bukkit.getPluginManager().callEvent(e);
-            e.handleCheck();
-            event.setCancelled(e.isCancelled());
+        if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
+                ClaimBuildEvent e = new ClaimBuildEvent(event.getPlayer(), event.getClickedBlock().getLocation());
+                Bukkit.getPluginManager().callEvent(e);
+                e.handleCheck();
+                event.setCancelled(e.isCancelled());
         }
     }
 
@@ -135,7 +142,40 @@ public class EventListener implements Listener {
     }
 
 
+    @EventHandler
+    public void onPlayerHit(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
+            Player target = (Player)event.getEntity();
+            Player p = (Player)event.getDamager();
+            PlayerPunchPlayerEvent e = new PlayerPunchPlayerEvent(p, target);
+            Bukkit.getPluginManager().callEvent(e);
+            e.perform();
+            event.setCancelled(e.canHurt());
+        }
 
+        if (event.getEntity() instanceof Player && event.getDamager() instanceof Projectile && (
+                (Projectile)event.getDamager()).getShooter() instanceof Player) {
+            Projectile pr = (Projectile)event.getDamager();
+            Player p = (Player)pr.getShooter();
+            Player target = (Player)event.getEntity();
+            PlayerShootPlayerEvent e = new PlayerShootPlayerEvent(p, target);
+            Bukkit.getPluginManager().callEvent(e);
+            e.perform();
+            event.setCancelled(e.canHurt());
+        }
+
+    }
+
+    @EventHandler
+    public void onPlayerDeath(PlayerDeathEvent event) {
+        if (event.getEntity().getKiller() instanceof Player) {
+            Player p = event.getEntity().getKiller();
+            Player target = event.getEntity();
+                PlayerKillPlayerEvent e = new PlayerKillPlayerEvent(p, target);
+                Bukkit.getPluginManager().callEvent(e);
+                e.perform();
+        }
+    }
 
 
 }

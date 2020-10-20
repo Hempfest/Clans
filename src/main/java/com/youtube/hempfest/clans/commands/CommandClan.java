@@ -14,6 +14,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
@@ -74,6 +75,14 @@ public class CommandClan extends BukkitCommand {
     private boolean isAlphaNumeric(String s) {
         return s != null && s.matches("^[a-zA-Z0-9]*$");
     }
+    
+    private ClanUtil getUtil() {
+        return new ClanUtil();
+    }
+
+    private ClaimUtil getClaim() {
+        return new ClaimUtil();
+    }
 
     @Override
     public boolean execute(CommandSender commandSender, String commandLabel, String[] args) {
@@ -118,23 +127,27 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("top")) {
-                ClanUtil clanUtil = new ClanUtil();
-                clanUtil.getLeaderboard(p, 1);
+                
+                try {
+                    getUtil().getLeaderboard(p, 1);
+                } catch (ParseException e) {
+                    e.printStackTrace();
+                }
                 return true;
             }
             if (args0.equalsIgnoreCase("list")) {
-                ClanUtil clanUtil = new ClanUtil();
+                
                 lib.sendMessage(p, "&r- Clan roster. (&7/clan info clanName&r)");
-                lib.paginatedClanList(p, clanUtil.getAllClanNames(), "c list", 1, 10);
+                lib.paginatedClanList(p, getUtil().getAllClanNames(), "c list", 1, 10);
                 return true;
             }
             if (args0.equalsIgnoreCase("claim")) {
-                ClanUtil clanUtil = new ClanUtil();
+                
                 if (claimingAllowed()) {
-                    if (clanUtil.getClan(p) != null) {
-                        if (clanUtil.getRankPower(p) >= clanUtil.claimingClearance()) {
-                            ClaimUtil claimUtil = new ClaimUtil();
-                            claimUtil.obtain(p);
+                    if (getUtil().getClan(p) != null) {
+                        if (getUtil().getRankPower(p) >= getUtil().claimingClearance()) {
+                            
+                            getClaim().obtain(p);
                         } else {
                             lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                             return true;
@@ -150,12 +163,16 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("unclaim")) {
-                ClanUtil clanUtil = new ClanUtil();
+                
                 if (claimingAllowed()) {
-                    if (clanUtil.getClan(p) != null) {
-                        if (clanUtil.getRankPower(p) >= clanUtil.claimingClearance()) {
-                            ClaimUtil claimUtil = new ClaimUtil();
-                            claimUtil.remove(p);
+                    if (getUtil().getClan(p) != null) {
+                        if (getUtil().getRankPower(p) >= getUtil().claimingClearance()) {
+                            
+                            try {
+                                getClaim().remove(p);
+                            } catch (ParseException e) {
+                                e.printStackTrace();
+                            }
                         } else {
                             lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                         }
@@ -170,8 +187,8 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("chat")) {
-                ClanUtil clanUtil = new ClanUtil();
-                if (clanUtil.getClan(p) != null) {
+                
+                if (getUtil().getClan(p) != null) {
                     if (ClanUtil.chatMode.get(p).equals("GLOBAL")) {
                         ClanUtil.chatMode.put(p, "CLAN");
                         lib.sendMessage(p, "&7&oSwitched to &3CLAN &7&ochat channel.");
@@ -223,8 +240,8 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("leave")) {
-                ClanUtil clanUtil = new ClanUtil();
-                clanUtil.leave(p);
+                
+                getUtil().leave(p);
                 ClanUtil.chatMode.put(p, "GLOBAL");
                 return true;
             }
@@ -233,9 +250,9 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("base")) {
-                ClanUtil clanUtil = new ClanUtil();
-                if (clanUtil.getClan(p) != null) {
-                    clanUtil.teleportBase(p);
+                
+                if (getUtil().getClan(p) != null) {
+                    getUtil().teleportBase(p);
                     lib.sendMessage(p, "&e&oWelcome to the clan base... i think..");
                 } else {
                     lib.sendMessage(p, lib.notInClan());
@@ -244,9 +261,9 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("setbase")) {
-                ClanUtil clanUtil = new ClanUtil();
-                Clan clan = new Clan(clanUtil.getClan(p), p);
-                if (clanUtil.getRankPower(p) >= clanUtil.baseClearance()) {
+                
+                Clan clan = new Clan(getUtil().getClan(p), p);
+                if (getUtil().getRankPower(p) >= getUtil().baseClearance()) {
                     clan.updateBase(p.getLocation());
                 } else {
                     lib.sendMessage(p, "&c&oYou do not have clan clearance.");
@@ -255,9 +272,13 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("info") || args0.equalsIgnoreCase("i")) {
-                ClanUtil clanUtil = new ClanUtil();
-                if (clanUtil.getClan(p) != null) {
-                    clanUtil.getMyClanInfo(p, 1);
+                
+                if (getUtil().getClan(p) != null) {
+                    try {
+                        getUtil().getMyClanInfo(p, 1);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     lib.sendMessage(p, lib.notInClan());
                     return true;
@@ -265,9 +286,13 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("members")) {
-                ClanUtil clanUtil = new ClanUtil();
-                if (clanUtil.getClan(p) != null) {
-                    clanUtil.getMyClanInfo(p, 1);
+                
+                if (getUtil().getClan(p) != null) {
+                    try {
+                        getUtil().getMyClanInfo(p, 1);
+                    } catch (ParseException e) {
+                        e.printStackTrace();
+                    }
                 } else {
                     lib.sendMessage(p, lib.notInClan());
                     return true;
@@ -287,22 +312,22 @@ public class CommandClan extends BukkitCommand {
             String args0 = args[0];
             String args1 = args[1];
             if (args0.equalsIgnoreCase("create")) {
-                ClanUtil clanUtil = new ClanUtil();
+                
                 if (!isAlphaNumeric(args1)) {
                     lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
                     return true;
                 }
-                clanUtil.create(p, args1, null);
+                getUtil().create(p, args1, null);
                 return true;
             }
             if (args0.equalsIgnoreCase("nick") || args0.equalsIgnoreCase("nickname")) {
-                ClanUtil clanUtil = new ClanUtil();
-                if (clanUtil.getClan(p) != null) {
+                
+                if (getUtil().getClan(p) != null) {
                     if (!isAlphaNumeric(args1)) {
                         lib.sendMessage(p, "&c&oInvalid nickname. Must contain only Alpha-numeric characters.");
                         return true;
                     }
-                    clanUtil.changeNickname(p, args1);
+                    getUtil().changeNickname(p, args1);
                 } else {
                     lib.sendMessage(p, lib.notInClan());
                     return true;
@@ -310,42 +335,42 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("top")) {
-                ClanUtil clanUtil = new ClanUtil();
+                
                 try {
-                    clanUtil.getLeaderboard(p, Integer.parseInt(args1));
-                } catch (IllegalFormatException e) {
+                    getUtil().getLeaderboard(p, Integer.parseInt(args1));
+                } catch (IllegalFormatException | ParseException e) {
                 lib.sendMessage(p, "&c&oInvalid page number!");
                 }
                 return true;
             }
             if (args0.equalsIgnoreCase("passowner")) {
-                ClanUtil clanUtil = new ClanUtil();
-                if (clanUtil.getClan(p) != null) {
-                    clanUtil.transferOwner(p, args1);
+                
+                if (getUtil().getClan(p) != null) {
+                    getUtil().transferOwner(p, args1);
                 } else {
                     lib.sendMessage(p, lib.notInClan());
                 }
                 return true;
             }
             if (args0.equalsIgnoreCase("list")) {
-                ClanUtil clanUtil = new ClanUtil();
+                
                 try {
-                    lib.paginatedList(p, clanUtil.getAllClanNames(), "c list", Integer.parseInt(args1), 10);
+                    lib.paginatedList(p, getUtil().getAllClanNames(), "c list", Integer.parseInt(args1), 10);
                 } catch (NumberFormatException e) {
                     lib.sendMessage(p, "&c&oInvalid page number!");
                 }
                 return true;
             }
             if (args0.equalsIgnoreCase("join")) {
-                ClanUtil clanUtil = new ClanUtil();
-                clanUtil.joinClan(p, args1, "none");
+                
+                getUtil().joinClan(p, args1, "none");
                 return true;
             }
             if (args0.equalsIgnoreCase("tag")) {
-                ClanUtil clanUtil = new ClanUtil();
-                Clan clan = new Clan(clanUtil.getClan(p), p);
-                if (clanUtil.getClan(p) != null) {
-                    if (clanUtil.getRankPower(p) >= clanUtil.tagChangeClearance()) {
+                
+                Clan clan = new Clan(getUtil().getClan(p), p);
+                if (getUtil().getClan(p) != null) {
+                    if (getUtil().getRankPower(p) >= getUtil().tagChangeClearance()) {
                         if (!isAlphaNumeric(args1)) {
                             lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
                             return true;
@@ -361,23 +386,23 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("promote")) {
-                ClanUtil clanUtil = new ClanUtil();
+                
                 DataManager dm = new DataManager("Config", "Configuration");
                 Config main = dm.getFile(ConfigType.MISC_FILE);
                 String adminRank = main.getConfig().getString("Formatting.Styles.Full.Admin");
                 String ownerRank = main.getConfig().getString("Formatting.Styles.Full.Owner");
-                if (clanUtil.getClan(p) != null) {
-                    if (clanUtil.getRankPower(p) >= clanUtil.positionClearance()) {
+                if (getUtil().getClan(p) != null) {
+                    if (getUtil().getRankPower(p) >= getUtil().positionClearance()) {
                         Player target = Bukkit.getPlayer(args1);
                         if (target == null) {
                             lib.sendMessage(p, "&c&oPlayer not online. Unable to promote.");
                             return true;
                         }
-                        if (clanUtil.getRankPower(target) >= 2) {
+                        if (getUtil().getRankPower(target) >= 2) {
                             lib.sendMessage(p, "&c&oThis player is rank &b&o" + adminRank.toUpperCase() + " &c&omost powerful next to &b&l" + ownerRank);
                             return true;
                         }
-                        clanUtil.promotePlayer(target);
+                        getUtil().promotePlayer(target);
                     } else {
                         lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                         return true;
@@ -389,19 +414,19 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("demote")) {
-                ClanUtil clanUtil = new ClanUtil();
-                if (clanUtil.getClan(p) != null) {
-                    if (clanUtil.getRankPower(p) >= clanUtil.positionClearance()) {
+                
+                if (getUtil().getClan(p) != null) {
+                    if (getUtil().getRankPower(p) >= getUtil().positionClearance()) {
                         Player target = Bukkit.getPlayer(args1);
                         if (target == null) {
                             lib.sendMessage(p, "&c&oPlayer not online. Unable to demote.");
                             return true;
                         }
-                        if (clanUtil.getRankPower(target) >= clanUtil.getRankPower(p)) {
+                        if (getUtil().getRankPower(target) >= getUtil().getRankPower(p)) {
                             lib.sendMessage(p, "&c&oThis player has more or the same level power as you.");
                             return true;
                         }
-                        clanUtil.demotePlayer(target);
+                        getUtil().demotePlayer(target);
                     } else {
                         lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                         return true;
@@ -415,11 +440,11 @@ public class CommandClan extends BukkitCommand {
             if (args0.equalsIgnoreCase("unclaim")) {
                 if (claimingAllowed()) {
                     if (args1.equalsIgnoreCase("all")) {
-                        ClanUtil clanUtil = new ClanUtil();
-                        if (clanUtil.getClan(p) != null) {
-                            if (clanUtil.getRankPower(p) >= clanUtil.unclaimAllClearance()) {
-                                ClaimUtil claimUtil = new ClaimUtil();
-                                claimUtil.removeAll(p);
+                        
+                        if (getUtil().getClan(p) != null) {
+                            if (getUtil().getRankPower(p) >= getUtil().unclaimAllClearance()) {
+                                
+                                getClaim().removeAll(p);
                             } else {
                                 lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                                 return true;
@@ -437,10 +462,10 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("password")) {
-                ClanUtil clanUtil = new ClanUtil();
-                Clan clan = new Clan(clanUtil.getClan(p), p);
-                if (clanUtil.getClan(p) != null) {
-                    if (clanUtil.getRankPower(p) >= clanUtil.passwordClearance()) {
+                
+                Clan clan = new Clan(getUtil().getClan(p), p);
+                if (getUtil().getClan(p) != null) {
+                    if (getUtil().getRankPower(p) >= getUtil().passwordClearance()) {
                         if (!isAlphaNumeric(args1)) {
                             lib.sendMessage(p, "&c&oInvalid password. Must contain only Alpha-numeric characters.");
                             return true;
@@ -457,26 +482,26 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("kick")) {
-                ClanUtil clanUtil = new ClanUtil();
-                if (clanUtil.getClan(p) != null) {
-                    if (clanUtil.getRankPower(p) >= clanUtil.kickClearance()) {
+                
+                if (getUtil().getClan(p) != null) {
+                    if (getUtil().getRankPower(p) >= getUtil().kickClearance()) {
                         Player target = Bukkit.getPlayer(args1);
                         if (target == null) {
 
                             return true;
                         }
-                        Clan clan = new Clan(clanUtil.getClan(p), target);
+                        Clan clan = new Clan(getUtil().getClan(p), target);
                         if (!Arrays.asList(clan.getMembers()).contains(target.getName())) {
                             lib.sendMessage(p, "&c&oThis player isn't a member of your clan.");
                             return true;
                         }
-                        if (clanUtil.getRankPower(target) > clanUtil.getRankPower(p)) {
+                        if (getUtil().getRankPower(target) > getUtil().getRankPower(p)) {
                             lib.sendMessage(p, "&c&oThis player has more power than you.");
                             return true;
                         }
-                        clanUtil.kickPlayer(target);
+                        getUtil().kickPlayer(target);
                         clan.messageClan("&e&oPlayer " + '"' + target.getName() + '"' + " was kicked from the clan..");
-                        lib.sendMessage(target, "&4&o" + clanUtil.getClanTag(clanUtil.getClan(p)) + " kicked you from the clan.");
+                        lib.sendMessage(target, "&4&o" + getUtil().getClanTag(getUtil().getClan(p)) + " kicked you from the clan.");
                     } else {
                         lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                         return true;
@@ -488,12 +513,12 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("members")) {
-                ClanUtil clanUtil = new ClanUtil();
-                if (clanUtil.getClan(p) != null) {
+                
+                if (getUtil().getClan(p) != null) {
                     try {
                         int page = Integer.parseInt(args1);
-                        clanUtil.getMyClanInfo(p, page);
-                    } catch (NumberFormatException e) {
+                        getUtil().getMyClanInfo(p, page);
+                    } catch (NumberFormatException | ParseException e) {
                         lib.sendMessage(p, "&c&oInvalid page number!");
                     }
                 } else {
@@ -503,31 +528,31 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("info") || args0.equalsIgnoreCase("i")) {
-                ClanUtil clanUtil = new ClanUtil();
+                
                 Player target = Bukkit.getPlayer(args1);
                 if (target == null) {
                     String clanName = args1;
-                    if (!clanUtil.getAllClanNames().contains(clanName)) {
+                    if (!getUtil().getAllClanNames().contains(clanName)) {
                         lib.sendMessage(p, "&c&oThis clan does not exist!");
                         return true;
                     }
-                    Clan clan = new Clan(clanUtil.getClanID(clanName), p);
-                    for (String info : clan.getClanInfo()) {
-                        sendMessage(p, info);
-                    }
+                    Clan clan = new Clan(getUtil().getClanID(clanName), p);
+                        for (String info : clan.getClanInfo()) {
+                            sendMessage(p, info);
+                        }
                     if (HempfestClans.idMode.containsKey(p) && HempfestClans.idMode.get(p).equals("ENABLED")) {
-                        lib.sendMessage(p, "&7#&fID &7of clan " + '"' + clanName + '"' + " is: &e&o" + clanUtil.getClanID(clanName));
+                        lib.sendMessage(p, "&7#&fID &7of clan " + '"' + clanName + '"' + " is: &e&o" + getUtil().getClanID(clanName));
                     }
                 return true;
                 }
-                if (clanUtil.getClan(target) != null) {
-                    Clan clanIndex = new Clan(clanUtil.getClan(target), p);
-                    String clanName = clanUtil.getClanTag(clanUtil.getClan(target));
-                    for (String info : clanIndex.getClanInfo()) {
-                        sendMessage(p, info);
-                    }
+                if (getUtil().getClan(target) != null) {
+                    Clan clanIndex = new Clan(getUtil().getClan(target), p);
+                    String clanName = getUtil().getClanTag(getUtil().getClan(target));
+                        for (String info : clanIndex.getClanInfo()) {
+                            sendMessage(p, info);
+                        }
                     if (HempfestClans.idMode.containsKey(p) && HempfestClans.idMode.get(p).equals("ENABLED")) {
-                        lib.sendMessage(p, "&7#&fID &7of player " + '"' + target.getName() + '"' +  " clan " + '"' + clanName + '"' + " is: &e&o" + clanUtil.getClanID(clanName));
+                        lib.sendMessage(p, "&7#&fID &7of player " + '"' + target.getName() + '"' +  " clan " + '"' + clanName + '"' + " is: &e&o" + getUtil().getClanID(clanName));
                     }
                 } else {
                     lib.sendMessage(p, target.getName() + " &c&oisn't in a clan.");
@@ -536,9 +561,9 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("message")) {
-                ClanUtil clanUtil = new ClanUtil();
-                Clan clan = new Clan(clanUtil.getClan(p), p);
-                if (clanUtil.getClan(p) != null)
+                
+                Clan clan = new Clan(getUtil().getClan(p), p);
+                if (getUtil().getClan(p) != null)
                 clan.messageClan(p.getName() + " say's : " + args1);
                 return true;
             }
@@ -559,73 +584,73 @@ public class CommandClan extends BukkitCommand {
             String args1 = args[1];
             String args2 = args[2];
             if (args0.equalsIgnoreCase("create")) {
-                ClanUtil clanUtil = new ClanUtil();
-                clanUtil.create(p, args1, args2);
+                
+                getUtil().create(p, args1, args2);
                 return true;
             }
             if (args0.equalsIgnoreCase("join")) {
-                ClanUtil clanUtil = new ClanUtil();
-                clanUtil.joinClan(p, args1, args2);
+                
+                getUtil().joinClan(p, args1, args2);
                 return true;
             }
             if (args0.equalsIgnoreCase("message")) {
-                ClanUtil clanUtil = new ClanUtil();
-                if (clanUtil.getClan(p) != null) {
-                    Clan clan = new Clan(clanUtil.getClan(p), p);
+                
+                if (getUtil().getClan(p) != null) {
+                    Clan clan = new Clan(getUtil().getClan(p), p);
                     clan.messageClan(p.getName() + " say's : " + args1 + " " + args2);
                 }
                 return true;
             }
             if (args0.equalsIgnoreCase("enemy")) {
-                ClanUtil clanUtil = new ClanUtil();
+                
                 if (args1.equalsIgnoreCase("add")) {
-                    if (clanUtil.getClan(p) != null) {
+                    if (getUtil().getClan(p) != null) {
                         String name = args2;
-                        if (!clanUtil.getAllClanNames().contains(name)) {
+                        if (!getUtil().getAllClanNames().contains(name)) {
                             lib.sendMessage(p, "&c&oThis clan does not exist!");
                             return true;
                         }
-                        if (name.equals(clanUtil.getClanTag(clanUtil.getClan(p)))) {
+                        if (name.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
                             lib.sendMessage(p, "&c&oYou can not ally your own clan!");
                             return true;
                         }
-                        String targetClan = clanUtil.getClanID(name);
-                        if (clanUtil.getEnemies(clanUtil.getClan(p)).contains(targetClan)) {
+                        String targetClan = getUtil().getClanID(name);
+                        if (getUtil().getEnemies(getUtil().getClan(p)).contains(targetClan)) {
                             lib.sendMessage(p, "&c&oYou are already enemies with this clan.\nTo become neutral type &7/clan enemy remove " + name);
                             return true;
                         }
-                        if (clanUtil.isNeutral(clanUtil.getClan(p), targetClan)) {
-                            clanUtil.addEnemy(clanUtil.getClan(p), targetClan);
+                        if (getUtil().isNeutral(getUtil().getClan(p), targetClan)) {
+                            getUtil().addEnemy(getUtil().getClan(p), targetClan);
                             return true;
                         }
-                        if (clanUtil.getAllies(clanUtil.getClan(p)).contains(targetClan)) {
-                            clanUtil.addEnemy(clanUtil.getClan(p), targetClan);
+                        if (getUtil().getAllies(getUtil().getClan(p)).contains(targetClan)) {
+                            getUtil().addEnemy(getUtil().getClan(p), targetClan);
                             return true;
                         }
                     }
                     return true;
                 }
                 if (args1.equalsIgnoreCase("remove")) {
-                    if (clanUtil.getClan(p) != null) {
+                    if (getUtil().getClan(p) != null) {
                         String name = args2;
-                        if (!clanUtil.getAllClanNames().contains(name)) {
+                        if (!getUtil().getAllClanNames().contains(name)) {
                             lib.sendMessage(p, "&c&oThis clan does not exist!");
                             return true;
                         }
-                        if (name.equals(clanUtil.getClanTag(clanUtil.getClan(p)))) {
+                        if (name.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
                             lib.sendMessage(p, "&c&oYou can not ally your own clan!");
                             return true;
                         }
-                        String targetClan = clanUtil.getClanID(name);
-                        if (clanUtil.getEnemies(targetClan).contains(clanUtil.getClan(p))) {
+                        String targetClan = getUtil().getClanID(name);
+                        if (getUtil().getEnemies(targetClan).contains(getUtil().getClan(p))) {
                             lib.sendMessage(p, "&c&oThis clan has marked you as an &4enemy");
                             return true;
                         }
-                        if (!clanUtil.getEnemies(clanUtil.getClan(p)).contains(targetClan)) {
+                        if (!getUtil().getEnemies(getUtil().getClan(p)).contains(targetClan)) {
                             lib.sendMessage(p, "&f&oYou are not enemies with this clan.");
                             return true;
                         }
-                        clanUtil.removeEnemy(clanUtil.getClan(p), targetClan);
+                        getUtil().removeEnemy(getUtil().getClan(p), targetClan);
                     } else {
                         lib.sendMessage(p, lib.notInClan());
                         return true;
@@ -635,32 +660,32 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("ally")) {
-                ClanUtil clanUtil = new ClanUtil();
+                
                 if (args1.equalsIgnoreCase("add")) {
-                    if (clanUtil.getClan(p) != null) {
+                    if (getUtil().getClan(p) != null) {
                         String name = args2;
-                        if (!clanUtil.getAllClanNames().contains(name)) {
+                        if (!getUtil().getAllClanNames().contains(name)) {
                             lib.sendMessage(p, "&c&oThis clan does not exist!");
                             return true;
                         }
-                        if (name.equals(clanUtil.getClanTag(clanUtil.getClan(p)))) {
+                        if (name.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
                             lib.sendMessage(p, "&c&oYou can not ally your own clan!");
                             return true;
                         }
-                        String targetClan = clanUtil.getClanID(name);
-                        if (clanUtil.getAllies(clanUtil.getClan(p)).contains(targetClan)) {
+                        String targetClan = getUtil().getClanID(name);
+                        if (getUtil().getAllies(getUtil().getClan(p)).contains(targetClan)) {
                             lib.sendMessage(p, "&a&oYou are already allies\nTo become neutral type &7/clan ally remove " + name);
                             return true;
                         }
-                        if (clanUtil.getEnemies(targetClan).contains(clanUtil.getClan(p))) {
+                        if (getUtil().getEnemies(targetClan).contains(getUtil().getClan(p))) {
                             lib.sendMessage(p, "&c&oClan " + '"' + "&4" + name + "&c&o" + '"' + " is currently enemies with you.");
                             return true;
                         }
-                        if (clanUtil.isNeutral(clanUtil.getClan(p), targetClan)) {
-                            clanUtil.sendAllyRequest(p, clanUtil.getClan(p), targetClan);
+                        if (getUtil().isNeutral(getUtil().getClan(p), targetClan)) {
+                            getUtil().sendAllyRequest(p, getUtil().getClan(p), targetClan);
                             return true;
                         }
-                        clanUtil.addAlly(p, clanUtil.getClan(p), targetClan);
+                        getUtil().addAlly(p, getUtil().getClan(p), targetClan);
                     } else {
                         lib.sendMessage(p, lib.notInClan());
                         return true;
@@ -668,27 +693,27 @@ public class CommandClan extends BukkitCommand {
                     return true;
                 }
                 if (args1.equalsIgnoreCase("remove")) {
-                    if (clanUtil.getClan(p) != null) {
+                    if (getUtil().getClan(p) != null) {
                         String name = args2;
-                        if (!clanUtil.getAllClanNames().contains(name)) {
+                        if (!getUtil().getAllClanNames().contains(name)) {
                             lib.sendMessage(p, "&c&oThis clan does not exist!");
                             return true;
                         }
-                        if (name.equals(clanUtil.getClanTag(clanUtil.getClan(p)))) {
+                        if (name.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
                             lib.sendMessage(p, "&c&oYou can not ally your own clan!");
                             return true;
                         }
-                        String targetClan = clanUtil.getClanID(name);
-                        if (clanUtil.isNeutral(clanUtil.getClan(p), targetClan)) {
+                        String targetClan = getUtil().getClanID(name);
+                        if (getUtil().isNeutral(getUtil().getClan(p), targetClan)) {
                             lib.sendMessage(p, "&f&oYou are currently neutral with this clan.");
                             return true;
                         }
-                        clanUtil.removeAlly(clanUtil.getClan(p), targetClan);
-                        clanUtil.removeAlly(targetClan, clanUtil.getClan(p));
-                        Clan clan = new Clan(clanUtil.getClan(p), null);
+                        getUtil().removeAlly(getUtil().getClan(p), targetClan);
+                        getUtil().removeAlly(targetClan, getUtil().getClan(p));
+                        Clan clan = new Clan(getUtil().getClan(p), null);
                         Clan clan2 = new Clan(targetClan, null);
-                        clan.messageClan("&f&oNow neutral with clan " + '"' + "&e" + clanUtil.getClanTag(targetClan) + "&f&o" + '"');
-                        clan2.messageClan("&f&oNow neutral with clan " + '"' + "&e" + clanUtil.getClanTag(clanUtil.getClan(p)) + "&f&o" + '"');
+                        clan.messageClan("&f&oNow neutral with clan " + '"' + "&e" + getUtil().getClanTag(targetClan) + "&f&o" + '"');
+                        clan2.messageClan("&f&oNow neutral with clan " + '"' + "&e" + getUtil().getClanTag(getUtil().getClan(p)) + "&f&o" + '"');
                     } else {
                         lib.sendMessage(p, lib.notInClan());
                         return true;
@@ -704,11 +729,11 @@ public class CommandClan extends BukkitCommand {
             String args0 = args[0];
             StringBuilder rsn = new StringBuilder();
             for (int i = 1; i < args.length; i++)
-                rsn.append(args[i] + " ");
+                rsn.append(args[i]).append(" ");
             int stop = rsn.length() - 1;
             if (args0.equalsIgnoreCase("message")) {
-                ClanUtil clanUtil = new ClanUtil();
-                Clan clan = new Clan(clanUtil.getClan(p), p);
+                
+                Clan clan = new Clan(getUtil().getClan(p), p);
                 clan.messageClan(p.getName() + " say's : " + rsn.substring(0, stop));
                 return true;
             }

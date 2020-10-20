@@ -1,12 +1,11 @@
 package com.youtube.hempfest.clans.util;
 
+import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.versions.Component;
 import com.youtube.hempfest.clans.util.versions.ComponentR1_8_1;
-import net.md_5.bungee.api.chat.BaseComponent;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -28,7 +27,7 @@ public class StringLibrary {
     }
 
     public void sendComponent(CommandSender s, TextComponent text) {
-        s.spigot().sendMessage((BaseComponent)text);
+        s.spigot().sendMessage(text);
     }
 
     public String getPrefix() {
@@ -124,12 +123,10 @@ public class StringLibrary {
                     if ((((page * contentLinesPerPage) + i + 1) == k) && (k != ((page * contentLinesPerPage) + contentLinesPerPage + 1)))
                     {
                         i++;
-                        String a = entry.replaceAll("%player%", p.getName());
-                        String b = a.replaceAll("%page%", String.valueOf(page + 1));
-                        String c = b.replaceAll("%%page_total%", String.valueOf(totalPageCount));
+                        String c = "";
                         ClanUtil clanUtil = new ClanUtil();
                         if (clanUtil.getClan(p) != null) {
-                            c = clanUtil.clanRelationColor(clanUtil.getClan(p), clanUtil.getClanID(c)) + c;
+                            c = clanUtil.clanRelationColor(clanUtil.getClan(p), clanUtil.getClanID(entry)) + entry;
                         }
                         p.sendMessage(color(c));
                     }
@@ -276,9 +273,9 @@ public class StringLibrary {
                     {
                         i++;
                         if (Bukkit.getServer().getVersion().contains("1.16")){
-                            sendComponent(p, Component.textHoverable("&f- ", "&b&l" + entry, "&rI am rank " + '"' + "&b" + clanUtil.getRankTag(clanUtil.getMemberRank(clanUtil.getClan(p), entry)) + "&r" + '"' + " within the clan."));
+                            sendComponent(p, Component.textHoverable("&f- ", "&b&l" + entry, "&rRank: " + '"' + "&b" + clanUtil.getRankTag(clanUtil.getMemberRank(clanUtil.getClan(p), entry)) + "&r" + '"' + "\nK/D: &b&o" + clanUtil.getKD(clanUtil.getUserID(entry))));
                         } else {
-                            sendComponent(p, ComponentR1_8_1.textHoverable("&f- ", "&b&l" + entry, "&rI am rank " + '"' + "&b" + clanUtil.getRankTag(clanUtil.getMemberRank(clanUtil.getClan(p), entry)) + "&r" + '"' + " within the clan.")); }
+                            sendComponent(p, ComponentR1_8_1.textHoverable("&f- ", "&b&l" + entry, "&rRank: " + '"' + "&b" + clanUtil.getRankTag(clanUtil.getMemberRank(clanUtil.getClan(p), entry)) + "&r" + '"' + "\nK/D: &b&o" + clanUtil.getKD(clanUtil.getUserID(entry)))); }
                     }
                 }
                 int point; point = page + 1; if (page >= 1) {

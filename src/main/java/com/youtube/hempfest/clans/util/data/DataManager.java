@@ -4,6 +4,7 @@ package com.youtube.hempfest.clans.util.data;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.events.AllyChatEvent;
 import com.youtube.hempfest.clans.util.events.ClanChatEvent;
+import com.youtube.hempfest.clans.util.timers.AsyncClaimResident;
 import com.youtube.hempfest.clans.util.timers.AsyncClanStatus;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
@@ -42,6 +43,11 @@ public class DataManager {
         asyncClanStatus.runTaskTimerAsynchronously(HempfestClans.getInstance(), 10L, 10L);
     }
 
+    public void performResidentEvent(){
+        AsyncClaimResident asyncClaimResident = new AsyncClaimResident();
+        asyncClaimResident.runTaskTimerAsynchronously(HempfestClans.getInstance(), 2L, 20L);
+    }
+
     public void formatClanChat(Player p, Set<Player> receivers, String message) {
         ClanChatEvent e = new ClanChatEvent(p, receivers, message, true);
         Bukkit.getPluginManager().callEvent(e);
@@ -69,6 +75,15 @@ public class DataManager {
     public File getClanFolder() {
         final File dir = new File(Config.class.getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
         File d = new File(dir.getParentFile().getPath(), HempfestClans.getInstance().getDescription().getName() + "/" + "Clans" + "/");
+        if(!d.exists()) {
+            d.mkdirs();
+        }
+        return d;
+    }
+
+    public File getUserFolder() {
+        final File dir = new File(Config.class.getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
+        File d = new File(dir.getParentFile().getPath(), HempfestClans.getInstance().getDescription().getName() + "/" + "Users" + "/");
         if(!d.exists()) {
             d.mkdirs();
         }

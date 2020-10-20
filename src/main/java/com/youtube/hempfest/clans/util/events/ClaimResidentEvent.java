@@ -19,13 +19,15 @@ public class ClaimResidentEvent extends Event implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private static final List<String> residents = new ArrayList<>();
+    public static final List<String> residents = new ArrayList<>();
 
     private final List<Claim> claimData = new ArrayList<>();
 
-    private static final HashMap<UUID, Long> invisibleResident = new HashMap<>();
+    public static final HashMap<UUID, Long> invisibleResident = new HashMap<>();
 
-    private static final HashMap<String, String> claimID = new HashMap<>();
+    public static final List<UUID> tempStorage = new ArrayList<>();
+
+    public static final HashMap<String, String> claimID = new HashMap<>();
 
     private static final HashMap<String, String> titleContext = new HashMap<>();
 
@@ -172,67 +174,69 @@ public class ClaimResidentEvent extends Event implements Cancellable {
 
     public void handleUpdate() {
         ClaimUtil claimUtil = new ClaimUtil();
-        Claim claim = new Claim(claimUtil.getClaimID(p.getLocation()));
+        ClanUtil clanUtil = new ClanUtil();
         titleContext.put("TITLE", "&3&oClaimed land");
         titleContext.put("SUB-TITLE", "&7Owned by: &b%s");
         titleContext.put("W-TITLE", "&4&nWilderness");
         titleContext.put("W-SUB-TITLE", "&7&oOwned by no-one.");
         if (claimUtil.isInClaim(p.getLocation())) {
+            Claim claim = new Claim(claimUtil.getClaimID(p.getLocation()));
             if (!lastKnownExists()) {
                 claimID.put(p.getName(), claimUtil.getClaimID(p.getLocation()));
             }
             if (lastKnownExists()) {
                 if (!claimID.get(p.getName()).equals(claimUtil.getClaimID(p.getLocation()))) {
-                    if (!Arrays.asList(claim.getClan().getMembers()).contains(p.getName())) {
-                        if (!invisibleResident.containsKey(p.getUniqueId())) {
-                            invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
+                    claimID.put(p.getName(), claimUtil.getClaimID(p.getLocation()));
+                    if (clanUtil.getClan(p) != null && !getClaim().getOwner().equals(clanUtil.getClan(p))) {
+                        if (!Arrays.asList(claim.getClan().getMembers()).contains(p.getName())) {
+                            if (!invisibleResident.containsKey(p.getUniqueId()))
+                                invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
+                            residents.remove(p.getName());
+                            tempStorage.add(p.getUniqueId());
                         }
-                        residents.remove(p.getName());
-                        claimID.put(p.getName(), claimUtil.getClaimID(p.getLocation()));
+                        if (Arrays.asList(claim.getClan().getMembers()).contains(p.getName())) {
+                            invisibleResident.remove(p.getUniqueId());
+                        }
                     }
-                    if (Arrays.asList(claim.getClan().getMembers()).contains(p.getName())) {
-                        if (!invisibleResident.containsKey(p.getUniqueId())) {
-                            invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
+                    if (clanUtil.getClan(p) != null && getClaim().getOwner().equals(clanUtil.getClan(p))) {
+                        if (tempStorage.contains(p.getUniqueId())) {
+                            if (!invisibleResident.containsKey(p.getUniqueId()))
+                                invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
+                            residents.remove(p.getName());
+                            tempStorage.remove(p.getUniqueId());
                         }
-                        residents.remove(p.getName());
-                        claimID.put(p.getName(), claimUtil.getClaimID(p.getLocation()));
                     }
                 }
             }
-            if (!residents.contains(p.getName())) {
-                ClanUtil clanUtil = new ClanUtil();
-                String clanName = clanUtil.getClanTag(claim.getOwner());
-                String color = "";
-                if (clanUtil.getClan(p) != null) {
-                    color = clanUtil.clanRelationColor(clanUtil.getClan(p), claim.getOwner());
-                } else {
-                    color = "&f&o";
-                }
-                if (titlesAllowed) {
-                    p.sendTitle(claimUtil.color(String.format(titleContext.get("TITLE"), clanName)), claimUtil.color(String.format(titleContext.get("SUB-TITLE"), color + clanName)), 10, 25, 10);
-                }
-                claimUtil.sendMessage(p, "Now entering &a" + color + clanName + "'s&7 land @ &f(&eX:" + color + getClaim().getLocation().getChunk().getX() + " &eZ:" + color + getClaim().getLocation().getChunk().getZ() + "&f)");
-                residents.add(p.getName());
-                if (!invisibleResident.containsKey(p.getUniqueId())) {
-                    invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
-                }
+            if (!residents.contains(p.getName()) || invisibleResident.containsKey(p.getUniqueId())) {
+                    String clanName = clanUtil.getClanTag(claim.getOwner());
+                    String color = "";
+                    if (clanUtil.getClan(p) != null) {
+                        color = clanUtil.clanRelationColor(clanUtil.getClan(p), claim.getOwner());
+                    } else {
+                        color = "&f&o";
+                    }
+                    if (titlesAllowed) {
+                        p.sendTitle(claimUtil.color(String.format(titleContext.get("TITLE"), clanName)), claimUtil.color(String.format(titleContext.get("SUB-TITLE"), color + clanName)), 10, 25, 10);
+                    }
+                    claimUtil.sendMessage(p, "Now entering &a" + color + clanName + "'s&7 land @ &f(&eX:" + color + getClaim().getLocation().getChunk().getX() + " &eZ:" + color + getClaim().getLocation().getChunk().getZ() + "&f)");
+                    residents.add(p.getName());
+                invisibleResident.remove(p.getUniqueId());
+                    return;
             }
         }
+
+        // Not in a claim area
         if (!claimUtil.isInClaim(p.getLocation())) {
             claimID.remove(p.getName());
-            if (!invisibleResident.containsKey(p.getUniqueId())) {
-                invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
+            if (!invisibleResident.containsKey(p.getUniqueId()) || residents.contains(p.getName())) {
                 if (titlesAllowed) {
                     p.sendTitle(claimUtil.color(titleContext.get("W-TITLE")), claimUtil.color(titleContext.get("W-SUB-TITLE")), 10, 25, 10);
                 }
                 claimUtil.sendMessage(p, "Now entering &4&nWilderness");
-            }
-            if (residents.contains(p.getName())) {
                 residents.remove(p.getName());
-                if (titlesAllowed) {
-                    p.sendTitle(claimUtil.color(titleContext.get("W-TITLE")), claimUtil.color(titleContext.get("W-SUB-TITLE")), 10, 25, 10);
-                }
-                claimUtil.sendMessage(p, "Now entering &4&nWilderness");
+                invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
+                return;
             }
         }
     }

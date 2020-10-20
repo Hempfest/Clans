@@ -16,6 +16,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 import java.io.File;
+import java.text.ParseException;
 import java.util.*;
 
 public class ClanUtil extends StringLibrary {
@@ -245,6 +246,52 @@ public class ClanUtil extends StringLibrary {
         Clan clanIndex2 = new Clan(targetClanID, null);
         clanIndex.messageClan("&f&oNow neutral with clan " + '"' + "&e" + getClanTag(targetClanID) + "&f&o" + '"');
         clanIndex2.messageClan("&f&oNow neutral with clan " + '"' + "&e" + getClanTag(clanID) + "&f&o" + '"');
+    }
+
+    public double getKD(UUID playerID) {
+        DataManager data = new DataManager(playerID.toString(), null);
+        Config user = data.getFile(ConfigType.USER_FILE);
+        int kills = user.getConfig().getInt("kills");
+        int deaths = user.getConfig().getInt("deaths");
+        double result = 0.0;
+        if (deaths == 0) {
+            result = kills;
+        } else {
+            result = kills / deaths;
+        }
+        return result;
+    }
+
+    public UUID getUserID(String playerName) {
+        UUID result = null;
+        for (UUID player : getAllUsers()) {
+            DataManager dm = new DataManager(player.toString(), null);
+            Config user = dm.getFile(ConfigType.USER_FILE);
+            if (user.getConfig().getString("username") == null) {
+                user.getConfig().set("username", Bukkit.getOfflinePlayer(player).getName());
+                user.saveConfig();
+            }
+            if (user.getConfig().getString("username").equals(playerName)) {
+                result = player;
+            }
+        }
+        return result;
+    }
+
+    public List<UUID> getAllUsers() {
+        DataManager dm = new DataManager();
+        List<UUID> result = new ArrayList<>();
+        for (File file : dm.getUserFolder().listFiles()) {
+            result.add(UUID.fromString(file.getName().replace(".yml", "")));
+        }
+        return result;
+    }
+
+    public static void updateUsername(Player p) {
+        DataManager data = new DataManager(p.getUniqueId().toString(), null);
+        Config user = data.getFile(ConfigType.USER_FILE);
+        user.getConfig().set("username", p.getName());
+        user.saveConfig();
     }
 
     public String getCurrentRank(int rankPower) {
@@ -572,10 +619,7 @@ public class ClanUtil extends StringLibrary {
     }
 
     public boolean isNeutral(String clanID, String targetClanID) {
-        if (!getAllies(clanID).contains(targetClanID) && !getEnemies(clanID).contains(targetClanID)) {
-            return true;
-        }
-        return false;
+        return !getAllies(clanID).contains(targetClanID) && !getEnemies(clanID).contains(targetClanID);
     }
 
     public String clanRelationColor(String clanID, String targetClanID) {
@@ -607,7 +651,7 @@ public class ClanUtil extends StringLibrary {
         return clan.getConfig().getString("password");
     }
 
-    public void getMyClanInfo(Player p, int page) {
+    public void getMyClanInfo(Player p, int page) throws ParseException {
         String clanID = getClan(p);
         Clan clanIndex = new Clan(clanID, p);
         DataManager dm = new DataManager(clanID, null);
@@ -632,7 +676,7 @@ public class ClanUtil extends StringLibrary {
         if (clanIndex.getBase() == null)
             array.add("&6Base: &7Not set");
         array.add("&6Password: &f" + password);
-        array.add("&6&lPower [&e" + clanIndex.getPower() + "&6&l]");
+        array.add("&6&lPower [&e" + clanIndex.format(String.valueOf(clanIndex.getPower())) + "&6&l]");
         array.add("&6" + getRankTag("Admin") + "s [&b" + admins.size() + "&6]");
         array.add("&6" + getRankTag("Moderator") + "s [&e" + mods.size() + "&6]");
         array.add("&6Claims [&e" + clanIndex.getOwnedClaims().length + "&6]");
@@ -787,14 +831,10 @@ public class ClanUtil extends StringLibrary {
         Server server = Bukkit.getServer();
         long time = server.getWorld(world).getTime();
 
-        if (time > on && time < off) {
-            return false;
-        } else {
-            return true;
-        }
+        return time <= on || time >= off;
     }
 
-    public void getLeaderboard(Player p, int page) {
+    public void getLeaderboard(Player p, int page) throws ParseException {
         StringLibrary sl = new StringLibrary();
         int o = 10;
 
@@ -853,11 +893,11 @@ public class ClanUtil extends StringLibrary {
                         Clan dummy = new Clan(null, null);
                         if (Bukkit.getServer().getVersion().contains("1.16")) {
                             sendComponent(p, Component.textRunnable("",
-                                    " &7# &3&l" + k + " &b&o" + nextTop + " &7: &6&l" + dummy.format(nextTopBal),
+                                    " &7# &3&l" + k + " &b&o" + nextTop + " &7: &6&l" + dummy.format(String.valueOf(nextTopBal)),
                                     "&6" + nextTop + " &a&oplaces &7#&6" + k + "&a&o on page " + pagee + ".", "c info " + nextTop));
                         } else {
                             sendComponent(p, ComponentR1_8_1.textRunnable( "",
-                                    " &7# &3&l" + k + " &b&o" + nextTop + " &7: &6&l" + dummy.format(nextTopBal),
+                                    " &7# &3&l" + k + " &b&o" + nextTop + " &7: &6&l" + dummy.format(String.valueOf(nextTopBal)),
                                     "&6" + nextTop + " &a&oplaces &7#&6" + k + "&a&o on page " + pagee + ".", "c info " + nextTop));
                         }
 
