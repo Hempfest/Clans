@@ -20,6 +20,14 @@ public class PlayerPunchPlayerEvent extends Event {
         this.victim = target;
     }
 
+    public Player getAttacker() {
+        return attacker;
+    }
+
+    public Player getVictim() {
+        return victim;
+    }
+
     @Override
     public HandlerList getHandlers() {
         return handlers;

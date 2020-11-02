@@ -2,6 +2,7 @@ package com.youtube.hempfest.clans.util.data;
 
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.util.construct.ClaimUtil;
 import com.youtube.hempfest.clans.util.events.AllyChatEvent;
 import com.youtube.hempfest.clans.util.events.ClanChatEvent;
 import com.youtube.hempfest.clans.util.timers.AsyncClaimResident;
@@ -39,13 +40,16 @@ public class DataManager {
     }
 
     public void runCleaner() {
+        HempfestClans.getInstance().getLogger().info("- Running data cache cleaner.");
         AsyncClanStatus asyncClanStatus = new AsyncClanStatus();
         asyncClanStatus.runTaskTimerAsynchronously(HempfestClans.getInstance(), 10L, 10L);
     }
 
     public void performResidentEvent(){
-        AsyncClaimResident asyncClaimResident = new AsyncClaimResident();
-        asyncClaimResident.runTaskTimerAsynchronously(HempfestClans.getInstance(), 2L, 20L);
+        if (ClaimUtil.claimingAllowed()) {
+            AsyncClaimResident asyncClaimResident = new AsyncClaimResident();
+            asyncClaimResident.runTaskTimerAsynchronously(HempfestClans.getInstance(), 2L, 20L);
+        }
     }
 
     public void formatClanChat(Player p, Set<Player> receivers, String message) {

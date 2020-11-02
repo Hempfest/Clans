@@ -13,7 +13,9 @@ public class AsyncClaimResident extends BukkitRunnable {
             ClaimResidentEvent event = new ClaimResidentEvent(p, true);
             Bukkit.getPluginManager().callEvent(event);
             if (!event.isCancelled()) {
-                event.handleUpdate();
+                if (Bukkit.getOnlinePlayers().size() > 0) {
+                    event.handleUpdate();
+                }
             }
         }
     }

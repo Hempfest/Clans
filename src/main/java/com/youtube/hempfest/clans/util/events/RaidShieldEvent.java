@@ -49,7 +49,7 @@ public class RaidShieldEvent extends Event implements Cancellable {
     }
 
     public boolean shieldOn() {
-        return HempfestClans.getInstance().shield.shieldStatus();
+        return HempfestClans.getInstance().clanUtil.shieldStatus();
     }
 
     public void setShieldOn(String shieldOn) {
@@ -73,10 +73,6 @@ public class RaidShieldEvent extends Event implements Cancellable {
         this.cancelled = b;
     }
 
-    private boolean configAllow() {
-        return main.getConfig().getBoolean("Clans.raid-shield.allow");
-    }
-
     @Override
     public HandlerList getHandlers() {
         return handlers;
@@ -87,22 +83,20 @@ public class RaidShieldEvent extends Event implements Cancellable {
     }
 
     public void handleUpdate() {
-            if (configAllow()) {
 
                 String world = main.getConfig().getString("Clans.raid-shield.main-world");
-                if (HempfestClans.getInstance().shield.isNight(world, on, off)) {
-                    if (HempfestClans.getInstance().shield.shieldStatus() == true) {
-                        HempfestClans.getInstance().shield.setRaidShield(false);
-                        Bukkit.broadcastMessage(HempfestClans.getInstance().shield.color(String.format(shieldOff, HempfestClans.getInstance().shield.getPrefix())));
+                if (HempfestClans.getInstance().clanUtil.isNight(world, on, off)) {
+                    if (HempfestClans.getInstance().clanUtil.shieldStatus()) {
+                        HempfestClans.getInstance().clanUtil.setRaidShield(false);
+                        Bukkit.broadcastMessage(HempfestClans.getInstance().clanUtil.color(String.format(shieldOff, HempfestClans.getInstance().clanUtil.getPrefix())));
                     }
                 }
-                if (!HempfestClans.getInstance().shield.isNight(world, on, off)) {
-                    if (HempfestClans.getInstance().shield.shieldStatus() == false) {
-                        HempfestClans.getInstance().shield.setRaidShield(true);
-                        Bukkit.broadcastMessage(HempfestClans.getInstance().shield.color(String.format(shieldOn, HempfestClans.getInstance().shield.getPrefix())));
+                if (!HempfestClans.getInstance().clanUtil.isNight(world, on, off)) {
+                    if (!HempfestClans.getInstance().clanUtil.shieldStatus()) {
+                        HempfestClans.getInstance().clanUtil.setRaidShield(true);
+                        Bukkit.broadcastMessage(HempfestClans.getInstance().clanUtil.color(String.format(shieldOn, HempfestClans.getInstance().clanUtil.getPrefix())));
                     }
                 }
-            }
     }
 
 }

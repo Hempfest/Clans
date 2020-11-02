@@ -9,10 +9,10 @@ import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Objects;
 
 public class ClaimUtil extends StringLibrary {
 
@@ -20,7 +20,7 @@ public class ClaimUtil extends StringLibrary {
     Config regions = dm.getFile(ConfigType.MISC_FILE);
     
     public ClanUtil getUtil() {
-        return new ClanUtil();
+        return HempfestClans.getInstance().clanUtil;
     }
 
     public void obtain(Player p) {
@@ -47,12 +47,11 @@ public class ClaimUtil extends StringLibrary {
                 sendMessage(p, alreadyOwnClaim());
             } else {
                 sendMessage(p, notClaimOwner(getUtil().clanRelationColor(getUtil().getClan(p), claim.getOwner()) + getUtil().getClanTag(claim.getOwner())));
-                return;
             }
         }
     }
 
-    public void remove(Player p) throws ParseException {
+    public void remove(Player p) {
         FileConfiguration d = regions.getConfig();
         Clan clan = new Clan(getUtil().getClan(p), p);
         if (isInClaim(p.getLocation())) {
@@ -64,7 +63,7 @@ public class ClaimUtil extends StringLibrary {
                 String world = p.getWorld().getName();
                 clan.messageClan("&e&oLand was un-claimed @ Chunk position: &7X:&3" + x + " &7Z:&3" + z + " &e&oin world &7" + world);
             } else {
-                if (HempfestClans.getInstance().shield.shieldStatus()) {
+                if (getUtil().shieldStatus()) {
                     if (getUtil().overPowerBypass()) {
                         Claim claim = new Claim(getClaimID(p.getLocation()), p);
                         Clan clan2 = new Clan(claim.getOwner(), p);
@@ -79,11 +78,9 @@ public class ClaimUtil extends StringLibrary {
                             result.messageClan("&7&oLand was &4&nover-powered&7&o @ Chunk position: &7X:&c" + x + " &7Z:&c" + z + " &7&oin world &4" + world);
                         } else {
                             sendMessage(p, "&cYour clans power is too weak in comparison.");
-                            return;
                         }
                     } else {
                         sendMessage(p, "&5&oYou cannot attempt anything right now.. The shield is resilient.");
-                        return;
                     }
                 } else {
                     Claim claim = new Claim(getClaimID(p.getLocation()), p);
@@ -99,9 +96,7 @@ public class ClaimUtil extends StringLibrary {
                         result.messageClan("&7&oLand was &4&nover-powered&7&0 @ Chunk position: &7X:&3" + x + " &7Z:&3" + z + " &7&oin world &4" + world);
                     } else {
                         sendMessage(p, "&cYour clans power is too weak in comparison.");
-                        return;
                     }
-                    return;
                 }
             }
         } else {
@@ -115,7 +110,7 @@ public class ClaimUtil extends StringLibrary {
             sendMessage(p, "Your clan has no land to unclaim. Consider obtaining some?");
             return;
         }
-        if (!d.getConfigurationSection(getUtil().getClan(p) + ".Claims").getKeys(false).isEmpty()) {
+        if (!Objects.requireNonNull(d.getConfigurationSection(getUtil().getClan(p) + ".Claims")).getKeys(false).isEmpty()) {
             d.set(getUtil().getClan(p) + ".Claims", null);
             d.createSection(getUtil().getClan(p) + ".Claims");
             regions.saveConfig();
@@ -129,12 +124,12 @@ public class ClaimUtil extends StringLibrary {
     public boolean isInClaim(Location loc) {
         FileConfiguration d = regions.getConfig();
         for (String clan : d.getKeys(false)) {
-            for (String s : d.getConfigurationSection(clan + ".Claims").getKeys(false)) {
+            for (String s : Objects.requireNonNull(d.getConfigurationSection(clan + ".Claims")).getKeys(false)) {
                 int x = d.getInt(clan + ".Claims." + s + ".X");
                 int z = d.getInt(clan + ".Claims." + s + ".Z");
                 String w = d.getString(clan + ".Claims." + s + ".World");
                 if ((loc.getChunk().getX() <= x) && (loc.getChunk().getZ() <= z) && (loc.getChunk().getX() >= x)
-                        && (loc.getChunk().getZ() >= z) && loc.getWorld().getName().equals(w)) {
+                        && (loc.getChunk().getZ() >= z) && Objects.requireNonNull(loc.getWorld()).getName().equals(w)) {
                     return true;
                 }
 
@@ -169,7 +164,7 @@ public class ClaimUtil extends StringLibrary {
         String id = "";
         if (isInClaim(loc)) {
             for (String clan : d.getKeys(false)) {
-                for (String s : d.getConfigurationSection(clan + ".Claims").getKeys(false)) {
+                for (String s : Objects.requireNonNull(d.getConfigurationSection(clan + ".Claims")).getKeys(false)) {
                     int x = d.getInt(clan + ".Claims." + s + ".X");
                     int z = d.getInt(clan + ".Claims." + s + ".Z");
                     if (loc.getChunk().getX() == x && loc.getChunk().getZ() == z) {
@@ -182,11 +177,7 @@ public class ClaimUtil extends StringLibrary {
     }
 
     public List<String> getAllClaims() {
-        List<String> array = new ArrayList<>();
-        for (String region : regions.getConfig().getKeys(false)) {
-            array.add(region);
-        }
-        return array;
+        return new ArrayList<>(regions.getConfig().getKeys(false));
     }
 
     private String serial(int count) {
@@ -199,7 +190,11 @@ public class ClaimUtil extends StringLibrary {
         return builder.toString();
     }
 
-
+    public static boolean claimingAllowed() {
+        DataManager dm = new DataManager("Config", "Configuration");
+        Config main = dm.getFile(ConfigType.MISC_FILE);
+        return main.getConfig().getBoolean("Clans.land-claiming.allow");
+    }
 
 
 }

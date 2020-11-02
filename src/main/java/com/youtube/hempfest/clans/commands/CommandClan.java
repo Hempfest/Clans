@@ -1,6 +1,7 @@
 package com.youtube.hempfest.clans.commands;
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.util.Color;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.ClaimUtil;
 import com.youtube.hempfest.clans.util.construct.Clan;
@@ -14,7 +15,6 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 
-import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
@@ -66,22 +66,16 @@ public class CommandClan extends BukkitCommand {
         return help;
     }
 
-    private boolean claimingAllowed() {
-        DataManager dm = new DataManager("Config", "Configuration");
-        Config main = dm.getFile(ConfigType.MISC_FILE);
-        return main.getConfig().getBoolean("Clans.land-claiming.allow");
-    }
-
     private boolean isAlphaNumeric(String s) {
         return s != null && s.matches("^[a-zA-Z0-9]*$");
     }
     
     private ClanUtil getUtil() {
-        return new ClanUtil();
+        return HempfestClans.getInstance().clanUtil;
     }
 
     private ClaimUtil getClaim() {
-        return new ClaimUtil();
+        return HempfestClans.getInstance().claimUtil;
     }
 
     @Override
@@ -118,7 +112,7 @@ public class CommandClan extends BukkitCommand {
                 lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan create <clanName> <password>");
                 return true;
             }
-            if (args0.equalsIgnoreCase("password")) {
+            if (args0.equalsIgnoreCase("password") || args0.equalsIgnoreCase("pass")) {
                 lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan password <newPassword>");
                 return true;
             }
@@ -127,12 +121,8 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("top")) {
-                
-                try {
-                    getUtil().getLeaderboard(p, 1);
-                } catch (ParseException e) {
-                    e.printStackTrace();
-                }
+
+                getUtil().getLeaderboard(p, 1);
                 return true;
             }
             if (args0.equalsIgnoreCase("list")) {
@@ -143,7 +133,7 @@ public class CommandClan extends BukkitCommand {
             }
             if (args0.equalsIgnoreCase("claim")) {
                 
-                if (claimingAllowed()) {
+                if (ClaimUtil.claimingAllowed()) {
                     if (getUtil().getClan(p) != null) {
                         if (getUtil().getRankPower(p) >= getUtil().claimingClearance()) {
                             
@@ -164,15 +154,10 @@ public class CommandClan extends BukkitCommand {
             }
             if (args0.equalsIgnoreCase("unclaim")) {
                 
-                if (claimingAllowed()) {
+                if (ClaimUtil.claimingAllowed()) {
                     if (getUtil().getClan(p) != null) {
                         if (getUtil().getRankPower(p) >= getUtil().claimingClearance()) {
-                            
-                            try {
-                                getClaim().remove(p);
-                            } catch (ParseException e) {
-                                e.printStackTrace();
-                            }
+                            getClaim().remove(p);
                         } else {
                             lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                         }
@@ -217,6 +202,13 @@ public class CommandClan extends BukkitCommand {
             }
             if (args0.equalsIgnoreCase("tag")) {
                 lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan tag <newTag>");
+                return true;
+            }
+            if (args0.equalsIgnoreCase("color")) {
+                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan color <newTagColor>");
+                for (Color color : Color.values()) {
+                    lib.sendMessage(p, "&7|&e)&r " + getUtil().getColor(color.name().replaceAll("_", "")) + color.name());
+                }
                 return true;
             }
             if (args0.equalsIgnoreCase("nick") || args0.equalsIgnoreCase("nickname")) {
@@ -274,11 +266,7 @@ public class CommandClan extends BukkitCommand {
             if (args0.equalsIgnoreCase("info") || args0.equalsIgnoreCase("i")) {
                 
                 if (getUtil().getClan(p) != null) {
-                    try {
-                        getUtil().getMyClanInfo(p, 1);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    getUtil().getMyClanInfo(p, 1);
                 } else {
                     lib.sendMessage(p, lib.notInClan());
                     return true;
@@ -288,11 +276,7 @@ public class CommandClan extends BukkitCommand {
             if (args0.equalsIgnoreCase("members")) {
                 
                 if (getUtil().getClan(p) != null) {
-                    try {
-                        getUtil().getMyClanInfo(p, 1);
-                    } catch (ParseException e) {
-                        e.printStackTrace();
-                    }
+                    getUtil().getMyClanInfo(p, 1);
                 } else {
                     lib.sendMessage(p, lib.notInClan());
                     return true;
@@ -338,7 +322,7 @@ public class CommandClan extends BukkitCommand {
                 
                 try {
                     getUtil().getLeaderboard(p, Integer.parseInt(args1));
-                } catch (IllegalFormatException | ParseException e) {
+                } catch (IllegalFormatException e) {
                 lib.sendMessage(p, "&c&oInvalid page number!");
                 }
                 return true;
@@ -376,6 +360,21 @@ public class CommandClan extends BukkitCommand {
                             return true;
                         }
                         clan.changeTag(args1);
+                    } else {
+                        lib.sendMessage(p, "&c&oYou do not have clan clearance.");
+                    }
+                } else {
+                    lib.sendMessage(p, lib.notInClan());
+                    return true;
+                }
+                return true;
+            }
+            if (args0.equalsIgnoreCase("color")) {
+
+                Clan clan = new Clan(getUtil().getClan(p), p);
+                if (getUtil().getClan(p) != null) {
+                    if (getUtil().getRankPower(p) >= getUtil().colorChangeClearance()) {
+                        clan.changeColor(args1);
                     } else {
                         lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                     }
@@ -438,7 +437,7 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("unclaim")) {
-                if (claimingAllowed()) {
+                if (ClaimUtil.claimingAllowed()) {
                     if (args1.equalsIgnoreCase("all")) {
                         
                         if (getUtil().getClan(p) != null) {
@@ -461,7 +460,7 @@ public class CommandClan extends BukkitCommand {
                 }
                 return true;
             }
-            if (args0.equalsIgnoreCase("password")) {
+            if (args0.equalsIgnoreCase("password") || args0.equalsIgnoreCase("pass")) {
                 
                 Clan clan = new Clan(getUtil().getClan(p), p);
                 if (getUtil().getClan(p) != null) {
@@ -518,7 +517,7 @@ public class CommandClan extends BukkitCommand {
                     try {
                         int page = Integer.parseInt(args1);
                         getUtil().getMyClanInfo(p, page);
-                    } catch (NumberFormatException | ParseException e) {
+                    } catch (NumberFormatException e) {
                         lib.sendMessage(p, "&c&oInvalid page number!");
                     }
                 } else {
@@ -534,6 +533,10 @@ public class CommandClan extends BukkitCommand {
                     String clanName = args1;
                     if (!getUtil().getAllClanNames().contains(clanName)) {
                         lib.sendMessage(p, "&c&oThis clan does not exist!");
+                        return true;
+                    }
+                    if (clanName.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
+                        getUtil().getMyClanInfo(p, 1);
                         return true;
                     }
                     Clan clan = new Clan(getUtil().getClanID(clanName), p);
@@ -685,7 +688,7 @@ public class CommandClan extends BukkitCommand {
                             getUtil().sendAllyRequest(p, getUtil().getClan(p), targetClan);
                             return true;
                         }
-                        getUtil().addAlly(p, getUtil().getClan(p), targetClan);
+                        getUtil().addAlly(getUtil().getClan(p), targetClan);
                     } else {
                         lib.sendMessage(p, lib.notInClan());
                         return true;

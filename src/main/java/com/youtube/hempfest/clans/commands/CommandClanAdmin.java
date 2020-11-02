@@ -7,11 +7,11 @@ import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
 
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,20 +23,17 @@ public class CommandClanAdmin extends BukkitCommand {
         setPermission(permission);
     }
 
-    private void sendMessage(CommandSender player, String message) {
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
-    }
-
     private List<String> helpMenu() {
         List<String> help = new ArrayList<>();
         help.add("&7|&e) &6/clanadmin &freload <&7configName&f>");
+        help.add("&7|&e) &6/clanadmin &eupdate");
         help.add("&7|&e) &6/clanadmin &fgetid <&7clanNamef>");
         help.add("&7|&e) &6/clanadmin &fidmode");
         return help;
     }
     
     private ClanUtil getUtil() {
-        return new ClanUtil();
+        return HempfestClans.getInstance().clanUtil;
     }
 
     @Override
@@ -77,6 +74,17 @@ public class CommandClanAdmin extends BukkitCommand {
             }
             if (args0.equalsIgnoreCase("getid")) {
                 lib.sendMessage(p, "&7|&e) &fInvalid usage : /clanadmin getid <playerName>");
+                return true;
+            }
+            if (args0.equalsIgnoreCase("update")) {
+                if (HempfestClans.getMain().getConfig().getString("Version").equals(HempfestClans.getInstance().getDescription().getVersion())) {
+                    lib.sendMessage(p, "&3&oThe configuration is already up to date.");
+                    return true;
+                } else {
+                    InputStream mainGrab = HempfestClans.getInstance().getResource("Config.yml");
+                    Config.copy(mainGrab, HempfestClans.getMain().getFile());
+                    lib.sendMessage(p, "&b&oUpdate configuration to the latest plugin version.");
+                }
                 return true;
             }
             if (args0.equalsIgnoreCase("idmode")) {

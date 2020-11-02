@@ -1,6 +1,8 @@
 package com.youtube.hempfest.clans.util.listener;
 
+import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
+import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
@@ -27,9 +29,18 @@ public class EventListener implements Listener {
         return ChatColor.translateAlternateColorCodes('&', text);
     }
 
+
+    public Config playerData(Player p) {
+        DataManager dm = new DataManager(p.getUniqueId().toString(), null);
+        return dm.getFile(ConfigType.USER_FILE);
+    }
+
     @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
+        if (playerData(p).getConfig().getString("Clan") != null) {
+            HempfestClans.playerClan.put(p.getUniqueId(), playerData(p).getConfig().getString("Clan"));
+        }
         ClanUtil.updateUsername(p);
         ClanUtil.chatMode.put(p, "GLOBAL");
     }
@@ -41,6 +52,7 @@ public class EventListener implements Listener {
         ClaimResidentEvent.invisibleResident.remove(p.getUniqueId());
         ClaimResidentEvent.residents.remove(p.getName());
         ClaimResidentEvent.tempStorage.remove(p.getUniqueId());
+        HempfestClans.playerClan.remove(p.getUniqueId());
     }
 
     private String chatMode(Player p) {
@@ -50,15 +62,17 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGH)
     public void onPrefixApply(AsyncPlayerChatEvent event) {
         Player p = event.getPlayer();
-        ClanUtil clanUtil = new ClanUtil();
+        ClanUtil clanUtil = HempfestClans.getInstance().clanUtil;
         DataManager dm = new DataManager("Config", "Configuration");
         if (chatMode(p).equals("GLOBAL")) {
             Config main = dm.getFile(ConfigType.MISC_FILE);
             if (main.getConfig().getBoolean("Formatting.allow")) {
                 if (clanUtil.getClan(p) != null) {
-                    String clanName = clanUtil.getClanTag(clanUtil.getClan(p));
+                    Clan clan = new Clan(clanUtil.getClan(p), p);
+                    String clanName = clan.getClanTag();
                     StringLibrary lib = new StringLibrary();
                     String rank = "";
+                    clanName = clanUtil.getColor(clan.getChatColor()) + clanName;
                     switch (lib.getRankStyle()) {
                         case "WORDLESS":
                             rank = lib.getWordlessStyle(clanUtil.getRank(p));
@@ -127,6 +141,8 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onBlockBreak(BlockBreakEvent event) {
+
+
         ClaimBuildEvent e = new ClaimBuildEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
         e.handleCheck();

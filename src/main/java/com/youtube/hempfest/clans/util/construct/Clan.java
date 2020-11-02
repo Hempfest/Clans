@@ -25,7 +25,7 @@ public class Clan {
     }
     
     private ClanUtil getUtil() {
-        return new ClanUtil();
+        return HempfestClans.getInstance().clanUtil;
     }
 
     public Clan(String clanID, Player p) {
@@ -80,13 +80,12 @@ public class Clan {
         List<String> mods = clan.getConfig().getStringList("moderators");
         List<String> admins = clan.getConfig().getStringList("admins");
         List<String> allies = clan.getConfig().getStringList("allies");
-        List<String> allyRequests = clan.getConfig().getStringList("ally-requests");
         List<String> enemies = clan.getConfig().getStringList("enemies");
         String status = "LOCKED";
         if (password == null)
             status = "OPEN";
         array.add(" ");
-        array.add("&2&lClan&7: &f" + getUtil().getClanTag(clanID));
+        array.add("&2&lClan&7: &f" + getUtil().getColor(getChatColor()) + getUtil().getClanTag(clanID));
         array.add("&f&m---------------------------");
         array.add("&2" + getUtil().getRankTag("Owner") + ": &f" + owner);
         array.add("&2Status: &f" + status);
@@ -140,15 +139,34 @@ public class Clan {
     }
 
     public void changeTag(String newTag) {
+        if (newTag.length() > HempfestClans.getMain().getConfig().getInt("Clans.tag-size")) {
+            getUtil().sendMessage(p, "&c&oThe clan name you have chosen is too long! Max tag length reached.");
+            return;
+        }
         Config c = dm().getFile(ConfigType.CLAN_FILE);
         c.getConfig().set("name", newTag);
         c.saveConfig();
         messageClan("&3&o&nThe clan name has been changed.");
     }
 
+    public void changeColor(String newColor) {
+        Config c = dm().getFile(ConfigType.CLAN_FILE);
+        c.getConfig().set("name-color", newColor);
+        c.saveConfig();
+        messageClan(getUtil().getColor(newColor) + "The clan name color has been changed.");
+    }
+
     public String getClanTag() {
         Config c = dm().getFile(ConfigType.CLAN_FILE);
         return c.getConfig().getString("name");
+    }
+
+    public String getChatColor() {
+        Config c = dm().getFile(ConfigType.CLAN_FILE);
+        if (c.getConfig().getString("name-color") == null) {
+            return "WHITE";
+        }
+        return c.getConfig().getString("name-color");
     }
 
     public String[] getMembers() {

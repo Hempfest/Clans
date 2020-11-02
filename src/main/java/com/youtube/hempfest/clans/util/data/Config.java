@@ -1,8 +1,8 @@
 package com.youtube.hempfest.clans.util.data;
 
+import com.youtube.hempfest.clans.HempfestClans;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.configuration.file.YamlConfiguration;
-import org.bukkit.plugin.java.JavaPlugin;
 
 import java.io.*;
 import java.util.ArrayList;
@@ -13,7 +13,7 @@ public class Config {
     private final String d;
     private FileConfiguration fc;
     private File file;
-    private final JavaPlugin plugin;
+    private final HempfestClans plugin;
     private static List<Config> configs;
 
     static {
@@ -21,7 +21,7 @@ public class Config {
     }
 
     public Config(final String n, final String d) {
-        this.plugin = JavaPlugin.getProvidingPlugin(this.getClass());
+        this.plugin = HempfestClans.getInstance();
         this.n = n;
         this.d = d;
         Config.configs.add(this);
@@ -53,17 +53,6 @@ public class Config {
         return this.n;
     }
 
-    public JavaPlugin getInstance() {
-        if(this.plugin == null) {
-            try {
-                throw new Exception();
-            }catch(final Exception e) {
-                e.printStackTrace();
-            }
-        }
-        return this.plugin;
-    }
-
 
     public static Config getConfig(final String n, final String d) {
         for(final Config c: Config.configs) {
@@ -84,7 +73,7 @@ public class Config {
 
     public boolean exists() {
         if(this.fc == null || this.file == null) {
-            final File temp = new File(this.getDataFolder(), String.valueOf(this.getName()) + ".yml");
+            final File temp = new File(this.getDataFolder(), this.getName() + ".yml");
             if(!temp.exists()) {
                 return false;
             }
@@ -95,7 +84,7 @@ public class Config {
 
     public File getFile() {
         if(this.file == null) {
-            this.file = new File(this.getDataFolder(), String.valueOf(this.getName() + ".yml")); //create method get data folder
+            this.file = new File(this.getDataFolder(), this.getName() + ".yml"); //create method get data folder
             if(!this.file.exists()) {
                 try {
                     this.file.createNewFile();
@@ -118,9 +107,9 @@ public class Config {
         final File dir = new File(Config.class.getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
         File d = null;
         if (this.d != null) {
-            d = new File(dir.getParentFile().getPath(), this.getInstance().getName() + "/" + this.d + "/");
+            d = new File(dir.getParentFile().getPath(), HempfestClans.getInstance().getName() + "/" + this.d + "/");
         } else {
-            d = new File(dir.getParentFile().getPath(), this.getInstance().getName());
+            d = new File(dir.getParentFile().getPath(), HempfestClans.getInstance().getName());
         }
         if(!d.exists()) {
             d.mkdirs();
@@ -130,7 +119,7 @@ public class Config {
 
     public void reload() {
         if(this.file == null) {
-            this.file = new File(this.getDataFolder(), String.valueOf(this.getName() + ".yml"));
+            this.file = new File(this.getDataFolder(), this.getName() + ".yml");
             if(!this.file.exists()) {
                 try {
                     this.file.createNewFile();
@@ -140,7 +129,7 @@ public class Config {
             }
 
             this.fc = YamlConfiguration.loadConfiguration(this.file);
-            final File defConfigStream = new File(this.plugin.getDataFolder(), String.valueOf(this.getName())+ ".yml");
+            final File defConfigStream = new File(this.plugin.getDataFolder(), this.getName() + ".yml");
             if(defConfigStream != null) {
                 final YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
                 this.fc.setDefaults(defConfig);

@@ -304,12 +304,8 @@ public class StringLibrary {
     public void chunkBorderHint(Player p) {
         Random r = new Random();
         int send = r.nextInt(3);
-        switch (send) {
-            case 2:
-                sendMessage(p, "&f[&7HINT&f] &7&oView chunk border's in game by pressing and releasing keys F3+G.");
-                break;
-            default:
-                break;
+        if (send == 2) {
+            sendMessage(p, "&f[&7HINT&f] &7&oView chunk border's in game by pressing and releasing keys F3+G.");
         }
     }
 

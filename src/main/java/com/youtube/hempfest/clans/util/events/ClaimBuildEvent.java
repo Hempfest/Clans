@@ -1,5 +1,6 @@
 package com.youtube.hempfest.clans.util.events;
 
+import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.construct.ClaimUtil;
@@ -44,23 +45,29 @@ public class ClaimBuildEvent extends Event {
         return handlers;
     }
 
+    public ClaimUtil getClaimUtil() {
+        return HempfestClans.getInstance().claimUtil;
+    }
+
+    public ClanUtil getUtil() {
+        return HempfestClans.getInstance().clanUtil;
+    }
+
     public void handleCheck() {
-        ClaimUtil claimUtil = new ClaimUtil();
-        if (claimUtil.isInClaim(location)) {
-            Claim claim = new Claim(claimUtil.getClaimID(location), p);
-            ClanUtil clanUtil = new ClanUtil();
-            if (clanUtil.getClan(p) != null) {
-                if (!claim.getOwner().equals(clanUtil.getClan(p))) {
-                    if (!clanUtil.getAllies(claim.getOwner()).contains(clanUtil.getClan(p))) {
+        if (getClaimUtil().isInClaim(location)) {
+            Claim claim = new Claim(getClaimUtil().getClaimID(location), p);
+            if (getUtil().getClan(p) != null) {
+                if (!claim.getOwner().equals(getUtil().getClan(p))) {
+                    if (!getUtil().getAllies(claim.getOwner()).contains(getUtil().getClan(p))) {
                         setCancelled(true);
                         StringLibrary stringLibrary = new StringLibrary();
-                        stringLibrary.sendMessage(p, "&c&oYou cannot do this here, land owned by: " + clanUtil.clanRelationColor(clanUtil.getClan(p), claim.getOwner()) + clanUtil.getClanTag(claim.getOwner()));
+                        stringLibrary.sendMessage(p, "&c&oYou cannot do this here, land owned by: " + getUtil().clanRelationColor(getUtil().getClan(p), claim.getOwner()) + getUtil().getClanTag(claim.getOwner()));
                     }
                 }
             } else {
                 setCancelled(true);
                 StringLibrary stringLibrary = new StringLibrary();
-                stringLibrary.sendMessage(p, "&c&oYou cannot do this here, land owned by: &e&o&n" + clanUtil.getClanTag(claim.getOwner()));
+                stringLibrary.sendMessage(p, "&c&oYou cannot do this here, land owned by: &e&o&n" + getUtil().getClanTag(claim.getOwner()));
             }
         }
     }
