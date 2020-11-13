@@ -1,22 +1,21 @@
 package com.youtube.hempfest.clans.util.timers;
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
-
-import java.util.List;
 
 public class AsyncClanStatus extends BukkitRunnable {
 
     @Override
     public void run() {
-        ClanUtil clanUtil = HempfestClans.getInstance().clanUtil;
-        if (HempfestClans.getInstance().running) {
+        ClanUtil clanUtil = Clan.clanUtil;
             if (Bukkit.getOnlinePlayers().size() > 0) {
                 for (Player p : Bukkit.getOnlinePlayers()) {
                     if (clanUtil.getClan(p) != null) {
@@ -44,18 +43,12 @@ public class AsyncClanStatus extends BukkitRunnable {
                         }
                         for (String ally : clanUtil.getAllies(clanUtil.getClan(p))) {
                             if (!clanUtil.getAllClanIDs().contains(ally)) {
-                                List<String> allies = clanUtil.getAllies(clanUtil.getClan(p));
-                                allies.remove(ally);
-                                cl.getConfig().set("allies", allies);
-                                cl.saveConfig();
+                                Clan.clanUtil.removeAlly(clanUtil.getClan(p), ally);
                             }
                         }
                         for (String enemy : clanUtil.getEnemies(clanUtil.getClan(p))) {
                             if (!clanUtil.getAllClanIDs().contains(enemy)) {
-                                List<String> enemies = clanUtil.getEnemies(clanUtil.getClan(p));
-                                enemies.remove(enemy);
-                                cl.getConfig().set("enemies", enemies);
-                                cl.saveConfig();
+                                Clan.clanUtil.removeEnemy(clanUtil.getClan(p), enemy);
                             }
                         }
                         for (String allyRe : clanUtil.getAllyRequests(clanUtil.getClan(p))) {
@@ -69,6 +62,5 @@ public class AsyncClanStatus extends BukkitRunnable {
                     }
                 }
             }
-        }
     }
 }

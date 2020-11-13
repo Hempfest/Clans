@@ -10,6 +10,10 @@
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
+      <module name="GoldEconomy" target="1.8" />
+      <module name="hempCore" target="1.8" />
+      <module name="hEssentials" target="1.8" />
+      <module name="hEssentialsGroups" target="1.8" />
       <module name="TestPlugin" target="1.8" />
     </bytecodeTargetLevel>
   </component>

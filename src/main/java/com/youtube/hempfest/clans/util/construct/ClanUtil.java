@@ -2,25 +2,30 @@ package com.youtube.hempfest.clans.util.construct;
 
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.Color;
-import com.youtube.hempfest.clans.util.HighestValue;
 import com.youtube.hempfest.clans.util.RankPriority;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.clans.util.versions.Component;
-import com.youtube.hempfest.clans.util.versions.ComponentR1_8_1;
-import org.bukkit.*;
+import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
+import com.youtube.hempfest.hempcore.formatting.string.RandomID;
+import java.io.File;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Objects;
+import java.util.UUID;
+import org.bukkit.Bukkit;
+import org.bukkit.OfflinePlayer;
+import org.bukkit.Server;
+import org.bukkit.Statistic;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
-
-import java.io.File;
-import java.util.*;
 
 public class ClanUtil extends StringLibrary {
 
     public boolean raidShield;
-    public static HashMap<Player, String> chatMode = new HashMap<>();
 
     public void create(Player p, String clanName, String password) {
     DataManager dm = new DataManager(p.getUniqueId().toString(), null);
@@ -59,7 +64,7 @@ public class ClanUtil extends StringLibrary {
 
     public void leave(Player p) {
     if (getClan(p) != null) {
-        Clan clanIndex = new Clan(getClan(p), p);
+        Clan clanIndex = HempfestClans.clanManager(p);
         DataManager dm = new DataManager(getClan(p), null);
         Config clan = dm.getFile(ConfigType.CLAN_FILE);
         DataManager data = new DataManager(p.getUniqueId().toString(), null);
@@ -75,6 +80,8 @@ public class ClanUtil extends StringLibrary {
                 user.getConfig().set("Clan", null);
                 user.saveConfig();
                 Bukkit.broadcastMessage(color(getPrefix() + " &c&oClan " + '"' + clanName + '"' + " has fallen.."));
+                HempfestClans.clanEnemies.remove(Clan.clanUtil.getClan(p));
+                HempfestClans.clanAllies.remove(Clan.clanUtil.getClan(p));
                 HempfestClans.playerClan.remove(p.getUniqueId());
                 break;
             case "Admin":
@@ -132,7 +139,7 @@ public class ClanUtil extends StringLibrary {
                     members.add(p.getName());
                     fc.set("members", members);
                     clan.saveConfig();
-                    Clan clanIndex = new Clan(getClan(p), p);
+                    Clan clanIndex = HempfestClans.clanManager(p);
                     clanIndex.messageClan("&a&oPlayer " + '"' + p.getName() + '"' + " joined the clan.");
                     return;
                 }
@@ -153,7 +160,7 @@ public class ClanUtil extends StringLibrary {
                     members.add(p.getName());
                     fc.set("members", members);
                     clan.saveConfig();
-                    Clan clanIndex = new Clan(getClan(p), p);
+                    Clan clanIndex = HempfestClans.clanManager(p);
                     clanIndex.messageClan("&a&oPlayer " + '"' + p.getName() + '"' + " joined the clan.");
                 } else {
                     sendMessage(p, wrongPassword());
@@ -183,7 +190,7 @@ public class ClanUtil extends StringLibrary {
         allies.add(clanID);
         clan.getConfig().set("ally-requests", allies);
         clan.saveConfig();
-        Clan clanIndex = new Clan(targetClanID, null);
+        Clan clanIndex = new Clan(targetClanID);
         sendMessage(p, "&a&oAlly invitation sent.");
         clanIndex.messageClan("&a&oClan " + '"' + "&e" + getClanTag(clanID) + "&a&o" + '"' + " wishes to ally, to accept\n&7Type &f/clan ally &6" + getClanTag(clanID));
     }
@@ -207,10 +214,11 @@ public class ClanUtil extends StringLibrary {
         clan.saveConfig();
         clan2.getConfig().set("allies", allies2);
         clan2.saveConfig();
-        Clan clanIndex = new Clan(clanID, null);
-        Clan clanIndex2 = new Clan(targetClanID, null);
+        Clan clanIndex = new Clan(clanID);
+        Clan clanIndex2 = new Clan(targetClanID);
         clanIndex.messageClan("&a&oNow allies with clan " + '"' + "&e" + getClanTag(targetClanID) + "&a&o" + '"');
         clanIndex2.messageClan("&a&oNow allies with clan " + '"' + "&e" + getClanTag(clanID) + "&a&o" + '"');
+        HempfestClans.clanAllies.put(clanID, allies);
     }
 
     public void removeAlly(String clanID, String targetClanID) {
@@ -220,6 +228,7 @@ public class ClanUtil extends StringLibrary {
         allies.remove(targetClanID);
         clan.getConfig().set("allies", allies);
         clan.saveConfig();
+        HempfestClans.clanAllies.put(clanID, allies);
     }
 
     public void addEnemy(String clanID, String targetClanID) {
@@ -233,10 +242,11 @@ public class ClanUtil extends StringLibrary {
         enemies.add(targetClanID);
         clan.getConfig().set("enemies", enemies);
         clan.saveConfig();
-        Clan clanIndex = new Clan(clanID, null);
-        Clan clanIndex2 = new Clan(targetClanID, null);
+        Clan clanIndex = new Clan(clanID);
+        Clan clanIndex2 = new Clan(targetClanID);
         clanIndex.messageClan("&4&oNow enemies with clan " + '"' + "&e" + getClanTag(targetClanID) + "&4&o" + '"');
         clanIndex2.messageClan("&4&oNow enemies with clan " + '"' + "&e" + getClanTag(clanID) + "&4&o" + '"');
+        HempfestClans.clanEnemies.put(clanID, enemies);
     }
 
     public void removeEnemy(String clanID, String targetClanID) {
@@ -246,24 +256,28 @@ public class ClanUtil extends StringLibrary {
         enemies.remove(targetClanID);
         clan.getConfig().set("enemies", enemies);
         clan.saveConfig();
-        Clan clanIndex = new Clan(clanID, null);
-        Clan clanIndex2 = new Clan(targetClanID, null);
+        Clan clanIndex = new Clan(clanID);
+        Clan clanIndex2 = new Clan(targetClanID);
         clanIndex.messageClan("&f&oNow neutral with clan " + '"' + "&e" + getClanTag(targetClanID) + "&f&o" + '"');
         clanIndex2.messageClan("&f&oNow neutral with clan " + '"' + "&e" + getClanTag(clanID) + "&f&o" + '"');
+        HempfestClans.clanEnemies.put(clanID, enemies);
     }
 
     public double getKD(UUID playerID) {
         OfflinePlayer player = Bukkit.getOfflinePlayer(playerID);
-        int kills = player.getStatistic(Statistic.PLAYER_KILLS);
-        int deaths = player.getStatistic(Statistic.DEATHS);
-        double result;
-        if (deaths == 0) {
-            result = kills;
-        } else {
-            double value = (double) kills / deaths;
-            result = Math.round(value);
-        }
-        return result;
+                if (Bukkit.getVersion().contains("1.12")) {
+                    return 0.0;
+                }
+                    int kills = player.getStatistic(Statistic.PLAYER_KILLS);
+                    int deaths = player.getStatistic(Statistic.DEATHS);
+                    double result;
+                    if (deaths == 0) {
+                        result = kills;
+                    } else {
+                        double value = (double) kills / deaths;
+                        result = Math.round(value);
+                    }
+                    return result;
     }
 
     public UUID getUserID(String playerName) {
@@ -399,7 +413,7 @@ public class ClanUtil extends StringLibrary {
                     array.add(target.getName());
                 clan.getConfig().set(clanUtil.getRankDowngrade(clanUtil.getRankPower(target)), array);
                 clan.saveConfig();
-                Clan clanIndex = new Clan(getClan(target), target);
+                Clan clanIndex = HempfestClans.clanManager(target);
                 clanIndex.messageClan("&d&oPlayer " + '"' + target.getName() + '"' + " was demoted.");
             }
         }
@@ -420,7 +434,7 @@ public class ClanUtil extends StringLibrary {
                 array.add(target.getName());
                 clan.getConfig().set(clanUtil.getRankUpgrade(clanUtil.getRankPower(target)), array);
                 clan.saveConfig();
-                Clan clanIndex = new Clan(getClan(target), target);
+                Clan clanIndex = HempfestClans.clanManager(target);
                 clanIndex.messageClan("&a&oPlayer " + '"' + target.getName() + '"' + " was promoted.");
             }
         }
@@ -454,7 +468,7 @@ public class ClanUtil extends StringLibrary {
     }
 
     public void teleportBase(Player p) {
-        Clan clan = new Clan(getClan(p), p);
+        Clan clan = HempfestClans.clanManager(p);
         if (clan.getBase() != null) {
             p.teleport(clan.getBase());
         }
@@ -463,7 +477,7 @@ public class ClanUtil extends StringLibrary {
     public void transferOwner(Player p, String target) {
         DataManager dm = new DataManager(getClan(p), null);
         Config clan = dm.getFile(ConfigType.CLAN_FILE);
-        Clan clanIndex = new Clan(getClan(p), p);
+        Clan clanIndex = HempfestClans.clanManager(p);
         if (Arrays.asList(clanIndex.getMembers()).contains(target)) {
             if (getRankPower(p) == 3) {
                 clan.getConfig().set("owner", target);
@@ -612,16 +626,33 @@ public class ClanUtil extends StringLibrary {
         return result;
     }
 
+    public List<Clan> getClans = new ArrayList<>();
+
+    public void loadClans() {
+        for (String clanID : getAllClanIDs()) {
+            Clan instance = new Clan(clanID);
+            if (!getClans.contains(instance)) {
+                getClans.add(instance);
+            }
+        }
+    }
+
     public List<String> getAllies(String clanID) {
-        DataManager dm = new DataManager(clanID, null);
-        Config clan = dm.getFile(ConfigType.CLAN_FILE);
-        return new ArrayList<>(clan.getConfig().getStringList("allies"));
+        if (!HempfestClans.clanAllies.containsKey(clanID)) {
+            DataManager dm = new DataManager(clanID, null);
+            Config clan = dm.getFile(ConfigType.CLAN_FILE);
+            return new ArrayList<>(clan.getConfig().getStringList("allies"));
+        }
+        return HempfestClans.clanEnemies.get(clanID);
     }
 
     public List<String> getEnemies(String clanID) {
-        DataManager dm = new DataManager(clanID, null);
-        Config clan = dm.getFile(ConfigType.CLAN_FILE);
-        return new ArrayList<>(clan.getConfig().getStringList("enemies"));
+        if (!HempfestClans.clanEnemies.containsKey(clanID)) {
+            DataManager dm = new DataManager(clanID, null);
+            Config clan = dm.getFile(ConfigType.CLAN_FILE);
+            return new ArrayList<>(clan.getConfig().getStringList("enemies"));
+        }
+        return HempfestClans.clanEnemies.get(clanID);
     }
 
     public boolean isNeutral(String clanID, String targetClanID) {
@@ -659,7 +690,7 @@ public class ClanUtil extends StringLibrary {
 
     public void getMyClanInfo(Player p, int page) {
         String clanID = getClan(p);
-        Clan clanIndex = new Clan(clanID, p);
+        Clan clanIndex = HempfestClans.clanManager(p);
         DataManager dm = new DataManager(clanID, null);
         Config clan = dm.getFile(ConfigType.CLAN_FILE);
         List<String> array = new ArrayList<>();
@@ -823,13 +854,7 @@ public class ClanUtil extends StringLibrary {
     }
 
     private String serial(int count) {
-        String ALPHA_NUMERIC_STRING = "ABCDEFGHIJKLMNOPQRSTUVWXYZ0123456789";
-        StringBuilder builder = new StringBuilder();
-        while (count-- != 0) {
-            int character = (int)(Math.random()*ALPHA_NUMERIC_STRING.length());
-            builder.append(ALPHA_NUMERIC_STRING.charAt(character));
-        }
-        return builder.toString();
+        return new RandomID(count, "ABGHJ2567").generate();
     }
 
     public void setRaidShield(boolean value) {
@@ -848,102 +873,29 @@ public class ClanUtil extends StringLibrary {
     }
 
     public void getLeaderboard(Player p, int page) {
-        int o = 10;
-
         HashMap<String, Double> clans = new HashMap<>();
-
-        // Filling the hashMap
         for (String clanID : getAllClanIDs()) {
             Clan clan = new Clan(clanID, null);
             clans.put(getClanTag(clanID), clan.getPower());
         }
-
-        p.sendMessage(color("&7&m------------&7&l[&6&oPage &l" + page + " &7: &6&oTop Clans&7&l]&7&m------------"));
-        int totalPageCount = 1;
-        if ((clans.size() % o) == 0) {
-            if (clans.size() > 0) {
-                totalPageCount = clans.size() / o;
-            }
+        PaginatedAssortment topClans = new PaginatedAssortment(p,null, clans);
+        if (Bukkit.getVersion().contains("1.16")) {
+            topClans.setListTitle("&7&m------------&7&l[&6&oTop Clans&7&l]&7&m------------");
+            topClans.setNormalText("");
+            topClans.setHoverText(" &#787674# &#0eaccc&l" + "%s" + " &#00fffb&o" + "%s" + " &#787674: &#ff7700&l" + "%s");
+            topClans.setHoverTextMessage("&6" + "%s" + " &a&oplaces &7#&6" + "%s" + "&a&o on page " + "%s" + ".");
+            topClans.setListBorder("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
         } else {
-            totalPageCount = (clans.size() / o) + 1;
+            topClans.setListTitle("&7&m------------&7&l[&6&oTop Clans&7&l]&7&m------------");
+            topClans.setNormalText("");
+            topClans.setHoverText(" &7# &3&l" + "%s" + " &b&o" + "%s" + " &7: &6&l" + "%s");
+            topClans.setHoverTextMessage("&6" + "%s" + " &a&oplaces &7#&6" + "%s" + "&a&o on page " + "%s" + ".");
+            topClans.setListBorder("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
         }
-        String nextTop = "";
-        Double nextTopBal = 0.0;
-
-
-
-
-        if (page <= totalPageCount) {
-            // begin line
-            if (clans.isEmpty()) {
-                p.sendMessage(ChatColor.WHITE + "The list is empty!");
-            } else {
-                int i1 = 0, k = 0;
-                page--;
-                HighestValue comp =  new HighestValue(clans);
-                TreeMap<String,Double> sorted_map = new TreeMap<>(comp);
-
-
-                sorted_map.putAll(clans);
-
-
-                for (Map.Entry<String, Double> clanName : sorted_map.entrySet()) {
-
-                    if (clanName.getValue() > nextTopBal) {
-                        nextTop = clanName.getKey();
-                        nextTopBal = clanName.getValue();
-
-
-
-                    }
-
-                    int pagee = page + 1;
-
-                    k++;
-                    if ((((page * o) + i1 + 1) == k) && (k != ((page * o) + o + 1))) {
-                        i1++;
-                        Clan dummy = new Clan(null, null);
-                        if (Bukkit.getServer().getVersion().contains("1.16")) {
-                            sendComponent(p, Component.textRunnable("",
-                                    " &7# &3&l" + k + " &b&o" + nextTop + " &7: &6&l" + dummy.format(String.valueOf(nextTopBal)),
-                                    "&6" + nextTop + " &a&oplaces &7#&6" + k + "&a&o on page " + pagee + ".", "c info " + nextTop));
-                        } else {
-                            sendComponent(p, ComponentR1_8_1.textRunnable( "",
-                                    " &7# &3&l" + k + " &b&o" + nextTop + " &7: &6&l" + dummy.format(String.valueOf(nextTopBal)),
-                                    "&6" + nextTop + " &a&oplaces &7#&6" + k + "&a&o on page " + pagee + ".", "c info " + nextTop));
-                        }
-
-                    }
-                    clans.remove(nextTop);
-                    nextTop = "";
-                    nextTopBal = 0.0;
-
-                }
-
-                int point; point = page + 1; if (page >= 1) {
-                    int last; last = point - 1; point = point + 1;
-                    if (Bukkit.getServer().getVersion().contains("1.16")) {
-                        sendComponent(p, Component.textRunnable("&b&oNavigate &7[", "&3&lCLICK", "&7] : &7[", "&c&lCLICK&7]", "&b&oClick this to goto the &5&onext page.", "&b&oClick this to go &d&oback a page.", "c top " + point, "c top " + last));
-                    } else {
-                        sendComponent(p, ComponentR1_8_1.textRunnable( "&b&oNavigate &7[", "&3&lCLICK", "&7] : &7[", "&c&lCLICK&7]", "&b&oClick this to goto the &5&onext page.", "&b&oClick this to go &d&oback a page.", "c top " + point, "c top " + last));
-                    }
-                } if (page == 0) {
-                    point = page + 1 + 1;
-                    if (Bukkit.getServer().getVersion().contains("1.16")) {
-                        sendComponent(p, Component.textRunnable("&b&oNavigate &7[", "&3&lCLICK", "&7]", "&b&oClick this to goto the &5&onext page.", "c top " + point));
-                    } else {
-                        sendComponent(p, ComponentR1_8_1.textRunnable( "&b&oNavigate &7[", "&3&lCLICK", "&7]", "&b&oClick this to goto the &5&onext page.", "c top " + point));
-                    }
-                }
-
-
-            }
-            // end line
-        } else
-        {
-            p.sendMessage(ChatColor.DARK_AQUA + "There are only " + ChatColor.GRAY + totalPageCount + ChatColor.DARK_AQUA + " pages!");
-
-        }
+        topClans.setLinesPerPage(10);
+        topClans.setNavigateCommand("c top");
+        topClans.setCommandToRun("c info");
+        topClans.exportSorted(PaginatedAssortment.MapType.DOUBLE, page);
     }
 
 }

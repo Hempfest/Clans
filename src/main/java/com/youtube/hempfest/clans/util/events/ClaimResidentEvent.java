@@ -1,22 +1,25 @@
 package com.youtube.hempfest.clans.util.events;
 
-import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.construct.ClaimUtil;
+import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
-import com.youtube.hempfest.clans.util.data.Config;
-import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.clans.util.listener.AsyncClanEventBuilder;
+import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+import java.util.UUID;
+import java.util.function.Function;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import java.util.*;
-import java.util.function.Function;
-
-public class ClaimResidentEvent extends Event implements Cancellable {
+public class ClaimResidentEvent extends AsyncClanEventBuilder implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -34,11 +37,7 @@ public class ClaimResidentEvent extends Event implements Cancellable {
 
     private final Player p;
 
-    private final DataManager dm = new DataManager("Config", "Configuration");
-
-    private final Config main = dm.getFile(ConfigType.MISC_FILE);
-
-    private boolean titlesAllowed = main.getConfig().getBoolean("Clans.land-claiming.send-titles");
+    private boolean titlesAllowed = DataManager.titlesAllowed();
 
     private boolean cancelled;
 
@@ -106,9 +105,11 @@ public class ClaimResidentEvent extends Event implements Cancellable {
         return handlers;
     }
 
-    public static HandlerList getHandlerList() {
+    @Override
+    public HandlerList getHandlerList() {
         return handlers;
     }
+
 
     public boolean isTitlesAllowed() {
         return titlesAllowed;
@@ -161,6 +162,9 @@ public class ClaimResidentEvent extends Event implements Cancellable {
         return result;
     }
 
+    /*
+    / Equals Wild if not in a claim
+     */
     public String lastKnownClaim() {
         String result = "Wild";
         if (lastKnownExists())
@@ -169,11 +173,16 @@ public class ClaimResidentEvent extends Event implements Cancellable {
     }
 
     public ClanUtil getUtil() {
-        return HempfestClans.getInstance().clanUtil;
+        return Clan.clanUtil;
+    }
+
+    @Override
+    public StringLibrary stringLibrary() {
+        return new StringLibrary();
     }
 
     public ClaimUtil getClaimUtil() {
-        return HempfestClans.getInstance().claimUtil;
+        return Claim.claimUtil;
     }
 
     public void handleUpdate() {
@@ -182,21 +191,22 @@ public class ClaimResidentEvent extends Event implements Cancellable {
         titleContext.put("W-TITLE", "&4&nWilderness");
         titleContext.put("W-SUB-TITLE", "&7&oOwned by no-one.");
         if (getClaimUtil().isInClaim(p.getLocation())) {
-            Claim claim = new Claim(getClaimUtil().getClaimID(p.getLocation()));
             if (!lastKnownExists()) {
+                // Filling the claim history thats non existent under circumstance A
                 claimID.put(p.getName(), getClaimUtil().getClaimID(p.getLocation()));
             }
             if (lastKnownExists()) {
+                // Checking clan information to decide wether or not to resend claim title.
                 if (!claimID.get(p.getName()).equals(getClaimUtil().getClaimID(p.getLocation()))) {
                     claimID.put(p.getName(), getClaimUtil().getClaimID(p.getLocation()));
                     if (getUtil().getClan(p) != null && !getClaim().getOwner().equals(getUtil().getClan(p))) {
-                        if (!Arrays.asList(claim.getClan().getMembers()).contains(p.getName())) {
+                        if (!Arrays.asList(getClaim().getClan().getMembers()).contains(p.getName())) {
                             if (!invisibleResident.containsKey(p.getUniqueId()))
                                 invisibleResident.put(p.getUniqueId(), p.getLastPlayed());
                             residents.remove(p.getName());
                             tempStorage.add(p.getUniqueId());
                         }
-                        if (Arrays.asList(claim.getClan().getMembers()).contains(p.getName())) {
+                        if (Arrays.asList(getClaim().getClan().getMembers()).contains(p.getName())) {
                             invisibleResident.remove(p.getUniqueId());
                         }
                     }
@@ -210,11 +220,12 @@ public class ClaimResidentEvent extends Event implements Cancellable {
                     }
                 }
             }
+            // Sending the title under specific circumstance
             if (!residents.contains(p.getName()) || invisibleResident.containsKey(p.getUniqueId())) {
-                    String clanName = getUtil().getClanTag(claim.getOwner());
+                    String clanName = getUtil().getClanTag(getClaim().getOwner());
                     String color = "";
                     if (getUtil().getClan(p) != null) {
-                        color = getUtil().clanRelationColor(getUtil().getClan(p), claim.getOwner());
+                        color = getUtil().clanRelationColor(getUtil().getClan(p), getClaim().getOwner());
                     } else {
                         color = "&f&o";
                     }
@@ -228,7 +239,7 @@ public class ClaimResidentEvent extends Event implements Cancellable {
             }
         }
 
-        // Not in a claim area
+        // Not in a claim area, sending wilderness title
         if (!getClaimUtil().isInClaim(p.getLocation())) {
             claimID.remove(p.getName());
             if (!invisibleResident.containsKey(p.getUniqueId()) || residents.contains(p.getName())) {

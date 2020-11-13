@@ -1,16 +1,16 @@
 package com.youtube.hempfest.clans.util.events;
 
-import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.construct.ClaimUtil;
+import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
+import com.youtube.hempfest.clans.util.listener.ClanEventBuilder;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class ClaimBuildEvent extends Event {
+public class ClaimBuildEvent extends ClanEventBuilder {
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -41,33 +41,43 @@ public class ClaimBuildEvent extends Event {
         return handlers;
     }
 
+    @Override
     public HandlerList getHandlerList() {
         return handlers;
     }
 
     public ClaimUtil getClaimUtil() {
-        return HempfestClans.getInstance().claimUtil;
+        return Claim.claimUtil;
     }
 
+    @Override
     public ClanUtil getUtil() {
-        return HempfestClans.getInstance().clanUtil;
+        return Clan.clanUtil;
+    }
+
+    @Override
+    public StringLibrary stringLibrary() {
+        return new StringLibrary();
+    }
+
+    public Claim getClaim() {
+        return new Claim(getClaimUtil().getClaimID(location), p);
     }
 
     public void handleCheck() {
         if (getClaimUtil().isInClaim(location)) {
-            Claim claim = new Claim(getClaimUtil().getClaimID(location), p);
             if (getUtil().getClan(p) != null) {
-                if (!claim.getOwner().equals(getUtil().getClan(p))) {
-                    if (!getUtil().getAllies(claim.getOwner()).contains(getUtil().getClan(p))) {
+                if (!getClaim().getOwner().equals(getUtil().getClan(p))) {
+                    if (!getUtil().getAllies(getClaim().getOwner()).contains(getUtil().getClan(p))) {
                         setCancelled(true);
                         StringLibrary stringLibrary = new StringLibrary();
-                        stringLibrary.sendMessage(p, "&c&oYou cannot do this here, land owned by: " + getUtil().clanRelationColor(getUtil().getClan(p), claim.getOwner()) + getUtil().getClanTag(claim.getOwner()));
+                        stringLibrary.sendMessage(p, "&c&oYou cannot do this here, land owned by: " + getUtil().clanRelationColor(getUtil().getClan(p), getClaim().getOwner()) + getUtil().getClanTag(getClaim().getOwner()));
                     }
                 }
             } else {
                 setCancelled(true);
                 StringLibrary stringLibrary = new StringLibrary();
-                stringLibrary.sendMessage(p, "&c&oYou cannot do this here, land owned by: &e&o&n" + getUtil().getClanTag(claim.getOwner()));
+                stringLibrary.sendMessage(p, "&c&oYou cannot do this here, land owned by: &e&o&n" + getUtil().getClanTag(getClaim().getOwner()));
             }
         }
     }

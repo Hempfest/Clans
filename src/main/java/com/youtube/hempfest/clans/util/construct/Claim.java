@@ -1,75 +1,108 @@
 package com.youtube.hempfest.clans.util.construct;
 
-import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import java.util.Objects;
 import org.bukkit.Bukkit;
+import org.bukkit.Chunk;
 import org.bukkit.Location;
-import org.bukkit.Material;
+import org.bukkit.block.Block;
+import org.bukkit.block.BlockFace;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class Claim {
 
-    String claimID;
-    Player p;
-    DataManager dm = new DataManager("Regions", "Configuration");
-    Config regions = dm.getFile(ConfigType.MISC_FILE);
+	private final String claimID;
+	private Player p;
+	private final DataManager dm = new DataManager("Regions", "Configuration");
+	private final Config regions = dm.getFile(ConfigType.MISC_FILE);
+	public static ClaimUtil claimUtil = new ClaimUtil();
 
-    public Claim(String claimID) {
-        this.claimID = claimID;
-    }
-
-    public Claim(String claimID, Player p) {
-        this.p = p;
-        this.claimID = claimID;
-    }
-
-    public Clan getClan() {
-        return new Clan(getOwner(), p);
-    }
-
-    public String getClaimID() {
-        return claimID;
-    }
+	public Claim(String claimID) {
+		this.claimID = claimID;
+	}
 
 
-    public String getOwner() {
-        FileConfiguration d = regions.getConfig();
-        String owner = "";
-        for (String clan : d.getKeys(false)) {
-            for (String s : d.getConfigurationSection(clan + ".Claims").getKeys(false)) {
-                if (s.equals(claimID))
-                    owner = clan;
-            }
-        }
-        return owner;
-    }
+	/**
+	 * @param p variable constructor access is deprecated and replaced by
+	 *          {@link #loadPlayer(Player p)}
+	 * @deprecated As of version 2.0.6
+	 */
+	public Claim(String claimID, Player p) {
+		this.p = p;
+		this.claimID = claimID;
+	}
 
-    public Location getLocation() {
-        Location teleportLocation = null;
-        try {
-            FileConfiguration d = regions.getConfig();
-                String clan = getOwner();
-                int x = d.getInt(clan + ".Claims." + claimID + ".X");
-                int y = 110;
-                int z = d.getInt(clan + ".Claims." + claimID + ".Z");
-                String world = d.getString(clan + ".Claims." + claimID + ".World");
-                boolean isOnLand = false;
-                while (isOnLand == false) {
-                    assert world != null;
-                    teleportLocation = new Location(Bukkit.getWorld(world), x << 4, y, z << 4).add(7, 0, 7);
-                    if (teleportLocation.getBlock().getType() != Material.AIR) {
-                        isOnLand = true;
-                    } else
-                        y--;
+	public void loadPlayer(Player p) {
+		this.p = p;
+	}
 
-                }
-        } catch (IllegalArgumentException e) {
-            HempfestClans.getInstance().getLogger().severe(String.format("[%s] - A non existent location was pulled while grabbing a non existent directory.", HempfestClans.getInstance().getDescription().getName()));
-        }
-        return teleportLocation;
-    }
+	public Clan getClan() {
+		Clan clan = null;
+		for (Clan clans : Clan.clanUtil.getClans) {
+			if (clans.getClanID().equals(getOwner())) {
+				clan = clans;
+			}
+		}
+		return clan;
+	}
+
+	public String getClaimID() {
+		return claimID;
+	}
+
+
+	public String getOwner() {
+		FileConfiguration d = regions.getConfig();
+		String owner = "";
+		for (String clan : d.getKeys(false)) {
+			for (String s : d.getConfigurationSection(clan + ".Claims").getKeys(false)) {
+				if (s.equals(claimID))
+					owner = clan;
+			}
+		}
+		return owner;
+	}
+
+	public Chunk getChunk() {
+
+		String[] ID = Claim.claimUtil.getClaimInfo(claimID);
+		int[] pos = Claim.claimUtil.getClaimPosition(claimID);
+		int x = pos[0];
+		int y = 110;
+		int z = pos[1];
+		String world = ID[3];
+		Location location = new Location(Bukkit.getWorld(world), x, y, z);
+		return Objects.requireNonNull(Bukkit.getWorld(world)).getChunkAt(location);
+	}
+
+	public Location getLocation() {
+		String[] ID = Claim.claimUtil.getClaimInfo(claimID);
+		int[] pos = Claim.claimUtil.getClaimPosition(claimID);
+		int x = pos[0];
+		int y = 110;
+		int z = pos[1];
+		String world = ID[2];
+		Location teleportLocation = new Location(Bukkit.getWorld(world), x << 4, y, z << 4).add(7, 0, 7);
+		if (!hasSurface(teleportLocation)) {
+			teleportLocation = new Location(Bukkit.getWorld(world), x << 4, y, z << 4).add(7, 10, 7);
+		}
+		return teleportLocation;
+	}
+
+	private boolean hasSurface(Location location) {
+		Block feet = location.getBlock();
+		if (!feet.getType().isAir() && !feet.getLocation().add(0, 1, 0).getBlock().getType().isAir()) {
+			return false; // not transparent (will suffocate)
+		}
+		Block head = feet.getRelative(BlockFace.UP);
+		if (!head.getType().isAir()) {
+			return false; // not transparent (will suffocate)
+		}
+		Block ground = feet.getRelative(BlockFace.DOWN);
+		return ground.getType().isSolid(); // not solid
+	}
 
 }

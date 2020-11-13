@@ -1,6 +1,7 @@
 package com.youtube.hempfest.clans.util;
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.util.construct.Clan;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.bukkit.entity.Player;
 
@@ -96,31 +97,31 @@ public class Placeholders extends PlaceholderExpansion {
         // %someplugin_placeholder1%
         if(identifier.equals("name")){
             String result = "None";
-            if (HempfestClans.getInstance().clanUtil.getClan(player) != null) {
-                if (HempfestClans.getInstance().clanUtil.getClanTag(HempfestClans.getInstance().clanUtil.getClan(player)) == null) {
+            if (Clan.clanUtil.getClan(player) != null) {
+                if (Clan.clanUtil.getClanTag(Clan.clanUtil.getClan(player)) == null) {
                     result = "&4Error";
                 } else
-                result = HempfestClans.getInstance().clanUtil.getClanTag(HempfestClans.getInstance().clanUtil.getClan(player));
+                result = Clan.clanUtil.getClanTag(Clan.clanUtil.getClan(player));
             }
             return result;
         }
 
         if (identifier.equals("rank")) {
             String result = "N/A";
-            if (HempfestClans.getInstance().clanUtil.getClan(player) != null) {
-                if (HempfestClans.getInstance().clanUtil.getClanTag(HempfestClans.getInstance().clanUtil.getClan(player)) == null) {
+            if (Clan.clanUtil.getClan(player) != null) {
+                if (Clan.clanUtil.getClanTag(Clan.clanUtil.getClan(player)) == null) {
                     result = "&4Error";
                 } else
-                result = HempfestClans.getInstance().clanUtil.getRank(player);
+                result = Clan.clanUtil.getRank(player);
             }
             return result;
         }
 
         if (identifier.equals("raidshield")) {
-            if (HempfestClans.getInstance().clanUtil.shieldStatus()) {
+            if (Clan.clanUtil.shieldStatus()) {
                 return "&a&oActive";
             }
-            if (!HempfestClans.getInstance().clanUtil.shieldStatus()) {
+            if (!Clan.clanUtil.shieldStatus()) {
                 return "&c&oDe-active";
             }
         }

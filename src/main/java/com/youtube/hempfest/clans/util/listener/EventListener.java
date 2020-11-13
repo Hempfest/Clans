@@ -7,9 +7,13 @@ import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.clans.util.events.*;
+import com.youtube.hempfest.clans.util.events.ClaimBuildEvent;
+import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
+import com.youtube.hempfest.clans.util.events.PlayerKillPlayerEvent;
+import com.youtube.hempfest.clans.util.events.PlayerPunchPlayerEvent;
+import com.youtube.hempfest.clans.util.events.PlayerShootPlayerEvent;
+import java.util.ArrayList;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -21,13 +25,14 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
-import org.bukkit.event.player.*;
+import org.bukkit.event.player.AsyncPlayerChatEvent;
+import org.bukkit.event.player.PlayerBucketEmptyEvent;
+import org.bukkit.event.player.PlayerBucketFillEvent;
+import org.bukkit.event.player.PlayerInteractEvent;
+import org.bukkit.event.player.PlayerJoinEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 
 public class EventListener implements Listener {
-
-    private String c(String text) {
-        return ChatColor.translateAlternateColorCodes('&', text);
-    }
 
 
     public Config playerData(Player p) {
@@ -40,14 +45,33 @@ public class EventListener implements Listener {
         Player p = e.getPlayer();
         if (playerData(p).getConfig().getString("Clan") != null) {
             HempfestClans.playerClan.put(p.getUniqueId(), playerData(p).getConfig().getString("Clan"));
+            DataManager dm = new DataManager(Clan.clanUtil.getClan(p), null);
+            Config clan = dm.getFile(ConfigType.CLAN_FILE);
+            HempfestClans.clanEnemies.put(Clan.clanUtil.getClan(p), new ArrayList<>(clan.getConfig().getStringList("enemies")));
+            HempfestClans.clanAllies.put(Clan.clanUtil.getClan(p), new ArrayList<>(clan.getConfig().getStringList("allies")));
         }
         ClanUtil.updateUsername(p);
-        ClanUtil.chatMode.put(p, "GLOBAL");
+        HempfestClans.chatMode.put(p, "GLOBAL");
+
     }
 
     @EventHandler
     public void onPlayerLeave(PlayerQuitEvent e) {
         Player p = e.getPlayer();
+        if (Clan.clanUtil.getClan(p) != null) {
+            Clan c = new Clan(Clan.clanUtil.getClan(p), p);
+            for (String player : c.getMembers()) {
+                int clanSize = c.getMembers().length;
+                int offlineSize = 0;
+                if (!Bukkit.getOfflinePlayer(Clan.clanUtil.getUserID(player)).isOnline()) {
+                    offlineSize++;
+                }
+                if (offlineSize == clanSize) {
+                    HempfestClans.clanEnemies.clear();
+                    HempfestClans.clanAllies.clear();
+                }
+            }
+        }
         ClaimResidentEvent.claimID.remove(p.getName());
         ClaimResidentEvent.invisibleResident.remove(p.getUniqueId());
         ClaimResidentEvent.residents.remove(p.getName());
@@ -56,31 +80,33 @@ public class EventListener implements Listener {
     }
 
     private String chatMode(Player p) {
-        return ClanUtil.chatMode.get(p);
+        return HempfestClans.chatMode.get(p);
     }
+
+    private static final DataManager dm = new DataManager();
 
     @EventHandler(priority = EventPriority.HIGH)
     public void onPrefixApply(AsyncPlayerChatEvent event) {
         Player p = event.getPlayer();
-        ClanUtil clanUtil = HempfestClans.getInstance().clanUtil;
-        DataManager dm = new DataManager("Config", "Configuration");
+        ClanUtil clanUtil = Clan.clanUtil;
+
         if (chatMode(p).equals("GLOBAL")) {
-            Config main = dm.getFile(ConfigType.MISC_FILE);
+            Config main = HempfestClans.getMain();
             if (main.getConfig().getBoolean("Formatting.allow")) {
                 if (clanUtil.getClan(p) != null) {
-                    Clan clan = new Clan(clanUtil.getClan(p), p);
+                    Clan clan = new Clan(clanUtil.getClan(p));
                     String clanName = clan.getClanTag();
                     StringLibrary lib = new StringLibrary();
-                    String rank = "";
+                    String rank;
                     clanName = clanUtil.getColor(clan.getChatColor()) + clanName;
                     switch (lib.getRankStyle()) {
                         case "WORDLESS":
                             rank = lib.getWordlessStyle(clanUtil.getRank(p));
-                            event.setFormat(c(String.format(lib.getChatFormat(), rank, clanName)) + " " + event.getFormat());
+                            event.setFormat(lib.color(String.format(lib.getChatFormat(), rank, clanName)) + " " + event.getFormat());
                             break;
                         case "FULL":
                             rank = lib.getFullStyle(clanUtil.getRank(p));
-                            event.setFormat(c(String.format(lib.getChatFormat(), rank, clanName)) + " " + event.getFormat());
+                            event.setFormat(lib.color(String.format(lib.getChatFormat(), rank, clanName)) + " " + event.getFormat());
                             break;
                     }
                 }
@@ -88,19 +114,23 @@ public class EventListener implements Listener {
             return;
         }
         if (chatMode(p).equals("CLAN")) {
-            dm.formatClanChat(p, event.getRecipients(), event.getMessage());
-            event.setCancelled(true);
-            return;
+            if (!event.isCancelled()) {
+                dm.formatClanChat(p, event.getRecipients(), event.getMessage());
+                event.setCancelled(true);
+                return;
+            }
         }
         if (chatMode(p).equals("ALLY")) {
-            dm.formatAllyChat(p, event.getRecipients(), event.getMessage());
-            event.setCancelled(true);
-            return;
+            if (!event.isCancelled()) {
+                dm.formatAllyChat(p, event.getRecipients(), event.getMessage());
+                event.setCancelled(true);
+                return;
+            }
         }
     }
 
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onProjectileHit(ProjectileHitEvent event) {
     if (event.getEntity().getShooter() instanceof Player) {
         Player p = (Player) event.getEntity().getShooter();
@@ -113,7 +143,7 @@ public class EventListener implements Listener {
     }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBucketRelease(PlayerBucketEmptyEvent event) {
         ClaimBuildEvent e = new ClaimBuildEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
@@ -121,7 +151,7 @@ public class EventListener implements Listener {
         event.setCancelled(e.isCancelled());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBucketFill(PlayerBucketFillEvent event) {
         ClaimBuildEvent e = new ClaimBuildEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
@@ -139,9 +169,8 @@ public class EventListener implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockBreak(BlockBreakEvent event) {
-
 
         ClaimBuildEvent e = new ClaimBuildEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
@@ -149,7 +178,7 @@ public class EventListener implements Listener {
         event.setCancelled(e.isCancelled());
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
     public void onBlockPlace(BlockPlaceEvent event) {
         ClaimBuildEvent e = new ClaimBuildEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
@@ -158,7 +187,7 @@ public class EventListener implements Listener {
     }
 
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGH)
     public void onPlayerHit(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
             Player target = (Player)event.getEntity();

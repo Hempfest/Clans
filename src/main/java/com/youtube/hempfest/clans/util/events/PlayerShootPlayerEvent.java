@@ -1,11 +1,13 @@
 package com.youtube.hempfest.clans.util.events;
 
+import com.youtube.hempfest.clans.util.StringLibrary;
+import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
+import com.youtube.hempfest.clans.util.listener.ClanEventBuilder;
 import org.bukkit.entity.Player;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-public class PlayerShootPlayerEvent extends Event{
+public class PlayerShootPlayerEvent extends ClanEventBuilder {
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -33,12 +35,19 @@ public class PlayerShootPlayerEvent extends Event{
         return handlers;
     }
 
+    @Override
     public HandlerList getHandlerList() {
         return handlers;
     }
 
+    @Override
     public ClanUtil getUtil() {
-        return new ClanUtil();
+        return Clan.clanUtil;
+    }
+
+    @Override
+    public StringLibrary stringLibrary() {
+        return new StringLibrary();
     }
 
     public void perform() {
@@ -64,9 +73,9 @@ public class PlayerShootPlayerEvent extends Event{
     }
 
     public void setCanHurt(boolean b) {
-        if (b == true)
+        if (b)
             this.cancelled = false;
-        if (b == false)
+        if (!b)
             this.cancelled = true;
     }
 }

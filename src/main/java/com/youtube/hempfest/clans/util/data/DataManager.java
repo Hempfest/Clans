@@ -2,17 +2,16 @@ package com.youtube.hempfest.clans.util.data;
 
 
 import com.youtube.hempfest.clans.HempfestClans;
-import com.youtube.hempfest.clans.util.construct.ClaimUtil;
+import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.events.AllyChatEvent;
 import com.youtube.hempfest.clans.util.events.ClanChatEvent;
 import com.youtube.hempfest.clans.util.timers.AsyncClaimResident;
 import com.youtube.hempfest.clans.util.timers.AsyncClanStatus;
-import org.bukkit.Bukkit;
-import org.bukkit.entity.Player;
-
 import java.io.File;
 import java.io.InputStream;
 import java.util.Set;
+import org.bukkit.Bukkit;
+import org.bukkit.entity.Player;
 
 public class DataManager {
     String name;
@@ -39,6 +38,12 @@ public class DataManager {
         return result;
     }
 
+    private static final Config main = new Config("Config", "Configuration");
+
+    public static boolean titlesAllowed() {
+       return main.getConfig().getBoolean("Clans.land-claiming.send-titles");
+    }
+
     public void runCleaner() {
         HempfestClans.getInstance().getLogger().info("- Running data cache cleaner.");
         AsyncClanStatus asyncClanStatus = new AsyncClanStatus();
@@ -46,7 +51,7 @@ public class DataManager {
     }
 
     public void performResidentEvent(){
-        if (ClaimUtil.claimingAllowed()) {
+        if (Claim.claimUtil.claimingAllowed()) {
             AsyncClaimResident asyncClaimResident = new AsyncClaimResident();
             asyncClaimResident.runTaskTimerAsynchronously(HempfestClans.getInstance(), 2L, 20L);
         }

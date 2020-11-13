@@ -2,18 +2,18 @@ package com.youtube.hempfest.clans.commands;
 
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
+import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
-
-import java.io.InputStream;
-import java.util.ArrayList;
-import java.util.List;
 
 public class CommandClanAdmin extends BukkitCommand {
 
@@ -33,7 +33,7 @@ public class CommandClanAdmin extends BukkitCommand {
     }
     
     private ClanUtil getUtil() {
-        return HempfestClans.getInstance().clanUtil;
+        return Clan.clanUtil;
     }
 
     @Override

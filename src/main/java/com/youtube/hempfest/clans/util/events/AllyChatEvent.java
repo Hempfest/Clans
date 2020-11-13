@@ -1,21 +1,21 @@
 package com.youtube.hempfest.clans.util.events;
 
-import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.util.StringLibrary;
+import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
-import com.youtube.hempfest.clans.util.versions.Component;
-import com.youtube.hempfest.clans.util.versions.ComponentR1_8_1;
+import com.youtube.hempfest.clans.util.listener.AsyncClanEventBuilder;
+import com.youtube.hempfest.hempcore.formatting.component.Text;
+import com.youtube.hempfest.hempcore.formatting.component.Text_R2;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Set;
-
-public class AllyChatEvent extends Event implements Cancellable {
+public class AllyChatEvent extends AsyncClanEventBuilder implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -39,6 +39,15 @@ public class AllyChatEvent extends Event implements Cancellable {
 
     private Sound pingSound = Sound.ENTITY_EXPERIENCE_ORB_PICKUP;
 
+    {
+        if (Bukkit.getVersion().contains("1.16")) {
+            static1 = "&#5b626e[&#16b7db&l&nAC&#5b626e] ";
+            static2 = " &#5b626e: &f";
+            highlight = "&#1696db&o%s";
+        } else {
+        }
+    }
+
     public AllyChatEvent(Player sender, Set<Player> receivers, String message, boolean isAsync) {
         super(isAsync);
         this.chatting = sender;
@@ -61,7 +70,8 @@ public class AllyChatEvent extends Event implements Cancellable {
         return handlers;
     }
 
-    public static HandlerList getHandlerList() {
+    @Override
+    public HandlerList getHandlerList() {
         return handlers;
     }
 
@@ -121,8 +131,14 @@ public class AllyChatEvent extends Event implements Cancellable {
         this.message = message;
     }
 
+    @Override
     public ClanUtil getUtil() {
-        return HempfestClans.getInstance().clanUtil;
+        return Clan.clanUtil;
+    }
+
+    @Override
+    public StringLibrary stringLibrary() {
+        return new StringLibrary();
     }
 
     public void sendAllyMessage() {
@@ -134,9 +150,9 @@ public class AllyChatEvent extends Event implements Cancellable {
                     clanId.add(getUtil().getClan(toGet));
                     if (clanId.size() != 0) {
                         if (Bukkit.getServer().getVersion().contains("1.16")) {
-                            getUtil().sendComponent(toGet, Component.textHoverable(static1, String.format(highlight, getUtil().getClanNickname(p)), static2 + getMessage(), String.format(playerMeta, p.getName())));
+                            getUtil().sendComponent(toGet, new Text().textHoverable(static1, String.format(highlight, getUtil().getClanNickname(p)), static2 + getMessage(), String.format(playerMeta, p.getName())));
                         } else {
-                            getUtil().sendComponent(toGet, ComponentR1_8_1.textHoverable(static1, String.format(highlight, p.getName()), static2 + getMessage(), String.format(playerMeta, p.getName())));
+                            getUtil().sendComponent(toGet, Text_R2.textHoverable(static1, String.format(highlight, p.getName()), static2 + getMessage(), String.format(playerMeta, p.getName())));
                         }
                         toGet.playSound(toGet.getLocation(), pingSound, 10, 1);
                     }
@@ -144,9 +160,9 @@ public class AllyChatEvent extends Event implements Cancellable {
             }
         }
         if (Bukkit.getServer().getVersion().contains("1.16")) {
-            getUtil().sendComponent(p, Component.textHoverable(static1, String.format(highlight, getUtil().getClanNickname(p)), static2 + getMessage(), String.format(playerMeta, p.getName())));
+            getUtil().sendComponent(p, new Text().textHoverable(static1, String.format(highlight, getUtil().getClanNickname(p)), static2 + getMessage(), String.format(playerMeta, p.getName())));
         } else {
-            getUtil().sendComponent(p, ComponentR1_8_1.textHoverable(static1, String.format(highlight, p.getName()), static2 + getMessage(), String.format(playerMeta, p.getName())));
+            getUtil().sendComponent(p, Text_R2.textHoverable(static1, String.format(highlight, p.getName()), static2 + getMessage(), String.format(playerMeta, p.getName())));
         }
         p.playSound(p.getLocation(), pingSound, 10, 1);
     }

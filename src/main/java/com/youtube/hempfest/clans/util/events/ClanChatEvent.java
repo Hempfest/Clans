@@ -1,24 +1,25 @@
 package com.youtube.hempfest.clans.util.events;
 
-import com.youtube.hempfest.clans.util.versions.Component;
-import com.youtube.hempfest.clans.util.versions.ComponentR1_8_1;
+import com.youtube.hempfest.clans.util.StringLibrary;
+import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
+import com.youtube.hempfest.clans.util.listener.AsyncClanEventBuilder;
+import com.youtube.hempfest.hempcore.formatting.component.Text;
+import com.youtube.hempfest.hempcore.formatting.component.Text_R2;
+import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
-import org.bukkit.event.Event;
 import org.bukkit.event.HandlerList;
 
-import java.util.Set;
-
-public class ClanChatEvent extends Event implements Cancellable {
+public class ClanChatEvent extends AsyncClanEventBuilder implements Cancellable {
 
     private static final HandlerList handlers = new HandlerList();
 
-    private Player chatting;
+    private final Player chatting;
 
-    private Set<Player> receivers;
+    private final Set<Player> receivers;
 
     private String message;
 
@@ -36,6 +37,14 @@ public class ClanChatEvent extends Event implements Cancellable {
 
     private Sound pingSound = Sound.ENTITY_EXPERIENCE_ORB_PICKUP;
 
+     {
+        if (Bukkit.getVersion().contains("1.16")) {
+            static1 = "&#5b626e[&#16b7db&l&nCC&#5b626e] ";
+            static2 = " &#5b626e: &f";
+            highlight = "&#1696db&o%s";
+        }
+    }
+
     public ClanChatEvent(Player sender, Set<Player> receivers, String message, boolean isAsync) {
         super(isAsync);
         this.chatting = sender;
@@ -51,15 +60,6 @@ public class ClanChatEvent extends Event implements Cancellable {
     @Override
     public void setCancelled(boolean b) {
     this.cancelled = b;
-    }
-
-    @Override
-    public HandlerList getHandlers() {
-        return handlers;
-    }
-
-    public static HandlerList getHandlerList() {
-        return handlers;
     }
 
     public Player getChatting() {
@@ -125,9 +125,9 @@ public class ClanChatEvent extends Event implements Cancellable {
             if (clanUtil.getClan(toGet) != null) {
                 if (clanUtil.getClan(toGet).equals(clanUtil.getClan(p))) {
                     if (Bukkit.getServer().getVersion().contains("1.16")) {
-                        clanUtil.sendComponent(toGet, Component.textHoverable(static1, String.format(highlight, clanUtil.getClanNickname(p)), static2 + getMessage(), String.format(playerMeta, p.getName())));
+                        clanUtil.sendComponent(toGet, new Text().textHoverable(static1, String.format(highlight, clanUtil.getClanNickname(p)), static2 + getMessage(), String.format(playerMeta, p.getName())));
                     } else {
-                        clanUtil.sendComponent(toGet, ComponentR1_8_1.textHoverable(static1, String.format(highlight, p.getName()), static2 + getMessage(), String.format(playerMeta, p.getName())));
+                        clanUtil.sendComponent(toGet, Text_R2.textHoverable(static1, String.format(highlight, p.getName()), static2 + getMessage(), String.format(playerMeta, p.getName())));
                     }
                     toGet.playSound(toGet.getLocation(), pingSound, 10, 1);
                 }
@@ -135,4 +135,23 @@ public class ClanChatEvent extends Event implements Cancellable {
         }
     }
 
+    @Override
+    public HandlerList getHandlers() {
+        return handlers;
+    }
+
+    @Override
+    public HandlerList getHandlerList() {
+        return handlers;
+    }
+
+    @Override
+    public ClanUtil getUtil() {
+        return Clan.clanUtil;
+    }
+
+    @Override
+    public StringLibrary stringLibrary() {
+        return new StringLibrary();
+    }
 }
