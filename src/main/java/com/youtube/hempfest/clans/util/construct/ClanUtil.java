@@ -872,6 +872,8 @@ public class ClanUtil extends StringLibrary {
         return time <= on || time >= off;
     }
 
+
+
     public void getLeaderboard(Player p, int page) {
         HashMap<String, Double> clans = new HashMap<>();
         for (String clanID : getAllClanIDs()) {
