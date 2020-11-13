@@ -16,7 +16,7 @@ _**Table of contents:**_
 **Importing** w/ the pom.xml
 ```
 <repository>
-	 <id>jitpack.io</id>
+    <id>jitpack.io</id>
     <url>https://jitpack.io</url>
 </repository>
 
