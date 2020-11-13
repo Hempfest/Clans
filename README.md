@@ -15,12 +15,15 @@ _**Table of contents:**_
 ## Developers
 **Importing** w/ the pom.xml
 ```
+<repository>
+	 <id>jitpack.io</id>
+    <url>https://jitpack.io</url>
+</repository>
+
 <dependency>
-   <groupId>Clans</groupId>
-   <artifactId>hEssentialsClans</artifactId>
-   <version>2.0.0</version>
-   <scope>system</scope>
-   <systemPath>${project.basedir}/src/main/resources/Clans.jar</systemPath>
+    <groupId>com.youtube.hempfest.clans</groupId>
+    <artifactId>hEssentialsClans</artifactId>
+    <version>2.0.6</version>
 </dependency>
 ```
 **Event List**
