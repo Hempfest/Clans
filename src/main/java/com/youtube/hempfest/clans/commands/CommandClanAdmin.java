@@ -7,6 +7,7 @@ import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
@@ -58,8 +59,13 @@ public class CommandClanAdmin extends BukkitCommand {
             return true;
         }
         if (length == 0) {
-            lib.sendMessage(p, "&r- Command help. (&7/clan #page&r)");
-        lib.paginatedList(p, helpMenu(), "c", 1, 5);
+            PaginatedAssortment helpAssist = new PaginatedAssortment(p, helpMenu());
+            lib.sendMessage(p, "&r- Command help. (&7/cla #page&r)");
+            helpAssist.setListTitle("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+            helpAssist.setListBorder("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+            helpAssist.setNavigateCommand("cla");
+            helpAssist.setLinesPerPage(5);
+            helpAssist.export(1);
             return true;
         }
         if (!p.hasPermission(this.getPermission())) {
@@ -104,6 +110,17 @@ public class CommandClanAdmin extends BukkitCommand {
                     return true;
                 }
                 return true;
+            }
+            PaginatedAssortment helpAssist = new PaginatedAssortment(p, helpMenu());
+            lib.sendMessage(p, "&r- Command help. (&7/cla #page&r)");
+            helpAssist.setListTitle("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+            helpAssist.setListBorder("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+            helpAssist.setNavigateCommand("cla");
+            helpAssist.setLinesPerPage(5);
+            try {
+                helpAssist.export(Integer.parseInt(args0));
+            } catch (NumberFormatException e) {
+                lib.sendMessage(p, "&c&oInvalid page number!");
             }
             return true;
         }

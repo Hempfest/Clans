@@ -10,6 +10,7 @@ import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
@@ -133,8 +134,13 @@ public class CommandClan extends BukkitCommand {
          */
 
         if (length == 0) {
+            PaginatedAssortment helpAssist = new PaginatedAssortment(p, helpMenu());
             lib.sendMessage(p, "&r- Command help. (&7/clan #page&r)");
-        lib.paginatedList(p, helpMenu(), "c", 1, 5);
+            helpAssist.setListTitle("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+            helpAssist.setListBorder("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+            helpAssist.setNavigateCommand("c");
+            helpAssist.setLinesPerPage(5);
+            helpAssist.export(1);
             return true;
         }
         if (!p.hasPermission(this.getPermission())) {
@@ -156,7 +162,6 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("top")) {
-
                 getUtil().getLeaderboard(p, 1);
                 return true;
             }
@@ -171,8 +176,13 @@ public class CommandClan extends BukkitCommand {
                 if (Claim.claimUtil.claimingAllowed()) {
                     if (getUtil().getClan(p) != null) {
                         if (getUtil().getRankPower(p) >= getUtil().claimingClearance()) {
-                            HempfestClans.claimMap.clear();
                             getClaim().obtain(p);
+                            HempfestClans.getInstance().claimMap.clear();
+                            Claim.claimUtil.loadClaims();
+                            try {
+                                HempfestClans.getInstance().integration.updateMap(Claim.claimUtil.getClaimID(p.getLocation()));
+                            } catch (Exception ignored) {
+                            }
                         } else {
                             lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                             return true;
@@ -192,8 +202,9 @@ public class CommandClan extends BukkitCommand {
                 if (Claim.claimUtil.claimingAllowed()) {
                     if (getUtil().getClan(p) != null) {
                         if (getUtil().getRankPower(p) >= getUtil().claimingClearance()) {
-                            HempfestClans.claimMap.clear();
                             getClaim().remove(p);
+                            HempfestClans.getInstance().claimMap.clear();
+                            Claim.claimUtil.loadClaims();
                         } else {
                             lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                         }
@@ -321,7 +332,13 @@ public class CommandClan extends BukkitCommand {
             }
             try {
                 int page = Integer.parseInt(args0);
-                lib.paginatedList(p, helpMenu(), "c", page, 5);
+                PaginatedAssortment helpAssist = new PaginatedAssortment(p, helpMenu());
+                lib.sendMessage(p, "&r- Command help. (&7/clan #page&r)");
+                helpAssist.setListTitle("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+                helpAssist.setListBorder("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+                helpAssist.setNavigateCommand("c");
+                helpAssist.setLinesPerPage(5);
+                helpAssist.export(page);
             } catch (NumberFormatException e) {
                 lib.sendMessage(p, "&c&oInvalid page number!");
             }
@@ -379,7 +396,7 @@ public class CommandClan extends BukkitCommand {
             if (args0.equalsIgnoreCase("list")) {
                 
                 try {
-                    lib.paginatedList(p, getUtil().getAllClanNames(), "c list", Integer.parseInt(args1), 10);
+                    lib.paginatedClanList(p, getUtil().getAllClanNames(), "c list", Integer.parseInt(args1), 10);
                 } catch (NumberFormatException e) {
                     lib.sendMessage(p, "&c&oInvalid page number!");
                 }
@@ -486,8 +503,9 @@ public class CommandClan extends BukkitCommand {
                         
                         if (getUtil().getClan(p) != null) {
                             if (getUtil().getRankPower(p) >= getUtil().unclaimAllClearance()) {
-                                HempfestClans.claimMap.clear();
                                 getClaim().removeAll(p);
+                                HempfestClans.getInstance().claimMap.clear();
+                                Claim.claimUtil.loadClaims();
                             } else {
                                 lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                                 return true;

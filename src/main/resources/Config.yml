@@ -81,5 +81,22 @@ Formatting:
   ### The first one is the clan RANK and the second one is the clan NAME
   Chat: '&r(&e%s&r) [&6%s&r]'
 
+  ##############################################
+  #|                                          |#
+  #|            RESPONSE FORMATTING           |#
+  #|                                          |#
+  ##############################################
+
+Response:
+  creation: ''
+  deletion: ''
+  kick-out: ''
+  kick-in: ''
+  password: ''
+  promotion: ''
+  demotion: ''
+  tag: ''
+  base: ''
+
   ## DO NOT EDIT BELOW
-  Version: 2.0.6
+  Version: 2.0.7

@@ -3,7 +3,6 @@ package com.youtube.hempfest.clans.util.construct;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -67,20 +66,12 @@ public class Claim {
 	}
 
 	public Chunk getChunk() {
-
-		String[] ID = Claim.claimUtil.getClaimInfo(claimID);
-		int[] pos = Claim.claimUtil.getClaimPosition(claimID);
-		int x = pos[0];
-		int y = 110;
-		int z = pos[1];
-		String world = ID[3];
-		Location location = new Location(Bukkit.getWorld(world), x, y, z);
-		return Objects.requireNonNull(Bukkit.getWorld(world)).getChunkAt(location);
+		return getLocation().getChunk();
 	}
 
 	public Location getLocation() {
 		String[] ID = Claim.claimUtil.getClaimInfo(claimID);
-		int[] pos = Claim.claimUtil.getClaimPosition(claimID);
+		int[] pos = Claim.claimUtil.getClaimPosition(ID);
 		int x = pos[0];
 		int y = 110;
 		int z = pos[1];

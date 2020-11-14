@@ -11,6 +11,7 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -40,15 +41,15 @@ public class ClaimUtil extends StringLibrary {
 			d.set(getUtil().getClan(p) + ".Claims." + claimID + ".Z", z);
 			d.set(getUtil().getClan(p) + ".Claims." + claimID + ".World", world);
 			regions.saveConfig();
-            loadClaims();
 			clan.messageClan("&3&oNew land was claimed @ Chunk position: &7X:&b" + x + " &7Z:&b" + z + " &3&oin world &7" + world);
 			chunkBorderHint(p);
-		} else {
+		} else if (isInClaim(p.getLocation())){
 			Claim claim = new Claim(getClaimID(p.getLocation()));
 			if (claim.getOwner().equals(getUtil().getClan(p))) {
 				sendMessage(p, alreadyOwnClaim());
 			} else {
 				sendMessage(p, notClaimOwner(getUtil().clanRelationColor(getUtil().getClan(p), claim.getOwner()) + getUtil().getClanTag(claim.getOwner())));
+
 			}
 		}
 	}
@@ -58,12 +59,12 @@ public class ClaimUtil extends StringLibrary {
 		Clan clan = HempfestClans.clanManager(p);
 		if (isInClaim(p.getLocation())) {
 			if (Arrays.asList(clan.getOwnedClaims()).contains(getClaimID(p.getLocation()))) {
+				HempfestClans.getInstance().integration.removeMarker(getClaimID(p.getLocation()));
 				d.set(getUtil().getClan(p) + ".Claims." + getClaimID(p.getLocation()), null);
 				regions.saveConfig();
 				int x = p.getLocation().getChunk().getX();
 				int z = p.getLocation().getChunk().getZ();
 				String world = p.getWorld().getName();
-				loadClaims();
 				clan.messageClan("&e&oLand was un-claimed @ Chunk position: &7X:&3" + x + " &7Z:&3" + z + " &e&oin world &7" + world);
 			} else {
 				if (getUtil().shieldStatus()) {
@@ -72,13 +73,13 @@ public class ClaimUtil extends StringLibrary {
 						claim.loadPlayer(p);
 						Clan clan2 = claim.getClan();
 						if (clan.getPower() > clan2.getPower()) {
+							HempfestClans.getInstance().integration.removeMarker(claim.getClaimID());
 							d.set(claim.getOwner() + ".Claims." + getClaimID(p.getLocation()), null);
 							regions.saveConfig();
 							int x = p.getLocation().getChunk().getX();
 							int z = p.getLocation().getChunk().getZ();
 							String world = p.getWorld().getName();
 							Clan result = new Clan(claim.getOwner());
-                            loadClaims();
 							result.messageClan("&7[&4CLAIM-BREACH&7] &6Clan &d&o" + getUtil().getClanTag(getUtil().getClan(p)) + "&r&o:");
 							result.messageClan("&7&oLand was &4&nover-powered&7&o @ Chunk position: &7X:&c" + x + " &7Z:&c" + z + " &7&oin world &4" + world);
 						} else {
@@ -89,16 +90,15 @@ public class ClaimUtil extends StringLibrary {
 					}
 				} else {
 					Claim claim = new Claim(getClaimID(p.getLocation()));
-					claim.loadPlayer(p);
 					Clan clan2 = new Clan(claim.getOwner());
 					if (clan.getPower() > clan2.getPower()) {
+						HempfestClans.getInstance().integration.removeMarker(claim.getClaimID());
 						d.set(claim.getOwner() + ".Claims." + getClaimID(p.getLocation()), null);
 						regions.saveConfig();
 						int x = p.getLocation().getChunk().getX();
 						int z = p.getLocation().getChunk().getZ();
 						String world = p.getWorld().getName();
 						Clan result = new Clan(claim.getOwner());
-                        loadClaims();
 						result.messageClan("&7[&4HIGHER-POWER&7] &d&o" + getUtil().getClanTag(getUtil().getClan(p)) + "&r&o:");
 						result.messageClan("&7&oLand was &4&nover-powered&7&0 @ Chunk position: &7X:&3" + x + " &7Z:&3" + z + " &7&oin world &4" + world);
 					} else {
@@ -118,12 +118,15 @@ public class ClaimUtil extends StringLibrary {
 			return;
 		}
 		if (!Objects.requireNonNull(d.getConfigurationSection(getUtil().getClan(p) + ".Claims")).getKeys(false).isEmpty()) {
+			for (String claimID : d.getConfigurationSection(getUtil().getClan(p) + ".Claims").getKeys(false)) {
+				HempfestClans.getInstance().integration.removeMarker(claimID);
+			}
 			d.set(getUtil().getClan(p) + ".Claims", null);
 			d.createSection(getUtil().getClan(p) + ".Claims");
 			regions.saveConfig();
 			Clan clan = HempfestClans.clanManager(p);
 			clan.messageClan("&e&oAll land has been un-claimed by: &3&n" + p.getName());
-			loadClaims();
+
 		} else {
 			sendMessage(p, "Your clan has no land to unclaim. Consider obtaining some?");
 		}
@@ -138,13 +141,15 @@ public class ClaimUtil extends StringLibrary {
 				String w = d.getString(clan + ".Claims." + s + ".World");
 				String[] ID = {clan, s, w};
 				int[] pos = {x, z};
-				HempfestClans.claimMap.put(ID, pos);
+				HempfestClans.getInstance().claimMap.put(ID, pos);
+				Bukkit.getLogger().info("ID: " + Arrays.asList(ID).toString());
+				Bukkit.getLogger().info("Pos: " + pos[0] + " " + pos[1]);
 			}
 		}
 	}
 
 	public boolean isInClaim(Location loc) {
-		for (Map.Entry<String[], int[]> entry : HempfestClans.claimMap.entrySet()) {
+		for (Map.Entry<String[], int[]> entry : HempfestClans.getInstance().claimMap.entrySet()) {
 			String[] ID = entry.getKey();
 			int[] pos = entry.getValue();
 			//String clanID = ID[0];
@@ -152,8 +157,7 @@ public class ClaimUtil extends StringLibrary {
 			String world = ID[2];
 			int x = pos[0];
 			int z = pos[1];
-			if ((loc.getChunk().getX() <= x) && (loc.getChunk().getZ() <= z) && (loc.getChunk().getX() >= x)
-					&& (loc.getChunk().getZ() >= z) && Objects.requireNonNull(loc.getWorld()).getName().equals(world)) {
+			if (loc.getChunk().getX() == x && loc.getChunk().getZ() == z && Objects.requireNonNull(loc.getWorld()).getName().equals(world)) {
 				return true;
 			}
 		}
@@ -184,7 +188,7 @@ public class ClaimUtil extends StringLibrary {
 		FileConfiguration d = regions.getConfig();
 		String id = "";
 		if (isInClaim(loc)) {
-			for (Map.Entry<String[], int[]> entry : HempfestClans.claimMap.entrySet()) {
+			for (Map.Entry<String[], int[]> entry : HempfestClans.getInstance().claimMap.entrySet()) {
 				String[] ID = entry.getKey();// ID[1] = name
 				int[] pos = entry.getValue();// pos[0] = x, pos[1] = z
 				if (loc.getChunk().getX() == pos[0] && loc.getChunk().getZ() == pos[1]) {
@@ -206,7 +210,7 @@ public class ClaimUtil extends StringLibrary {
 
 	public List<String> getAllClaims() {
 		List<String> array = new ArrayList<>();
-		for (Map.Entry<String[], int[]> entry : HempfestClans.claimMap.entrySet()) {
+		for (Map.Entry<String[], int[]> entry : HempfestClans.getInstance().claimMap.entrySet()) {
 			String[] ID = entry.getKey();
 			if (!array.contains(ID[1])) {
 				array.add(ID[1]);
@@ -217,7 +221,7 @@ public class ClaimUtil extends StringLibrary {
 
 	public String[] getClaimInfo(String claimID) {
 		String[] result = new String[0];
-		for (Map.Entry<String[], int[]> entry : HempfestClans.claimMap.entrySet()) {
+		for (Map.Entry<String[], int[]> entry : HempfestClans.getInstance().claimMap.entrySet()) {
 			String[] ID = entry.getKey();
 			if (ID[1].equals(claimID)) {
 				result = ID;
@@ -226,12 +230,12 @@ public class ClaimUtil extends StringLibrary {
 		return result;
 	}
 
-	public int[] getClaimPosition(String claimID) {
+	public int[] getClaimPosition(String[] key) {
 		int[] result = new int[0];
-		for (Map.Entry<String[], int[]> entry : HempfestClans.claimMap.entrySet()) {
+		for (Map.Entry<String[], int[]> entry : HempfestClans.getInstance().claimMap.entrySet()) {
 			String[] ID = entry.getKey();
 			int[] pos = entry.getValue();
-			if (ID[1].equals(claimID)) {
+			if (Arrays.equals(key, ID)) {
 				result = pos;
 			}
 		}

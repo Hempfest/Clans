@@ -213,7 +213,7 @@ public class EventListener implements Listener {
 
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
-        if (event.getEntity().getKiller() instanceof Player) {
+        if (event.getEntity().getKiller() != null) {
             Player p = event.getEntity().getKiller();
             Player target = event.getEntity();
                 PlayerKillPlayerEvent e = new PlayerKillPlayerEvent(p, target);

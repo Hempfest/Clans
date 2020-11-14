@@ -9,6 +9,7 @@ import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.clans.util.dynmap.HempfestDynmapIntegration;
 import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
 import com.youtube.hempfest.clans.util.listener.EventListener;
 import com.youtube.hempfest.clans.util.timers.SyncRaidShield;
@@ -31,6 +32,8 @@ public class HempfestClans extends JavaPlugin {
 
 	private final PluginManager pm = getServer().getPluginManager();
 
+	public HempfestDynmapIntegration integration = new HempfestDynmapIntegration();
+
 	public DataManager dataManager = new DataManager();
 
 	public static HashMap<UUID, String> playerClan = new HashMap<>();
@@ -39,7 +42,7 @@ public class HempfestClans extends JavaPlugin {
 
 	public static HashMap<Player, String> idMode = new HashMap<>();
 
-	public static HashMap<String[], int[]> claimMap = new HashMap<>();
+	public HashMap<String[], int[]> claimMap = new HashMap<>();
 
 	public static HashMap<Player, String> chatMode = new HashMap<>();
 
@@ -61,22 +64,34 @@ public class HempfestClans extends JavaPlugin {
 		log.info(String.format("[%s] - Beginning claim resident event", getDescription().getName()));
 		Claim.claimUtil.loadClaims();
 		Clan.clanUtil.loadClans();
+		getLogger().info("- Loading & caching all claim and clan data.");
 		dataManager.performResidentEvent();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			DataManager data = new DataManager(p.getUniqueId().toString(), null);
 			Config user = data.getFile(ConfigType.USER_FILE);
 			if (user.getConfig().getString("Clan") != null) {
 				playerClan.put(p.getUniqueId(), user.getConfig().getString("Clan"));
+				getLogger().info("- Refilled user data. *RELOAD NOT SAFE*");
 			}
 		}
 		if (pm.isPluginEnabled("PlaceholderAPI")) {
 			new Placeholders(this).register();
-			getLogger().info("- PlaceholderAPI found! Loading clans placeholders (3).");
+			getLogger().info("- PlaceholderAPI found! Loading clans placeholders %clans_(name, rank, raidshield)%.");
 		} else {
 			getLogger().info("- PlaceholderAPI not found, placeholders will not work!");
 		}
 		registerMetrics(9234);
+			Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+				if (Bukkit.getPluginManager().isPluginEnabled("dynmap")) {
+					getLogger().info("- Dynmap found initializing API...");
+					integration.registerDynmap();
+					getLogger().info("- API successfully initialized");
+					integration.fillMap();
+					getLogger().info("- Market sets successfully updated in accordance to claims.");
+				}
+			}, 2);
 	}
+
 
 	public void onDisable() {
 		log.info(String.format("[%s] - Mmm yes.. this server is made of server.", getDescription().getName()));
@@ -154,6 +169,7 @@ public class HempfestClans extends JavaPlugin {
 		metrics.addCustomChart(new Metrics.SimplePie("used_prefix", () -> ChatColor.stripColor(getMain().getConfig().getString("Formatting.prefix"))));
 		metrics.addCustomChart(new Metrics.SingleLineChart("total_logged_players", () -> Clan.clanUtil.getAllUsers().size()));
 		metrics.addCustomChart(new Metrics.SingleLineChart("total_clans_made", () -> Clan.clanUtil.getAllClanIDs().size()));
+		getLogger().info("- Converting bStats metrics tables.");
 	}
 
 

@@ -23,6 +23,7 @@ jobs:
 
     - name: Build with Maven
       run: mvn -B package --file pom.xml
+
     - name: Create a Release
       uses: actions/create-release@v1
 
