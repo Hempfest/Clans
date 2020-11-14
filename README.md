@@ -24,7 +24,7 @@ _**Table of contents:**_
     <groupId>com.github.Hempfest</groupId>
     <artifactId>Clans</artifactId>
     <version>-290a2bcb48-1</version>
-       <scope>provided</scope>
+    <scope>provided</scope>
 </dependency>
 <dependency>
     <groupId>com.github.Hempfest</groupId>
