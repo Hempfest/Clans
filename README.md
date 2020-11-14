@@ -20,16 +20,18 @@ _**Table of contents:**_
     <url>https://jitpack.io</url>
 </repository>
 
-<dependency>
-    <groupId>com.youtube.hempfest.clans</groupId>
-    <artifactId>hEssentialsClans</artifactId>
-    <version>2.0.6</version>
-</dependency>
-<dependency>
-    <groupId>com.youtube.hempfest.hempcore</groupId>
-    <artifactId>hempCore</artifactId>
-    <version>1.0.0</version>
-</dependency>
+	<dependency>
+	    <groupId>com.github.Hempfest</groupId>
+	    <artifactId>Clans</artifactId>
+	    <version>-290a2bcb48-1</version>
+        <scope>provided</scope>
+	</dependency>
+	<dependency>
+		<groupId>com.github.Hempfest</groupId>
+		<artifactId>HempCore</artifactId>
+		<version>96915fddcf</version>
+		<scope>provided</scope>
+	</dependency>
 ```
 **Event List**
 ```
