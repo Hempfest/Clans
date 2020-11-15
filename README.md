@@ -23,14 +23,12 @@ _**Table of contents:**_
 <dependency>
     <groupId>com.github.Hempfest</groupId>
     <artifactId>Clans</artifactId>
-    <version>-290a2bcb48-1</version>
-    <scope>provided</scope>
+    <version>-SNAPSHOT</version>
 </dependency>
 <dependency>
     <groupId>com.github.Hempfest</groupId>
     <artifactId>HempCore</artifactId>
-    <version>96915fddcf</version>
-    <scope>provided</scope>
+    <version>-SNAPSHOT</version>
 </dependency>
 ```
 **Event List**
