@@ -28,7 +28,7 @@ _**Table of contents:**_
 <dependency>
     <groupId>com.github.Hempfest</groupId>
     <artifactId>HempCore</artifactId>
-    <version>-SNAPSHOT</version>
+    <version>96915fddcf</version>
 </dependency>
 ```
 **Event List**
