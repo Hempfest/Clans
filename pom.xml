@@ -61,5 +61,5 @@
 			<version>96915fddcf</version>
 			<scope>provided</scope>
 		</dependency>
-	</dependencies>
+    </dependencies>
 </project>
