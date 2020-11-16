@@ -12,7 +12,6 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
@@ -41,16 +40,6 @@ public class CommandClanAdmin extends BukkitCommand {
 
     @Override
     public boolean execute(CommandSender commandSender, String commandLabel, String[] args) {
-        if(args.length == 1){
-            if(args[0].equalsIgnoreCase("update")){
-                if(!HempfestClans.isUsingLatestVersion){
-                    commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', lib.getPrefix() + " You are already using the latest version of clans!"));
-                    HempfestClans.getInstance().updatePlugin();
-                }else{
-                    commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', lib.getPrefix() + " You are already using the latest version of clans!"));
-                }
-            }
-        }
         if (!(commandSender instanceof Player)) {
             return true;
         }

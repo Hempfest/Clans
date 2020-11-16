@@ -60,10 +60,11 @@ public class HempfestDynmapIntegration {
 		am.setCornerLocations(d1, d2);
 		am.setLabel(c.getClaimID());
 		am.setDescription(c.getClan().getClanTag() + " - " + Arrays.asList(c.getClan().getMembers()).toString());
-		int stroke = 1;
+		int stroke = 3;
 		double strokeOpac = 50.5;
+		double Opac = 10.5;
 		am.setLineStyle(stroke, strokeOpac, 0x03d3fc);
-		am.setFillStyle(1, 0x03d3fc);
+		am.setFillStyle(Opac, 0x03d3fc);
 	}
 
 	public void removeMarker(String claimID) {
