@@ -15,20 +15,17 @@ import com.youtube.hempfest.clans.util.dynmap.HempfestDynmapIntegration;
 import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
 import com.youtube.hempfest.clans.util.listener.EventListener;
 import com.youtube.hempfest.clans.util.timers.SyncRaidShield;
-
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.InputStream;
-import java.util.*;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Random;
+import java.util.UUID;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
-import org.eclipse.jgit.api.Git;
-import org.eclipse.jgit.api.errors.GitAPIException;
 
 
 public class HempfestClans extends JavaPlugin {
@@ -56,8 +53,6 @@ public class HempfestClans extends JavaPlugin {
 	public static HashMap<String, List<String>> clanEnemies = new HashMap<>();
 
 	public static HashMap<String, List<String>> clanAllies = new HashMap<>();
-
-	public static boolean isUsingLatestVersion = true;
 
 	public void onEnable() {
 		if(JSONUrlParser.jsonGetRequest("https://clans-startstop-messages.herokuapp.com/") != null) {
@@ -111,20 +106,6 @@ public class HempfestClans extends JavaPlugin {
 				getLogger().info("- Marker sets successfully updated in accordance to claims.");
 			}
 		}, 2);
-
-
-		//Check if server is using the latest version of clans
-		if(JSONUrlParser.jsonGetRequest("https://spigot-plugins-latest-version.herokuapp.com/") != null) {
-			JsonObject latestVersionObject = JSONUrlParser.jsonGetRequest("https://spigot-plugins-latest-version.herokuapp.com/");
-			String latestVersion = latestVersionObject.get("Clans").toString();
-			String currentVersion = Bukkit.getVersion();
-			if (!latestVersion.equals(currentVersion)) {
-				isUsingLatestVersion = false;
-				getLogger().warning("- NEW CLANS VERSION AVAILABLE");
-				getLogger().warning("- The latest version is " + latestVersion + ", but you are currently using verion " + currentVersion);
-				getLogger().warning("- Run (/clans update) as a player or in the console to initialize plugin update!");
-			}
-		}
 	}
 
 
@@ -214,19 +195,5 @@ public class HempfestClans extends JavaPlugin {
 		metrics.addCustomChart(new Metrics.SingleLineChart("total_logged_players", () -> Clan.clanUtil.getAllUsers().size()));
 		metrics.addCustomChart(new Metrics.SingleLineChart("total_clans_made", () -> Clan.clanUtil.getAllClanIDs().size()));
 		getLogger().info("- Converting bStats metrics tables.");
-	}
-	public void updatePlugin(){
-		if(!isUsingLatestVersion){
-			try {
-				Git git = Git.cloneRepository()
-						.setURI("https://github.com/Hempfest/Clans")
-						.setDirectory(new File("/out/artifacts/hEssentialsClans.jar"))
-						.setBranch("refs/heads/master").call();
-				File pluginJar = git.getRepository().getDirectory();
-				InputStream targetStream = new FileInputStream(pluginJar);
-				Config.copy(targetStream, new File(Config.class.getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " ")));
-			} catch (GitAPIException | FileNotFoundException e) {e.printStackTrace();}
-
-		}
 	}
 }
