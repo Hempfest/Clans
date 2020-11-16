@@ -1,6 +1,8 @@
 package com.youtube.hempfest.clans;
 
+import com.google.gson.JsonObject;
 import com.youtube.hempfest.clans.commands.Command;
+import com.youtube.hempfest.clans.util.JSONUrlParser;
 import com.youtube.hempfest.clans.util.Metrics;
 import com.youtube.hempfest.clans.util.Placeholders;
 import com.youtube.hempfest.clans.util.construct.Claim;
@@ -13,9 +15,8 @@ import com.youtube.hempfest.clans.util.dynmap.HempfestDynmapIntegration;
 import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
 import com.youtube.hempfest.clans.util.listener.EventListener;
 import com.youtube.hempfest.clans.util.timers.SyncRaidShield;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+
+import java.util.*;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -51,7 +52,14 @@ public class HempfestClans extends JavaPlugin {
 	public static HashMap<String, List<String>> clanAllies = new HashMap<>();
 
 	public void onEnable() {
-		log.info(String.format("[%s] - Who are you? {RE-VAMPED}", getDescription().getName()));
+		JsonObject jsonObject = JSONUrlParser.jsonGetRequest("http://45.79.148.21/start-stop-json/");
+		String startMessage = "";
+		ArrayList<String> messages = new ArrayList<>();
+		for (int i = 0; i < jsonObject.getAsJsonArray("startMessages").size(); i++) {
+			messages.add(jsonObject.getAsJsonArray("startMessages").get(i).toString());
+		}
+		startMessage = messages.get(new Random().nextInt(messages.size())).replaceAll("\"", "");
+		log.info(String.format("[%s] - " + startMessage, getDescription().getName()));
 		setInstance(this);
 		dataManager.copyDefaults();
 		Command commands = new Command();
@@ -94,7 +102,14 @@ public class HempfestClans extends JavaPlugin {
 
 
 	public void onDisable() {
-		log.info(String.format("[%s] - Mmm yes.. this server is made of server.", getDescription().getName()));
+		JsonObject jsonObject = JSONUrlParser.jsonGetRequest("http://45.79.148.21/start-stop-json/");
+		String stopMessage = "";
+		ArrayList<String> messages = new ArrayList<>();
+		for (int i = 0; i < jsonObject.getAsJsonArray("stopMessages").size(); i++) {
+			messages.add(jsonObject.getAsJsonArray("stopMessages").get(i).toString());
+		}
+		stopMessage = messages.get(new Random().nextInt(messages.size())).replaceAll("\"", "");
+		log.info(String.format("[%s] - " + stopMessage, getDescription().getName()));
 		ClaimResidentEvent.claimID.clear();
 		ClaimResidentEvent.invisibleResident.clear();
 		ClaimResidentEvent.residents.clear();
@@ -171,6 +186,5 @@ public class HempfestClans extends JavaPlugin {
 		metrics.addCustomChart(new Metrics.SingleLineChart("total_clans_made", () -> Clan.clanUtil.getAllClanIDs().size()));
 		getLogger().info("- Converting bStats metrics tables.");
 	}
-
 
 }
