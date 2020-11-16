@@ -16,6 +16,10 @@ import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
 import com.youtube.hempfest.clans.util.listener.EventListener;
 import com.youtube.hempfest.clans.util.timers.SyncRaidShield;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.InputStream;
 import java.util.*;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
@@ -23,6 +27,8 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.eclipse.jgit.api.Git;
+import org.eclipse.jgit.api.errors.GitAPIException;
 
 
 public class HempfestClans extends JavaPlugin {
@@ -51,15 +57,19 @@ public class HempfestClans extends JavaPlugin {
 
 	public static HashMap<String, List<String>> clanAllies = new HashMap<>();
 
+	public static boolean isUsingLatestVersion = true;
+
 	public void onEnable() {
-		JsonObject jsonObject = JSONUrlParser.jsonGetRequest("http://45.79.148.21/start-stop-json/");
-		String startMessage = "";
-		ArrayList<String> messages = new ArrayList<>();
-		for (int i = 0; i < jsonObject.getAsJsonArray("startMessages").size(); i++) {
-			messages.add(jsonObject.getAsJsonArray("startMessages").get(i).toString());
+		if(JSONUrlParser.jsonGetRequest("https://clans-startstop-messages.herokuapp.com/") != null) {
+			JsonObject startMessageObject = JSONUrlParser.jsonGetRequest("https://clans-startstop-messages.herokuapp.com/");
+			String startMessage = "";
+			ArrayList<String> messages = new ArrayList<>();
+			for (int i = 0; i < startMessageObject.getAsJsonArray("startMessages").size(); i++) {
+				messages.add(startMessageObject.getAsJsonArray("startMessages").get(i).toString());
+			}
+			startMessage = messages.get(new Random().nextInt(messages.size())).replaceAll("\"", "");
+			log.info(String.format("[%s] - " + startMessage, getDescription().getName()));
 		}
-		startMessage = messages.get(new Random().nextInt(messages.size())).replaceAll("\"", "");
-		log.info(String.format("[%s] - " + startMessage, getDescription().getName()));
 		setInstance(this);
 		dataManager.copyDefaults();
 		Command commands = new Command();
@@ -70,9 +80,12 @@ public class HempfestClans extends JavaPlugin {
 		refreshChat();
 		runShieldTimer();
 		log.info(String.format("[%s] - Beginning claim resident event", getDescription().getName()));
+		getLogger().info("- Loading claim data");
 		Claim.claimUtil.loadClaims();
+		getLogger().info("- Claim data cached.");
+		getLogger().info("- Loading clan data");
 		Clan.clanUtil.loadClans();
-		getLogger().info("- Loading & caching all claim and clan data.");
+		getLogger().info("- Clan data cached.");
 		dataManager.performResidentEvent();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			DataManager data = new DataManager(p.getUniqueId().toString(), null);
@@ -89,27 +102,43 @@ public class HempfestClans extends JavaPlugin {
 			getLogger().info("- PlaceholderAPI not found, placeholders will not work!");
 		}
 		registerMetrics(9234);
-			Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-				if (Bukkit.getPluginManager().isPluginEnabled("dynmap")) {
-					getLogger().info("- Dynmap found initializing API...");
-					integration.registerDynmap();
-					getLogger().info("- API successfully initialized");
-					integration.fillMap();
-					getLogger().info("- Market sets successfully updated in accordance to claims.");
-				}
-			}, 2);
+		Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
+			if (Bukkit.getPluginManager().isPluginEnabled("dynmap")) {
+				getLogger().info("- Dynmap found initializing API...");
+				integration.registerDynmap();
+				getLogger().info("- API successfully initialized");
+				integration.fillMap();
+				getLogger().info("- Marker sets successfully updated in accordance to claims.");
+			}
+		}, 2);
+
+
+		//Check if server is using the latest version of clans
+		if(JSONUrlParser.jsonGetRequest("https://spigot-plugins-latest-version.herokuapp.com/") != null) {
+			JsonObject latestVersionObject = JSONUrlParser.jsonGetRequest("https://spigot-plugins-latest-version.herokuapp.com/");
+			String latestVersion = latestVersionObject.get("Clans").toString();
+			String currentVersion = Bukkit.getVersion();
+			if (!latestVersion.equals(currentVersion)) {
+				isUsingLatestVersion = false;
+				getLogger().warning("- NEW CLANS VERSION AVAILABLE");
+				getLogger().warning("- The latest version is " + latestVersion + ", but you are currently using verion " + currentVersion);
+				getLogger().warning("- Run (/clans update) as a player or in the console to initialize plugin update!");
+			}
+		}
 	}
 
 
 	public void onDisable() {
-		JsonObject jsonObject = JSONUrlParser.jsonGetRequest("http://45.79.148.21/start-stop-json/");
-		String stopMessage = "";
-		ArrayList<String> messages = new ArrayList<>();
-		for (int i = 0; i < jsonObject.getAsJsonArray("stopMessages").size(); i++) {
-			messages.add(jsonObject.getAsJsonArray("stopMessages").get(i).toString());
+		if(JSONUrlParser.jsonGetRequest("https://clans-startstop-messages.herokuapp.com/") != null) {
+			JsonObject stopMessageObject = JSONUrlParser.jsonGetRequest("https://clans-startstop-messages.herokuapp.com/");
+			String stopMessage = "";
+			ArrayList<String> messages = new ArrayList<>();
+			for (int i = 0; i < stopMessageObject.getAsJsonArray("stopMessages").size(); i++) {
+				messages.add(stopMessageObject.getAsJsonArray("stopMessages").get(i).toString());
+			}
+			stopMessage = messages.get(new Random().nextInt(messages.size())).replaceAll("\"", "");
+			log.info(String.format("[%s] - " + stopMessage, getDescription().getName()));
 		}
-		stopMessage = messages.get(new Random().nextInt(messages.size())).replaceAll("\"", "");
-		log.info(String.format("[%s] - " + stopMessage, getDescription().getName()));
 		ClaimResidentEvent.claimID.clear();
 		ClaimResidentEvent.invisibleResident.clear();
 		ClaimResidentEvent.residents.clear();
@@ -186,5 +215,18 @@ public class HempfestClans extends JavaPlugin {
 		metrics.addCustomChart(new Metrics.SingleLineChart("total_clans_made", () -> Clan.clanUtil.getAllClanIDs().size()));
 		getLogger().info("- Converting bStats metrics tables.");
 	}
+	public void updatePlugin(){
+		if(!isUsingLatestVersion){
+			try {
+				Git git = Git.cloneRepository()
+						.setURI("https://github.com/Hempfest/Clans")
+						.setDirectory(new File("/out/artifacts/hEssentialsClans.jar"))
+						.setBranch("refs/heads/master").call();
+				File pluginJar = git.getRepository().getDirectory();
+				InputStream targetStream = new FileInputStream(pluginJar);
+				Config.copy(targetStream, new File(Config.class.getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " ")));
+			} catch (GitAPIException | FileNotFoundException e) {e.printStackTrace();}
 
+		}
+	}
 }

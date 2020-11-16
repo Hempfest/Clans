@@ -12,6 +12,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.List;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
@@ -23,22 +24,33 @@ public class CommandClanAdmin extends BukkitCommand {
         super(name, description, usageMessage, aliases);
         setPermission(permission);
     }
-
+    StringLibrary lib = new StringLibrary();
     private List<String> helpMenu() {
         List<String> help = new ArrayList<>();
         help.add("&7|&e) &6/clanadmin &freload <&7configName&f>");
-        help.add("&7|&e) &6/clanadmin &eupdate");
+        help.add("&7|&e) &6/clanadmin &echeck");
         help.add("&7|&e) &6/clanadmin &fgetid <&7clanNamef>");
         help.add("&7|&e) &6/clanadmin &fidmode");
+        help.add("&7|&e) &6/clanadmin &fupdate");
         return help;
     }
-    
+
     private ClanUtil getUtil() {
         return Clan.clanUtil;
     }
 
     @Override
     public boolean execute(CommandSender commandSender, String commandLabel, String[] args) {
+        if(args.length == 1){
+            if(args[0].equalsIgnoreCase("update")){
+                if(!HempfestClans.isUsingLatestVersion){
+                    commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', lib.getPrefix() + " You are already using the latest version of clans!"));
+                    HempfestClans.getInstance().updatePlugin();
+                }else{
+                    commandSender.sendMessage(ChatColor.translateAlternateColorCodes('&', lib.getPrefix() + " You are already using the latest version of clans!"));
+                }
+            }
+        }
         if (!(commandSender instanceof Player)) {
             return true;
         }
@@ -49,7 +61,6 @@ public class CommandClanAdmin extends BukkitCommand {
          */
         int length = args.length;
         Player p = (Player) commandSender;
-        StringLibrary lib = new StringLibrary();
         /*
         //  /\ /\ /\ /\ /\ /\
         //
@@ -82,7 +93,7 @@ public class CommandClanAdmin extends BukkitCommand {
                 lib.sendMessage(p, "&7|&e) &fInvalid usage : /clanadmin getid <playerName>");
                 return true;
             }
-            if (args0.equalsIgnoreCase("update")) {
+            if (args0.equalsIgnoreCase("check")) {
                 if (HempfestClans.getMain().getConfig().getString("Version").equals(HempfestClans.getInstance().getDescription().getVersion())) {
                     lib.sendMessage(p, "&3&oThe configuration is already up to date.");
                     return true;
