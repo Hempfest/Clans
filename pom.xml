@@ -9,7 +9,7 @@
 	<packaging>jar</packaging>
 
 	<name>hEssentialsClans</name>
-	<url>http://maven.apache.org</url>
+	<url>https://jitpack.io/#Hempfest/Clans/v2.0.7</url>
 
 	<properties>
 		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
