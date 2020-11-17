@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.Random;
 import net.md_5.bungee.api.chat.TextComponent;
 import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 
@@ -19,7 +18,7 @@ public class StringLibrary {
 
 
 	public void sendMessage(Player p, String message) {
-		p.sendMessage(ChatColor.translateAlternateColorCodes('&', getPrefix() + " " + message));
+		p.sendMessage(color(getPrefix() + " " + message));
 	}
 
 	public String color(String text) {

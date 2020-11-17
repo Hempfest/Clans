@@ -102,8 +102,6 @@ public class HempfestClans extends JavaPlugin {
 				getLogger().info("- Dynmap found initializing API...");
 				integration.registerDynmap();
 				getLogger().info("- API successfully initialized");
-				integration.fillMap();
-				getLogger().info("- Marker sets successfully updated in accordance to claims.");
 			}
 		}, 2);
 	}

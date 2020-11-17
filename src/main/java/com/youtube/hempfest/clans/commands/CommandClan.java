@@ -15,12 +15,14 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.List;
+import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
+import org.dynmap.markers.AreaMarker;
 
 public class CommandClan extends BukkitCommand {
 
@@ -60,6 +62,8 @@ public class CommandClan extends BukkitCommand {
         help.add("&7|&e) &6/clan &fclaim");
         help.add("&7|&e) &6/clan &funclaim");
         help.add("&7|&e) &6/clan &funclaim all");
+        help.add("&7|&e) &6/clan &fmap");
+        help.add("&7|&e) &6/clan &funmap");
         help.add("&7|&e) &6/clan &fpassowner <&7playerName&f>");
         help.add("&7|&e) &6/clan &fally <&7clanName&f>");
         help.add("&7|&e) &6/clan &fally <&aadd&7,&cremove&f> <&7clanName&f>");
@@ -84,7 +88,7 @@ public class CommandClan extends BukkitCommand {
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
         List<String> array = new ArrayList<>();
         if (args.length == 1)
-            array.addAll(Arrays.asList("create", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
+            array.addAll(Arrays.asList("create", "map", "unmap", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("unclaim")) {
                 array.add("all");
@@ -179,10 +183,6 @@ public class CommandClan extends BukkitCommand {
                             getClaim().obtain(p);
                             HempfestClans.getInstance().claimMap.clear();
                             Claim.claimUtil.loadClaims();
-                            try {
-                                HempfestClans.getInstance().integration.updateMap(Claim.claimUtil.getClaimID(p.getLocation()));
-                            } catch (Exception ignored) {
-                            }
                         } else {
                             lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                             return true;
@@ -197,6 +197,29 @@ public class CommandClan extends BukkitCommand {
                 }
                 return true;
             }
+            if (args0.equalsIgnoreCase("unmap")) {
+                if (Clan.clanUtil.getClan(p) != null) {
+                    Clan clan = HempfestClans.clanManager(p);
+                    if (Claim.claimUtil.isInClaim(p.getLocation())) {
+                        Claim claim = new Claim(Claim.claimUtil.getClaimID(p.getLocation()));
+                        if (Arrays.asList(clan.getOwnedClaims()).contains(claim.getClaimID())) {
+                            Set<AreaMarker> markers = HempfestClans.getInstance().integration.markerset.getAreaMarkers();
+                            for (AreaMarker am : markers) {
+                                if (am.getMarkerID().equals(claim.getClaimID())) {
+                                    am.deleteMarker();
+                                    lib.sendMessage(p, "&b&oCurrent claim visibility has been removed from the map.");
+                                    return true;
+                                }
+                            }
+                            return true;
+                        }
+                        // not owner
+                    } else {
+                        // not in claim
+                    }
+                }
+            }
+
             if (args0.equalsIgnoreCase("unclaim")) {
                 
                 if (Claim.claimUtil.claimingAllowed()) {

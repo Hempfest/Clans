@@ -11,7 +11,6 @@ import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
-import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -142,8 +141,6 @@ public class ClaimUtil extends StringLibrary {
 				String[] ID = {clan, s, w};
 				int[] pos = {x, z};
 				HempfestClans.getInstance().claimMap.put(ID, pos);
-				Bukkit.getLogger().info("ID: " + Arrays.asList(ID).toString());
-				Bukkit.getLogger().info("Pos: " + pos[0] + " " + pos[1]);
 			}
 		}
 	}
