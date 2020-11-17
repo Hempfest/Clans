@@ -5,7 +5,7 @@
 
 	<groupId>com.youtube.hempfest.clans</groupId>
 	<artifactId>hEssentialsClans</artifactId>
-	<version>2.0.6</version>
+	<version>2.0.7</version>
 	<packaging>jar</packaging>
 
 	<name>hEssentialsClans</name>
@@ -16,29 +16,6 @@
 		<maven.compiler.target>1.8</maven.compiler.target>
 		<maven.compiler.source>1.8</maven.compiler.source>
 	</properties>
-
-	<build>
-		<pluginManagement>
-			<plugins>
-				<plugin>
-					<artifactId>maven-javadoc-plugin</artifactId>
-					<inherited>false</inherited>
-					<configuration>
-						<aggregate>true</aggregate>
-					</configuration>
-					<executions>
-						<execution>
-							<id>aggregate</id>
-							<goals>
-								<goal>aggregate-jar</goal>
-							</goals>
-							<phase>package</phase>
-						</execution>
-					</executions>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
 
 
 	<repositories>
@@ -62,6 +39,11 @@
 			<artifactId>spigot-api</artifactId>
 			<version>1.16.1-R0.1-SNAPSHOT</version>
 			<scope>provided</scope>
+		</dependency>
+		<dependency>
+			<groupId>com.youtube.hempfest.clans</groupId>
+			<artifactId>hEssentialsClans</artifactId>
+			<version>2.0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>me.clip</groupId>
