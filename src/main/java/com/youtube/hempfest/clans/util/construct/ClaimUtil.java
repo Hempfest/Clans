@@ -58,7 +58,6 @@ public class ClaimUtil extends StringLibrary {
 		Clan clan = HempfestClans.clanManager(p);
 		if (isInClaim(p.getLocation())) {
 			if (Arrays.asList(clan.getOwnedClaims()).contains(getClaimID(p.getLocation()))) {
-				HempfestClans.getInstance().integration.removeMarker(getClaimID(p.getLocation()));
 				d.set(getUtil().getClan(p) + ".Claims." + getClaimID(p.getLocation()), null);
 				regions.saveConfig();
 				int x = p.getLocation().getChunk().getX();
@@ -72,7 +71,7 @@ public class ClaimUtil extends StringLibrary {
 						claim.loadPlayer(p);
 						Clan clan2 = claim.getClan();
 						if (clan.getPower() > clan2.getPower()) {
-							HempfestClans.getInstance().integration.removeMarker(claim.getClaimID());
+
 							d.set(claim.getOwner() + ".Claims." + getClaimID(p.getLocation()), null);
 							regions.saveConfig();
 							int x = p.getLocation().getChunk().getX();
@@ -91,7 +90,6 @@ public class ClaimUtil extends StringLibrary {
 					Claim claim = new Claim(getClaimID(p.getLocation()));
 					Clan clan2 = new Clan(claim.getOwner());
 					if (clan.getPower() > clan2.getPower()) {
-						HempfestClans.getInstance().integration.removeMarker(claim.getClaimID());
 						d.set(claim.getOwner() + ".Claims." + getClaimID(p.getLocation()), null);
 						regions.saveConfig();
 						int x = p.getLocation().getChunk().getX();
@@ -117,9 +115,6 @@ public class ClaimUtil extends StringLibrary {
 			return;
 		}
 		if (!Objects.requireNonNull(d.getConfigurationSection(getUtil().getClan(p) + ".Claims")).getKeys(false).isEmpty()) {
-			for (String claimID : d.getConfigurationSection(getUtil().getClan(p) + ".Claims").getKeys(false)) {
-				HempfestClans.getInstance().integration.removeMarker(claimID);
-			}
 			d.set(getUtil().getClan(p) + ".Claims", null);
 			d.createSection(getUtil().getClan(p) + ".Claims");
 			regions.saveConfig();

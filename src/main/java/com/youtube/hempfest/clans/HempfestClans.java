@@ -11,7 +11,6 @@ import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.clans.util.dynmap.HempfestDynmapIntegration;
 import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
 import com.youtube.hempfest.clans.util.listener.EventListener;
 import com.youtube.hempfest.clans.util.timers.SyncRaidShield;
@@ -35,8 +34,6 @@ public class HempfestClans extends JavaPlugin {
 	private final Logger log = Logger.getLogger("Minecraft");
 
 	private final PluginManager pm = getServer().getPluginManager();
-
-	public HempfestDynmapIntegration integration = new HempfestDynmapIntegration();
 
 	public DataManager dataManager = new DataManager();
 
@@ -97,13 +94,7 @@ public class HempfestClans extends JavaPlugin {
 			getLogger().info("- PlaceholderAPI not found, placeholders will not work!");
 		}
 		registerMetrics(9234);
-		Bukkit.getScheduler().scheduleSyncDelayedTask(this, () -> {
-			if (Bukkit.getPluginManager().isPluginEnabled("dynmap")) {
-				getLogger().info("- Dynmap found initializing API...");
-				integration.registerDynmap();
-				getLogger().info("- API successfully initialized");
-			}
-		}, 2);
+
 	}
 
 

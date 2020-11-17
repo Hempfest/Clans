@@ -15,14 +15,12 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.List;
-import java.util.Set;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
-import org.dynmap.markers.AreaMarker;
 
 public class CommandClan extends BukkitCommand {
 
@@ -196,28 +194,6 @@ public class CommandClan extends BukkitCommand {
                     return true;
                 }
                 return true;
-            }
-            if (args0.equalsIgnoreCase("unmap")) {
-                if (Clan.clanUtil.getClan(p) != null) {
-                    Clan clan = HempfestClans.clanManager(p);
-                    if (Claim.claimUtil.isInClaim(p.getLocation())) {
-                        Claim claim = new Claim(Claim.claimUtil.getClaimID(p.getLocation()));
-                        if (Arrays.asList(clan.getOwnedClaims()).contains(claim.getClaimID())) {
-                            Set<AreaMarker> markers = HempfestClans.getInstance().integration.markerset.getAreaMarkers();
-                            for (AreaMarker am : markers) {
-                                if (am.getMarkerID().equals(claim.getClaimID())) {
-                                    am.deleteMarker();
-                                    lib.sendMessage(p, "&b&oCurrent claim visibility has been removed from the map.");
-                                    return true;
-                                }
-                            }
-                            return true;
-                        }
-                        // not owner
-                    } else {
-                        // not in claim
-                    }
-                }
             }
 
             if (args0.equalsIgnoreCase("unclaim")) {
