@@ -82,33 +82,85 @@ public class CommandClan extends BukkitCommand {
         return Claim.claimUtil;
     }
 
+    List<String> arguments = new ArrayList<String>();
+
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
-        List<String> array = new ArrayList<>();
-        if (args.length == 1)
-            array.addAll(Arrays.asList("create", "map", "unmap", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
+
+
+        List<String> result = new ArrayList<>();
+        if (args.length == 1) {
+            arguments.clear();
+            arguments.addAll(Arrays.asList("create", "map", "color", "unmap", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
+            for (String a : arguments) {
+                if (a.toLowerCase().startsWith(args[0].toLowerCase()))
+                    result.add(a);
+            }
+            return result;
+        }
         if (args.length == 2) {
             if (args[0].equalsIgnoreCase("unclaim")) {
-                array.add("all");
+                arguments.clear();
+                arguments.add("all");
+                for (String a : arguments) {
+                    if (a.toLowerCase().startsWith(args[1].toLowerCase()))
+                        result.add(a);
+                }
+                return result;
+            }
+            if (args[0].equalsIgnoreCase("color")) {
+                arguments.clear();
+                for (Color color : Color.values()) {
+                    arguments.add(color.name());
+                }
+                for (String a : arguments) {
+                    if (a.toLowerCase().startsWith(args[1].toLowerCase()))
+                        result.add(a);
+                }
+                return result;
             }
             if (args[0].equalsIgnoreCase("ally")) {
-                array.add("add");
-                array.add("remove");
+                arguments.clear();
+                arguments.add("add");
+                arguments.add("remove");
+                for (String a : arguments) {
+                    if (a.toLowerCase().startsWith(args[1].toLowerCase()))
+                        result.add(a);
+                }
+                return result;
             }
             if (args[0].equalsIgnoreCase("enemy")) {
-                array.add("add");
-                array.add("remove");
+                arguments.clear();
+                arguments.add("add");
+                arguments.add("remove");
+                for (String a : arguments) {
+                    if (a.toLowerCase().startsWith(args[1].toLowerCase()))
+                        result.add(a);
+                }
+                return result;
             }
         }
         if (args.length == 3) {
             if (args[0].equalsIgnoreCase("ally")) {
-                array.addAll(Clan.clanUtil.getAllClanNames());
+                arguments.clear();
+                arguments.addAll(Clan.clanUtil.getAllClanNames());
+                for (String a : arguments) {
+                    if (a.toLowerCase().startsWith(args[2].toLowerCase()))
+                        result.add(a);
+                }
+                return result;
             }
             if (args[0].equalsIgnoreCase("enemy")) {
-                array.addAll(Clan.clanUtil.getAllClanNames());
+                arguments.clear();
+                arguments.addAll(Clan.clanUtil.getAllClanNames());
+                for (String a : arguments) {
+                    if (a.toLowerCase().startsWith(args[2].toLowerCase()))
+                        result.add(a);
+                }
+                return result;
             }
         }
-        return array;
+        return null;
     }
 
     @Override

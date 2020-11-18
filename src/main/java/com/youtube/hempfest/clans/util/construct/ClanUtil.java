@@ -643,7 +643,7 @@ public class ClanUtil extends StringLibrary {
             Config clan = dm.getFile(ConfigType.CLAN_FILE);
             return new ArrayList<>(clan.getConfig().getStringList("allies"));
         }
-        return HempfestClans.clanEnemies.get(clanID);
+        return HempfestClans.clanAllies.get(clanID);
     }
 
     public List<String> getEnemies(String clanID) {
