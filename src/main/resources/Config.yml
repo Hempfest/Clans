@@ -1,13 +1,17 @@
-##############################################
-#|                                          |#
-#|                  OPTIONS                 |#
-#|                                          |#
-##############################################
+#
+#----------------------------------,,-----------------------------
+#    .g8""8q.               mm     db
+#  .dP'    `YM.             MM
+#  dM'      `MM `7MMpdMAo.mmMMmm `7MM  ,pW"Wq.`7MMpMMMb.  ,pP"Ybd
+#  MM        MM   MM   `Wb  MM     MM 6W'   `Wb MM    MM  8I   `"
+#  MM.      ,MP   MM    M8  MM     MM 8M     M8 MM    MM  `YMMMa.
+#  `Mb.    ,dP'   MM   ,AP  MM     MM YA.   ,A9 MM    MM  L.   I8
+#    `"bmmd"'     MMbmmd'   `Mbmo.JMML.`Ybmd9'.JMML  JMML.M9mmmP'
+#                 MM
+#---------------.JMML.---------------------------------------------
 ## Clearance levels: [Member: 0, Moderator: 1, Admin: 2, Owner:3]
+#
 Clans:
-
-  # Toggle the ability for Clans to hook into vault. (Disables bank usage)
-  check-for-vault: true
 
   # Change the max size a clan tag can be.
   tag-size: 15
@@ -45,18 +49,24 @@ Clans:
     down-time: 13000
     # Decide whether to allow or deny the ability to overpower other clan claims
     ## while the shield is up.
-    claiming: DENY
+    claiming: false
 
   # Change the minimum rank clearance needed to update the clan base.
   clan-base:
-    # Clearance levels: [Member: 0, Moderator: 1, Admin: 2, Owner:3]
     clearance: 1
-
-##############################################
-#|                                          |#
-#|              CHAT FORMATTING             |#
-#|                                          |#
-##############################################
+#-------------------------------------------------------------------
+#
+#----------------,,-----------------------
+#    .g8"""bgd `7MM                 mm
+#  .dP'     `M   MM                 MM
+#  dM'       `   MMpMMMb.   ,6"Yb.mmMMmm
+#  MM            MM    MM  8)   MM  MM
+#  MM.           MM    MM   ,pm9MM  MM
+#  `Mb.     ,'   MM    MM  8M   MM  MM
+#    `"bmmmd'  .JMML  JMML.`Moo9^Yo.`Mbmo
+#-----------------------------------------
+#
+#-------------------------------------------------------------------
 Formatting:
   allow: true
   # Change the prefix displayed for the plugin.
@@ -80,13 +90,20 @@ Formatting:
   # Two "%s" need placement in order for the formatting to work correctly
   ### The first one is the clan RANK and the second one is the clan NAME
   Chat: '&r(&e%s&r) [&6%s&r]'
-
-  ##############################################
-  #|                                          |#
-  #|            RESPONSE FORMATTING           |#
-  #|                                          |#
-  ##############################################
-
+#-------------------------------------------------------------------
+#
+# ----------------------------------------------------------------------------
+#  `7MM"""Mq.
+#    MM   `MM.
+#    MM   ,M9  .gP"Ya  ,pP"Ybd `7MMpdMAo.  ,pW"Wq.`7MMpMMMb.  ,pP"Ybd  .gP"Ya
+#    MMmmdM9  ,M'   Yb 8I   `"   MM   `Wb 6W'   `Wb MM    MM  8I   `" ,M'   Yb
+#    MM  YM.  8M"""""" `YMMMa.   MM    M8 8M     M8 MM    MM  `YMMMa. 8M""""""
+#    MM   `Mb.YM.    , L.   I8   MM   ,AP YA.   ,A9 MM    MM  L.   I8 YM.    ,
+#  .JMML. .JMM.`Mbmmd' M9mmmP'   MMbmmd'   `Ybmd9'.JMML  JMML.M9mmmP'  `Mbmmd'
+#                                MM
+# -----------------------------.JMML.------------------------------------------
+#
+#-------------------------------------------------------------------
 Response:
   creation: ''
   deletion: ''
@@ -97,6 +114,10 @@ Response:
   demotion: ''
   tag: ''
   base: ''
-
-  ## DO NOT EDIT BELOW
-  Version: 2.0.7
+#-------------------------------------------------------------------
+## -- DO NOT EDIT BELOW --
+# Authors: Hempfest, Modify
+# Contributors: Coolmike35
+# Pro link: ??
+##------------------------
+Version: 2.0.7

@@ -15,6 +15,7 @@ import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
 import com.youtube.hempfest.clans.util.listener.EventListener;
 import com.youtube.hempfest.clans.util.timers.SyncRaidShield;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Random;
@@ -52,6 +53,22 @@ public class HempfestClans extends JavaPlugin {
 	public static HashMap<String, List<String>> clanAllies = new HashMap<>();
 
 	public void onEnable() {
+		getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+		getLogger().info("- Clans [Free]. Loading plugin information...");
+		getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+		for (String ch : logo()) {
+			try {
+				Thread.sleep(300);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			getLogger().info("- " + ch);
+		}
+		try {
+			Thread.sleep(300);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		if(JSONUrlParser.jsonGetRequest("https://clans-startstop-messages.herokuapp.com/") != null) {
 			JsonObject startMessageObject = JSONUrlParser.jsonGetRequest("https://clans-startstop-messages.herokuapp.com/");
 			String startMessage = "";
@@ -72,12 +89,8 @@ public class HempfestClans extends JavaPlugin {
 		refreshChat();
 		runShieldTimer();
 		log.info(String.format("[%s] - Beginning claim resident event", getDescription().getName()));
-		getLogger().info("- Loading claim data");
 		Claim.claimUtil.loadClaims();
-		getLogger().info("- Claim data cached.");
-		getLogger().info("- Loading clan data");
 		Clan.clanUtil.loadClans();
-		getLogger().info("- Clan data cached.");
 		dataManager.performResidentEvent();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			DataManager data = new DataManager(p.getUniqueId().toString(), null);
@@ -94,9 +107,12 @@ public class HempfestClans extends JavaPlugin {
 			getLogger().info("- PlaceholderAPI not found, placeholders will not work!");
 		}
 		registerMetrics(9234);
-
+		getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
 	}
 
+	private List<String> logo() {
+		return new ArrayList<>(Arrays.asList("   ▄▄· ▄▄▌   ▄▄▄·  ▐ ▄ .▄▄ · ", "  ▐█ ▌▪██•  ▐█ ▀█ •█▌▐█▐█ ▀. ", "  ██ ▄▄██▪  ▄█▀▀█ ▐█▐▐▌▄▀▀▀█▄", "  ▐███▌▐█▌▐▌▐█ ▪▐▌██▐█▌▐█▄▪▐█", "  ·▀▀▀ .▀▀▀  ▀  ▀ ▀▀ █▪ ▀▀▀▀ "));
+	}
 
 	public void onDisable() {
 		if(JSONUrlParser.jsonGetRequest("https://clans-startstop-messages.herokuapp.com/") != null) {

@@ -896,7 +896,7 @@ public class ClanUtil extends StringLibrary {
         }
         topClans.setLinesPerPage(10);
         topClans.setNavigateCommand("c top");
-        topClans.setCommandToRun("c info");
+        topClans.setCommandToRun("c info %s");
         topClans.exportSorted(PaginatedAssortment.MapType.DOUBLE, page);
     }
 
