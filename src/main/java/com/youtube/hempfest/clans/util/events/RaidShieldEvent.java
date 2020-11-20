@@ -80,8 +80,7 @@ public class RaidShieldEvent extends ClanEventBuilder implements Cancellable {
         return handlers;
     }
 
-    @Override
-    public HandlerList getHandlerList() {
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 

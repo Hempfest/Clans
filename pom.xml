@@ -47,7 +47,7 @@
 			<scope>provided</scope>
 		</dependency>
 		<dependency>
-			<groupId>com.youtube.hempfest.hempcore</groupId>
+			<groupId>com.github.Hempfest</groupId>
 			<artifactId>HempCore</artifactId>
 			<version>1.0.0</version>
 		</dependency>

@@ -105,8 +105,7 @@ public class ClaimResidentEvent extends AsyncClanEventBuilder implements Cancell
         return handlers;
     }
 
-    @Override
-    public HandlerList getHandlerList() {
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 

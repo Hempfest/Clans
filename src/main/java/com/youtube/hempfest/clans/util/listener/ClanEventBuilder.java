@@ -10,8 +10,6 @@ public abstract class ClanEventBuilder extends Event {
 
     public abstract HandlerList getHandlers();
 
-    public abstract HandlerList getHandlerList();
-
     public abstract ClanUtil getUtil();
 
     public abstract StringLibrary stringLibrary();

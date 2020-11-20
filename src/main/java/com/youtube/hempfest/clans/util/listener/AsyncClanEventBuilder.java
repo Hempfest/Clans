@@ -14,8 +14,6 @@ public abstract class AsyncClanEventBuilder extends Event {
 
     public abstract HandlerList getHandlers();
 
-    public abstract HandlerList getHandlerList();
-
     public abstract ClanUtil getUtil();
 
     public abstract StringLibrary stringLibrary();

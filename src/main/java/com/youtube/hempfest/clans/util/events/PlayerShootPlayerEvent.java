@@ -35,8 +35,7 @@ public class PlayerShootPlayerEvent extends ClanEventBuilder {
         return handlers;
     }
 
-    @Override
-    public HandlerList getHandlerList() {
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 

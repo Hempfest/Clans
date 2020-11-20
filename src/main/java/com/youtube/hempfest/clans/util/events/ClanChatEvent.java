@@ -140,8 +140,7 @@ public class ClanChatEvent extends AsyncClanEventBuilder implements Cancellable 
         return handlers;
     }
 
-    @Override
-    public HandlerList getHandlerList() {
+    public static HandlerList getHandlerList() {
         return handlers;
     }
 
