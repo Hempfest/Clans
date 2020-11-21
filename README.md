@@ -25,6 +25,11 @@ _**Table of contents:**_
     <artifactId>HempCore</artifactId>
     <version>1.0.0</version>
 </dependency>
+<dependency>
+    <groupId>com.github.Hempfest</groupId>
+    <artifactId>Clans</artifactId>
+    <version>2.0.7</version>
+</dependency>
 ```
 **Event List**
 ```
