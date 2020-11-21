@@ -55,7 +55,8 @@ public class Clan {
 		clan.getConfig().set("base.float", exact);
 		clan.getConfig().set("base.world", w.getName());
 		clan.saveConfig();
-		messageClan("&6The clan base was updated.");
+		String format = String.format(HempfestClans.getMain().getConfig().getString("Response.base"), loc.getWorld().getName());
+		messageClan(format);
 	}
 
 	public String getClanID() {
@@ -146,14 +147,15 @@ public class Clan {
 		}
 		c.getConfig().set("password", newPassword);
 		c.saveConfig();
-		messageClan("&b&o&nThe clan password has been changed.");
+		messageClan(String.format(HempfestClans.getMain().getConfig().getString("Response.password"), newPassword));
 	}
 
 	public void changeTag(String newTag) {
 		Config c = dm().getFile(ConfigType.CLAN_FILE);
 		c.getConfig().set("name", newTag);
 		c.saveConfig();
-		messageClan("&3&o&nThe clan name has been changed.");
+		String format = String.format(HempfestClans.getMain().getConfig().getString("Response.tag"), newTag);
+		messageClan(format);
 	}
 
 	public void changeColor(String newColor) {

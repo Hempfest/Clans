@@ -25,9 +25,11 @@ import org.bukkit.entity.Player;
 public class CommandClan extends BukkitCommand {
 
 
-    public CommandClan(String name, String description, String permission, String usageMessage, List<String> aliases) {
-        super(name, description, usageMessage, aliases);
-        setPermission(permission);
+    public CommandClan() {
+        super("clans");
+        setDescription("Base command for clans.");
+        setAliases(Arrays.asList("cl", "c"));
+        setPermission("clans.use");
     }
 
     private void sendMessage(CommandSender player, String message) {
@@ -459,9 +461,9 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("tag")) {
-                
-                Clan clan = HempfestClans.clanManager(p);
+
                 if (getUtil().getClan(p) != null) {
+                    Clan clan = HempfestClans.clanManager(p);
                     if (getUtil().getRankPower(p) >= getUtil().tagChangeClearance()) {
                         if (!isAlphaNumeric(args1)) {
                             lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
@@ -612,8 +614,10 @@ public class CommandClan extends BukkitCommand {
                             return true;
                         }
                         getUtil().kickPlayer(target);
-                        clan.messageClan("&e&oPlayer " + '"' + target.getName() + '"' + " was kicked from the clan..");
-                        lib.sendMessage(target, "&4&o" + getUtil().getClanTag(getUtil().getClan(p)) + " kicked you from the clan.");
+                        String format = String.format(HempfestClans.getMain().getConfig().getString("Response.kick-out"), target.getName());
+                        String format1 = String.format(HempfestClans.getMain().getConfig().getString("Response.kick-in"), getUtil().getClanTag(getUtil().getClan(p)));
+                        clan.messageClan(format);
+                        lib.sendMessage(target, format1);
                     } else {
                         lib.sendMessage(p, "&c&oYou do not have clan clearance.");
                         return true;

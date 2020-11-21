@@ -10,6 +10,7 @@ import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
 import java.io.InputStream;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandSender;
@@ -19,18 +20,19 @@ import org.bukkit.entity.Player;
 public class CommandClanAdmin extends BukkitCommand {
 
 
-    public CommandClanAdmin(String name, String description, String permission, String usageMessage, List<String> aliases) {
-        super(name, description, usageMessage, aliases);
-        setPermission(permission);
+    public CommandClanAdmin() {
+        super("clansadmin");
+        setDescription("Base command for staff commands.");
+        setAliases(Arrays.asList("ca", "cla"));
+        setPermission("clans.admin.use");
     }
     StringLibrary lib = new StringLibrary();
     private List<String> helpMenu() {
         List<String> help = new ArrayList<>();
         help.add("&7|&e) &6/clanadmin &freload <&7configName&f>");
-        help.add("&7|&e) &6/clanadmin &echeck");
+        help.add("&7|&e) &6/clanadmin &eupdate");
         help.add("&7|&e) &6/clanadmin &fgetid <&7clanNamef>");
         help.add("&7|&e) &6/clanadmin &fidmode");
-        help.add("&7|&e) &6/clanadmin &fupdate");
         return help;
     }
 
@@ -83,10 +85,16 @@ public class CommandClanAdmin extends BukkitCommand {
                 return true;
             }
             if (args0.equalsIgnoreCase("check")) {
-                if (HempfestClans.getMain().getConfig().getString("Version").equals(HempfestClans.getInstance().getDescription().getVersion())) {
-                    lib.sendMessage(p, "&3&oThe configuration is already up to date.");
-                    return true;
-                } else {
+                try {
+                    if (HempfestClans.getMain().getConfig().getString("Version").equals(HempfestClans.getInstance().getDescription().getVersion())) {
+                        lib.sendMessage(p, "&3&oThe configuration is already up to date.");
+                        return true;
+                    } else {
+                        InputStream mainGrab = HempfestClans.getInstance().getResource("Config.yml");
+                        Config.copy(mainGrab, HempfestClans.getMain().getFile());
+                        lib.sendMessage(p, "&b&oUpdate configuration to the latest plugin version.");
+                    }
+                }catch (NullPointerException e) {
                     InputStream mainGrab = HempfestClans.getInstance().getResource("Config.yml");
                     Config.copy(mainGrab, HempfestClans.getMain().getFile());
                     lib.sendMessage(p, "&b&oUpdate configuration to the latest plugin version.");

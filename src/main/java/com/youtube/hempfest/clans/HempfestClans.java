@@ -1,7 +1,6 @@
 package com.youtube.hempfest.clans;
 
 import com.google.gson.JsonObject;
-import com.youtube.hempfest.clans.commands.Command;
 import com.youtube.hempfest.clans.util.JSONUrlParser;
 import com.youtube.hempfest.clans.util.Metrics;
 import com.youtube.hempfest.clans.util.Placeholders;
@@ -12,8 +11,10 @@ import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
-import com.youtube.hempfest.clans.util.listener.EventListener;
 import com.youtube.hempfest.clans.util.timers.SyncRaidShield;
+import com.youtube.hempfest.hempcore.command.CommandBuilder;
+import com.youtube.hempfest.hempcore.event.EventBuilder;
+import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
@@ -24,7 +25,6 @@ import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
-import org.bukkit.plugin.PluginManager;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -33,8 +33,6 @@ public class HempfestClans extends JavaPlugin {
 	private static HempfestClans instance;
 
 	private final Logger log = Logger.getLogger("Minecraft");
-
-	private final PluginManager pm = getServer().getPluginManager();
 
 	public DataManager dataManager = new DataManager();
 
@@ -81,9 +79,10 @@ public class HempfestClans extends JavaPlugin {
 		}
 		setInstance(this);
 		dataManager.copyDefaults();
-		Command commands = new Command();
-		commands.registerAll();
-		pm.registerEvents(new EventListener(), this);
+		EventBuilder builder = new EventBuilder(this);
+		builder.compileFields("com.youtube.hempfest.clans.util.listener");
+		CommandBuilder commandBuilder = new CommandBuilder(this);
+		commandBuilder.compileFields("com.youtube.hempfest.clans.commands");
 		dataManager.runCleaner();
 		Clan.clanUtil.setRaidShield(true);
 		refreshChat();
@@ -100,7 +99,7 @@ public class HempfestClans extends JavaPlugin {
 				getLogger().info("- Refilled user data. *RELOAD NOT SAFE*");
 			}
 		}
-		if (pm.isPluginEnabled("PlaceholderAPI")) {
+		if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
 			new Placeholders(this).register();
 			getLogger().info("- PlaceholderAPI found! Loading clans placeholders %clans_(name, rank, raidshield)%.");
 		} else {
@@ -157,7 +156,12 @@ public class HempfestClans extends JavaPlugin {
 
 	public static Config getMain() {
 		DataManager dm = new DataManager("Config", "Configuration");
-		return dm.getFile(ConfigType.MISC_FILE);
+		Config main = dm.getFile(ConfigType.MISC_FILE);
+		if (!main.exists()) {
+			InputStream is = getInstance().getResource("Config.yml");
+			Config.copy(is, main.getFile());
+		}
+		return main;
 	}
 
 	private void runShieldTimer() {

@@ -105,15 +105,15 @@ Formatting:
 #
 #-------------------------------------------------------------------
 Response:
-  creation: ''
-  deletion: ''
-  kick-out: ''
-  kick-in: ''
-  password: ''
-  promotion: ''
-  demotion: ''
-  tag: ''
-  base: ''
+  creation: '&a&o%s created an &f%s &a&oclan &7%s'
+  deletion: '&c&oClan "%s" has fallen...'
+  kick-out: '&e&oPlayer "%s" was kicked from the clan.'
+  kick-in: '&4&o%s kicked you from the clan.'
+  password: '&b&o&nThe clan password has been changed.'
+  promotion: '&a&oPlayer "%s" was promoted.'
+  demotion: '&d&oPlayer "%s" was demoted.'
+  tag: '&b&oThe clan name was changed to %s'
+  base: '&aThe clan base location was updated.'
 #-------------------------------------------------------------------
 ## -- DO NOT EDIT BELOW --
 # Authors: Hempfest, Modify

@@ -40,14 +40,18 @@ public class ClanUtil extends StringLibrary {
         local.set("Clan", newID);
         HempfestClans.playerClan.put(p.getUniqueId(), newID);
         user.saveConfig();
+        String status = "OPEN";
         if (password == null) {
             createClanFile(newID, clanName);
             sendMessage(p, "Clan " + '"' + clanName + '"' + " created with no password.");
-            Bukkit.broadcastMessage(color(getPrefix() + " &a&o" + p.getName() + String.format(" created an &fOPEN &a&oclan &7%s.", clanName)));
+            String format = String.format(HempfestClans.getMain().getConfig().getString("Response.creation"), p.getName(), status, clanName);
+            Bukkit.broadcastMessage(color(getPrefix() + " " + format));
         } else {
+            status = "LOCKED";
             createClanFile(newID, clanName, password);
             sendMessage(p, "Clan " + '"' + clanName + '"' + " created with password: &e&o" + password);
-            Bukkit.broadcastMessage(color(getPrefix() + " &a&o" + p.getName() + String.format(" created a &fLOCKED &a&oclan &7%s.", clanName)));
+            String format = String.format(HempfestClans.getMain().getConfig().getString("Response.creation"), p.getName(), status, clanName);
+            Bukkit.broadcastMessage(color(getPrefix() + " " + format));
         }
         DataManager data = new DataManager(newID, null);
         Config clanFile = data.getFile(ConfigType.CLAN_FILE);
@@ -79,7 +83,8 @@ public class ClanUtil extends StringLibrary {
                 clan.delete();
                 user.getConfig().set("Clan", null);
                 user.saveConfig();
-                Bukkit.broadcastMessage(color(getPrefix() + " &c&oClan " + '"' + clanName + '"' + " has fallen.."));
+                String format = String.format(HempfestClans.getMain().getConfig().getString("Response.deletion"), clanName);
+                Bukkit.broadcastMessage(color(getPrefix() + " " + format));
                 HempfestClans.clanEnemies.remove(Clan.clanUtil.getClan(p));
                 HempfestClans.clanAllies.remove(Clan.clanUtil.getClan(p));
                 HempfestClans.playerClan.remove(p.getUniqueId());
@@ -414,7 +419,8 @@ public class ClanUtil extends StringLibrary {
                 clan.getConfig().set(clanUtil.getRankDowngrade(clanUtil.getRankPower(target)), array);
                 clan.saveConfig();
                 Clan clanIndex = HempfestClans.clanManager(target);
-                clanIndex.messageClan("&d&oPlayer " + '"' + target.getName() + '"' + " was demoted.");
+                String format = String.format(HempfestClans.getMain().getConfig().getString("Response.demotion"), target.getName(), getRankTag(getRank(target)));
+                clanIndex.messageClan(format);
             }
         }
     }
@@ -435,7 +441,8 @@ public class ClanUtil extends StringLibrary {
                 clan.getConfig().set(clanUtil.getRankUpgrade(clanUtil.getRankPower(target)), array);
                 clan.saveConfig();
                 Clan clanIndex = HempfestClans.clanManager(target);
-                clanIndex.messageClan("&a&oPlayer " + '"' + target.getName() + '"' + " was promoted.");
+                String format = String.format(HempfestClans.getMain().getConfig().getString("Response.promotion"), target.getName(), getRankTag(getRank(target)));
+                clanIndex.messageClan(format);
             }
         }
     }
