@@ -95,7 +95,7 @@ public class CommandClan extends BukkitCommand {
         List<String> result = new ArrayList<>();
         if (args.length == 1) {
             arguments.clear();
-            arguments.addAll(Arrays.asList("create", "map", "color", "unmap", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
+            arguments.addAll(Arrays.asList("create", "color", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
             TabInsertEvent event = new TabInsertEvent();
             Bukkit.getPluginManager().callEvent(event);
             arguments.addAll(event.getArgs(1));
