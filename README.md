@@ -77,11 +77,11 @@ _**Table of contents:**_
 **Know your API**
 
 ```JAVA 
-public Clan clan = new Clan(clanID, Player); //- [Utility class for getting clan information.] Player variable can be null.
+public Clan clan = new Clan(clanID); //- [Utility class for getting clan information.]
 ```
 
 ```JAVA 
-public Claim claim = new Claim(claimID, Player); //- [Utility class for getting information regarding a claim.] Player variable can be null.
+public Claim claim = new Claim(claimID); //- [Utility class for getting information regarding a claim.]
 ```
 
 ```JAVA 
