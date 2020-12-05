@@ -37,6 +37,8 @@ public class HempfestClans extends JavaPlugin {
 
 	public DataManager dataManager = new DataManager();
 
+	public List<String> tabList = new ArrayList<>();
+
 	public static HashMap<UUID, String> playerClan = new HashMap<>();
 
 	public static HashMap<UUID, Clan> clanManager = new HashMap<>();

@@ -11,7 +11,7 @@ import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.clans.util.events.SubCommandEvent;
-import com.youtube.hempfest.clans.util.listener.TabCompleteEntry;
+import com.youtube.hempfest.clans.util.events.TabInsertEvent;
 import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -96,9 +96,9 @@ public class CommandClan extends BukkitCommand {
         if (args.length == 1) {
             arguments.clear();
             arguments.addAll(Arrays.asList("create", "map", "color", "unmap", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
-            if (!Arrays.asList(TabCompleteEntry.getContainer()).isEmpty()) {
-                arguments.addAll(Arrays.asList(TabCompleteEntry.getContainer()));
-            }
+            TabInsertEvent event = new TabInsertEvent();
+            Bukkit.getPluginManager().callEvent(event);
+            arguments.addAll(event.getArgs(1));
             for (String a : arguments) {
                 if (a.toLowerCase().startsWith(args[0].toLowerCase()))
                     result.add(a);
@@ -106,6 +106,9 @@ public class CommandClan extends BukkitCommand {
             return result;
         }
         if (args.length == 2) {
+            TabInsertEvent event = new TabInsertEvent();
+            Bukkit.getPluginManager().callEvent(event);
+            arguments.addAll(event.getArgs(2));
             if (args[0].equalsIgnoreCase("unclaim")) {
                 arguments.clear();
                 arguments.add("all");
@@ -165,6 +168,9 @@ public class CommandClan extends BukkitCommand {
             }
         }
         if (args.length == 3) {
+            TabInsertEvent event = new TabInsertEvent();
+            Bukkit.getPluginManager().callEvent(event);
+            arguments.addAll(event.getArgs(3));
             if (args[0].equalsIgnoreCase("ally")) {
                 arguments.clear();
                 arguments.addAll(Clan.clanUtil.getAllClanNames());

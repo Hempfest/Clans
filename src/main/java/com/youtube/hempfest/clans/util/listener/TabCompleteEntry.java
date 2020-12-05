@@ -1,23 +1,20 @@
 package com.youtube.hempfest.clans.util.listener;
 
 
-import java.util.ArrayList;
-import java.util.List;
+import com.youtube.hempfest.clans.HempfestClans;
 
 public class TabCompleteEntry {
 
-	private static final List<String> tabList = new ArrayList<>();
-
 	public static void add(String value) {
-		tabList.add(value);
+		HempfestClans.getInstance().tabList.add(value);
 	}
 
 	public static void remove(String value) {
-		tabList.remove(value);
+		HempfestClans.getInstance().tabList.remove(value);
 	}
 
 	public static String[] getContainer() {
-		return tabList.toArray(new String[0]);
+		return HempfestClans.getInstance().tabList.toArray(new String[0]);
 	}
 
 
