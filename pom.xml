@@ -84,7 +84,7 @@
 		<dependency>
 			<groupId>com.github.Hempfest</groupId>
 			<artifactId>HempCore</artifactId>
-			<version>1.0.2</version>
+			<version>1.0.6_1</version>
 		</dependency>
     </dependencies>
 </project>

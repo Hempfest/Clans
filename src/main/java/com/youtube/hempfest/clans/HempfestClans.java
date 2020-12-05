@@ -1,6 +1,7 @@
 package com.youtube.hempfest.clans;
 
 import com.google.gson.JsonObject;
+import com.youtube.hempfest.clans.metadata.PersistentClan;
 import com.youtube.hempfest.clans.util.JSONUrlParser;
 import com.youtube.hempfest.clans.util.Metrics;
 import com.youtube.hempfest.clans.util.Placeholders;
@@ -107,6 +108,13 @@ public class HempfestClans extends JavaPlugin {
 		}
 		registerMetrics(9234);
 		getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+		try {
+			getLogger().info("- Attempting automatic clan meta query process..");
+			PersistentClan.querySaved();
+			getLogger().info("- Query success! All found meta cached. (" + PersistentClan.getMetaDataContainer().length + ")");
+		} catch (NullPointerException e) {
+			getLogger().info("- Process failed. No directory found to process.");
+		}
 	}
 
 	private List<String> logo() {
@@ -150,8 +158,14 @@ public class HempfestClans extends JavaPlugin {
 			clan = new Clan(new ClanUtil().getClan(p));
 			clanManager.put(p.getUniqueId(), clan);
 			return clan;
-		} else
+		} else {
+			if (!clanManager.get(p.getUniqueId()).getClanID().equals(playerClan.get(p.getUniqueId()))) {
+				clan = new Clan(new ClanUtil().getClan(p));
+				clanManager.put(p.getUniqueId(), clan);
+				return clan;
+			}
 			return clanManager.get(p.getUniqueId());
+		}
 	}
 
 	public static Config getMain() {

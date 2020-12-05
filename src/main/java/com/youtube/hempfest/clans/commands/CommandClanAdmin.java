@@ -84,7 +84,7 @@ public class CommandClanAdmin extends BukkitCommand {
                 lib.sendMessage(p, "&7|&e) &fInvalid usage : /clanadmin getid <playerName>");
                 return true;
             }
-            if (args0.equalsIgnoreCase("check")) {
+            if (args0.equalsIgnoreCase("update")) {
                 try {
                     if (HempfestClans.getMain().getConfig().getString("Version").equals(HempfestClans.getInstance().getDescription().getVersion())) {
                         lib.sendMessage(p, "&3&oThe configuration is already up to date.");

@@ -9,6 +9,7 @@ import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
 import com.youtube.hempfest.hempcore.formatting.string.RandomID;
+import com.youtube.hempfest.hempcore.library.HUID;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -498,6 +499,10 @@ public class ClanUtil extends StringLibrary {
         }
     }
 
+    /**
+     * @param p Target player to retrieve id from
+     * @return Gets the specified players clanID
+     */
     public String getClan(Player p) {
         if (!HempfestClans.playerClan.containsKey(p.getUniqueId())) {
             return null;
@@ -518,12 +523,20 @@ public class ClanUtil extends StringLibrary {
         sendMessage(p, "&3&oChat nickname updated to: &7" + newName);
     }
 
+    /**
+     * @param p Target player to check
+     * @return Gets the clan nickname for the specified player.
+     */
     public String getClanNickname(Player p) {
         DataManager dm = new DataManager(p.getUniqueId().toString(), null);
         Config user = dm.getFile(ConfigType.USER_FILE);
         return user.getConfig().getString("Nickname") != null ? user.getConfig().getString("Nickname") : p.getName();
     }
 
+    /**
+     * @param p Target to check
+     * @return Gets the rank of the specified player in default format.
+     */
     public String getRank(Player p) {
         DataManager dm = new DataManager(getClan(p), null);
         Config clan = dm.getFile(ConfigType.CLAN_FILE);
@@ -544,6 +557,11 @@ public class ClanUtil extends StringLibrary {
         return rank;
     }
 
+    /**
+     * @param rank The default rank to check
+     * @return Gets the configured rank tag for the specifed default rank
+     * See getRank(Player p) for online usage.
+     */
     public String getRankTag(String rank) {
         String result = "";
         DataManager dm = new DataManager("Config", "Configuration");
@@ -616,18 +634,30 @@ public class ClanUtil extends StringLibrary {
         return priority;
     }
 
+    /**
+     * @param clanID Target clan to check
+     * @return Gets the clan tag from the specified clan.
+     */
     public String getClanTag(String clanID) {
         DataManager dm = new DataManager(clanID, null);
         Config clan = dm.getFile(ConfigType.CLAN_FILE);
         return clan.getConfig().getString("name");
     }
 
+    /**
+     * @param color Target color in COLOR_NAME format
+     * @return Gets the specified color in color code format.
+     */
     public String getColor(String color) {
-        String result = "&f";
-        for (Color c : Color.values()) {
-            String cName = c.name().replace("_", "");
-            if (color.equalsIgnoreCase(cName)) {
-                result = c.toCode();
+        String result = "";
+        for (String c : color.split(",")) {
+            for (Color a : Color.values()) {
+                if (c.replace(",", "").matches(a.name().toLowerCase())) {
+                    result = result + a.toCode();
+                }
+                if (c.replace(",", "").matches(a.name())) {
+                    result = result + a.toCode();
+                }
             }
         }
         return result;
@@ -644,6 +674,10 @@ public class ClanUtil extends StringLibrary {
         }
     }
 
+    /**
+     * @param clanID Target clan to check
+     * @return Gets the list of allies for the specified clan.
+     */
     public List<String> getAllies(String clanID) {
         if (!HempfestClans.clanAllies.containsKey(clanID)) {
             DataManager dm = new DataManager(clanID, null);
@@ -653,6 +687,10 @@ public class ClanUtil extends StringLibrary {
         return HempfestClans.clanAllies.get(clanID);
     }
 
+    /**
+     * @param clanID Target clan to check
+     * @return Gets the list of enemies for the specified clan.
+     */
     public List<String> getEnemies(String clanID) {
         if (!HempfestClans.clanEnemies.containsKey(clanID)) {
             DataManager dm = new DataManager(clanID, null);
@@ -662,10 +700,20 @@ public class ClanUtil extends StringLibrary {
         return HempfestClans.clanEnemies.get(clanID);
     }
 
+    /**
+     * @param clanID Primary clan
+     * @param targetClanID Target clan
+     * @return Checks if the two clans are neutral in relation.
+     */
     public boolean isNeutral(String clanID, String targetClanID) {
         return !getAllies(clanID).contains(targetClanID) && !getEnemies(clanID).contains(targetClanID);
     }
 
+    /**
+     * @param clanID Primary clan
+     * @param targetClanID Target clan
+     * @return Gets the relation color in color code format for the two clans.
+     */
     public String clanRelationColor(String clanID, String targetClanID) {
         String result = "&f&o";
         ClanUtil clanUtil = new ClanUtil();
@@ -762,6 +810,10 @@ public class ClanUtil extends StringLibrary {
         p.sendMessage( " ");
     }
 
+    /**
+     * @param clanName Target clan to check
+     * @return Gets the ID of a specified clan by name.
+     */
     public String getClanID(String clanName) {
         String result = "N?A";
         for (String ID : getAllClanIDs()) {
@@ -774,6 +826,9 @@ public class ClanUtil extends StringLibrary {
         return result;
     }
 
+    /**
+     * @return Gets a list of all saved clans by name
+     */
     public List<String> getAllClanNames() {
         List<String> array = new ArrayList<>();
         for (String clan : getAllClanIDs()) {
@@ -784,6 +839,9 @@ public class ClanUtil extends StringLibrary {
         return array;
     }
 
+    /**
+     * @return Gets a list of all saved clans by clanID
+     */
     public List<String> getAllClanIDs() {
         DataManager dm = new DataManager();
         List<String> array = new ArrayList<>();
@@ -879,12 +937,21 @@ public class ClanUtil extends StringLibrary {
         return time <= on || time >= off;
     }
 
-
+    public HUID getId(String clanId) {
+        DataManager dm = new DataManager(clanId);
+        Config clan = dm.getFile(ConfigType.CLAN_FILE);
+        return clan.getConfig().getString("HUID") != null ? HUID.fromString(clan.getConfig().getString("HUID")) : null;
+    }
 
     public void getLeaderboard(Player p, int page) {
         HashMap<String, Double> clans = new HashMap<>();
+        Clan clan = null;
         for (String clanID : getAllClanIDs()) {
-            Clan clan = new Clan(clanID, null);
+            for (Clan c : getClans) {
+                if (c.getClanID().equals(clanID)) {
+                    clan = c;
+                }
+            }
             clans.put(getClanTag(clanID), clan.getPower());
         }
         PaginatedAssortment topClans = new PaginatedAssortment(p,null, clans);

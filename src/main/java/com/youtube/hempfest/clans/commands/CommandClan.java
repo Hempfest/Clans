@@ -1,6 +1,8 @@
 package com.youtube.hempfest.clans.commands;
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.metadata.ClanMeta;
+import com.youtube.hempfest.clans.metadata.PersistentClan;
 import com.youtube.hempfest.clans.util.Color;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
@@ -26,9 +28,9 @@ public class CommandClan extends BukkitCommand {
 
 
     public CommandClan() {
-        super("clans");
+        super("clan");
         setDescription("Base command for clans.");
-        setAliases(Arrays.asList("cl", "c"));
+        setAliases(Arrays.asList("clans", "cl", "c"));
         setPermission("clans.use");
     }
 
@@ -113,11 +115,28 @@ public class CommandClan extends BukkitCommand {
             if (args[0].equalsIgnoreCase("color")) {
                 arguments.clear();
                 for (Color color : Color.values()) {
-                    arguments.add(color.name());
+                    arguments.add(color.name().toLowerCase());
                 }
                 for (String a : arguments) {
-                    if (a.toLowerCase().startsWith(args[1].toLowerCase()))
+                    String arg = args[1];
+                    if (arg.endsWith(",")) {
+                        int stop = arg.length() - 1;
+                        arg = arg.substring(0, stop);
+                        result.add(arg + "," + a);
+                    }
+                    int len = arg.length() - 1;
+                    if (len > 4) {
+                        if (a.toLowerCase().startsWith(arg.substring(arg.length() - 4).toLowerCase())) {
+                            int stop = arg.length() - 2;
+                            int stop2 = arg.length() - 4;
+                            arg = arg.substring(0, stop);
+                            result.add(arg.substring(0, stop2) + a);
+                        }
+                    }
+                    if (a.toLowerCase().startsWith(args[1].toLowerCase())) {
                         result.add(a);
+                    }
+
                 }
                 return result;
             }
@@ -152,6 +171,7 @@ public class CommandClan extends BukkitCommand {
                 }
                 return result;
             }
+
             if (args[0].equalsIgnoreCase("enemy")) {
                 arguments.clear();
                 arguments.addAll(Clan.clanUtil.getAllClanNames());
@@ -190,6 +210,13 @@ public class CommandClan extends BukkitCommand {
          */
 
         if (length == 0) {
+            ClanMeta meta = PersistentClan.loadTempInstance(Clan.clanUtil.getId(Clan.clanUtil.getClan(p)));
+            if (meta != null) {
+                PersistentClan.deleteInstance(meta.getId());
+                lib.sendMessage(p, "&c&oInstance deleted");
+                return true;
+            }
+            lib.sendMessage(p, Clan.clanUtil.getId(Clan.clanUtil.getClan(p)).toString() + "<- ID");
             PaginatedAssortment helpAssist = new PaginatedAssortment(p, helpMenu());
             lib.sendMessage(p, "&r- Command help. (&7/clan #page&r)");
             helpAssist.setListTitle("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");

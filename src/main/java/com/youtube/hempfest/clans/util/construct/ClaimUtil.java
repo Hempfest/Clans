@@ -68,7 +68,6 @@ public class ClaimUtil extends StringLibrary {
 				if (getUtil().shieldStatus()) {
 					if (getUtil().overPowerBypass()) {
 						Claim claim = new Claim(getClaimID(p.getLocation()));
-						claim.loadPlayer(p);
 						Clan clan2 = claim.getClan();
 						if (clan.getPower() > clan2.getPower()) {
 

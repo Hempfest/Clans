@@ -17,6 +17,9 @@ public class DataManager {
     String name;
     String directory;
     public DataManager() {}
+    public DataManager(String name) {
+        this.name = name;
+    }
     public DataManager(String name, String directory) {
         this.name = name;
         this.directory = directory;
@@ -51,9 +54,13 @@ public class DataManager {
     }
 
     public void performResidentEvent(){
-        if (Claim.claimUtil.claimingAllowed()) {
-            AsyncClaimResident asyncClaimResident = new AsyncClaimResident();
-            asyncClaimResident.runTaskTimerAsynchronously(HempfestClans.getInstance(), 2L, 20L);
+        if (!Bukkit.getPluginManager().isPluginEnabled("ClansBorders")) {
+            if (Claim.claimUtil.claimingAllowed()) {
+                AsyncClaimResident asyncClaimResident = new AsyncClaimResident();
+                asyncClaimResident.runTaskTimerAsynchronously(HempfestClans.getInstance(), 2L, 20L);
+            }
+        } else {
+            Bukkit.getLogger().info("- Alternative claim notification system found. (Borders)");
         }
     }
 

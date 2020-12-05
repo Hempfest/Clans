@@ -1,9 +1,14 @@
 package com.youtube.hempfest.clans.util.construct;
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.metadata.ClanMeta;
+import com.youtube.hempfest.clans.metadata.PersistentClan;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.hempcore.library.HFEncoded;
+import com.youtube.hempfest.hempcore.library.HUID;
+import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
@@ -24,6 +29,12 @@ public class Clan {
 
 	public static ClanUtil clanUtil = new ClanUtil();
 
+	/**
+	 * @param clanID Create a clan object using a clanID
+	 *               See ClanUtil for getting id.
+	 *               If using a player object it is recommended to
+	 *               use the clanManager from main class HempfestClans.java
+	 */
 	public Clan(String clanID) {
 		this.clanID = clanID;
 	}
@@ -38,6 +49,9 @@ public class Clan {
 		this.clanID = clanID;
 	}
 
+	/**
+	 * @param loc Update the clans base to a specified location.
+	 */
 	public void updateBase(Location loc) {
 		Config clan = dm().getFile(ConfigType.CLAN_FILE);
 		double x = loc.getX();
@@ -57,12 +71,88 @@ public class Clan {
 		clan.saveConfig();
 		String format = String.format(HempfestClans.getMain().getConfig().getString("Response.base"), loc.getWorld().getName());
 		messageClan(format);
+		HUID id;
+		/*
+		try {
+			id = clanUtil.getId(clanID);
+			messageClan("Value already set retrieving..");
+			ClanMetaData meta = ClanMeta.loadTempInstance(id);
+			if (meta == null) {
+				meta = ClanMeta.loadSavedInstance(id);
+				messageClan(meta.getId().toString() + "<- Current ID");
+				for (String m : getMembers()) {
+					if (Bukkit.getPlayer(m) != null) {
+
+						try {
+							Bukkit.getPlayer(m).teleport((Location) new HFEncoded(meta.value()).deserialized());
+						} catch (IOException | ClassNotFoundException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		} catch (NullPointerException e) {
+			ClanMeta metaData = new ClanMeta(clanID);
+			metaData.setValue(getBase());
+			metaData.setDebugging(true);
+			metaData.saveMeta();
+		}
+
+		 */id = clanUtil.getId(clanID);
+		if (id != null) {
+
+			messageClan("Value already set retrieving..");
+			ClanMeta meta = PersistentClan.loadTempInstance(id);
+			if (meta == null) {
+				meta = PersistentClan.loadSavedInstance(id);
+				messageClan(meta.getId().toString() + "<- Current ID");
+				for (String m : getMembers()) {
+					if (Bukkit.getPlayer(m) != null) {
+
+						try {
+							Bukkit.getPlayer(m).teleport((Location) new HFEncoded(meta.value()).deserialized());
+						} catch (IOException | ClassNotFoundException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			} else {
+				messageClan(meta.getId().toString() + "<- Current ID (Temp)");
+				for (String m : getMembers()) {
+					if (Bukkit.getPlayer(m) != null) {
+
+						try {
+							Bukkit.getPlayer(m).teleport((Location) new HFEncoded(meta.value()).deserialized());
+						} catch (IOException | ClassNotFoundException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+		} else {
+			PersistentClan metaData = new PersistentClan(clanID);
+			metaData.setValue(getBase());
+			metaData.setDebugging(true);
+			metaData.storeTemp();
+			metaData.saveMeta();
+			for (HUID id2 : PersistentClan.getMetaDataContainer()) {
+				Bukkit.getServer().getLogger().info(id2.toString());
+			}
+		}
+
+
 	}
 
+	/**
+	 * @return Gets the clanID stored within the clan object.
+	 */
 	public String getClanID() {
 		return clanID;
 	}
 
+	/**
+	 * @return Gets the location of the clans base.
+	 */
 	public Location getBase() {
 		Config clan = dm().getFile(ConfigType.CLAN_FILE);
 		try {
@@ -82,6 +172,9 @@ public class Clan {
 		}
 	}
 
+	/**
+	 * @return Get the clans information list as an array.
+	 */
 	public String[] getClanInfo() {
 
 		Config clan = dm().getFile(ConfigType.CLAN_FILE);
@@ -137,6 +230,9 @@ public class Clan {
 		return array.toArray(new String[0]);
 	}
 
+	/**
+	 * @param newPassword Change the clans password to a new one of specification.
+	 */
 	public void changePassword(String newPassword) {
 		Config c = dm().getFile(ConfigType.CLAN_FILE);
 		if (newPassword.equals("empty")) {
@@ -150,6 +246,9 @@ public class Clan {
 		messageClan(String.format(HempfestClans.getMain().getConfig().getString("Response.password"), newPassword));
 	}
 
+	/**
+	 * @param newTag Change the clans name tag to a new one of specification.
+	 */
 	public void changeTag(String newTag) {
 		Config c = dm().getFile(ConfigType.CLAN_FILE);
 		c.getConfig().set("name", newTag);
@@ -158,6 +257,11 @@ public class Clan {
 		messageClan(format);
 	}
 
+
+	/**
+	 * @param newColor Change the clans color to a new one of specification using
+	 *                 minecraft color codes by name.
+	 */
 	public void changeColor(String newColor) {
 		Config c = dm().getFile(ConfigType.CLAN_FILE);
 		c.getConfig().set("name-color", newColor);
@@ -165,11 +269,17 @@ public class Clan {
 		messageClan(clanUtil.getColor(newColor) + "The clan name color has been changed.");
 	}
 
+	/**
+	 * @return Gets the clan objects clan tag
+	 */
 	public String getClanTag() {
 		Config c = dm().getFile(ConfigType.CLAN_FILE);
 		return c.getConfig().getString("name");
 	}
 
+	/**
+	 * @return Gets the clan objects clan tag color
+	 */
 	public String getChatColor() {
 		Config c = dm().getFile(ConfigType.CLAN_FILE);
 		if (c.getConfig().getString("name-color") == null) {
@@ -178,12 +288,18 @@ public class Clan {
 		return c.getConfig().getString("name-color");
 	}
 
+	/**
+	 * @return Gets the member list of the clan object.
+	 */
 	public String[] getMembers() {
 		Config c = dm().getFile(ConfigType.CLAN_FILE);
 		List<String> array = new ArrayList<>(c.getConfig().getStringList("members"));
 		return array.toArray(new String[0]);
 	}
 
+	/**
+	 * @param message Send a message of specification to the clan
+	 */
 	public void messageClan(String message) {
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			if (clanUtil.getClan(p) != null && clanUtil.getClan(p).equals(clanID)) {
@@ -192,6 +308,10 @@ public class Clan {
 		}
 	}
 
+	/**
+	 * @param amount Format a number to ##.## format
+	 * @return Gets the formatted result as a double.
+	 */
 	public double format(String amount) {
 		// Assigning value to BigDecimal object b1
 		BigDecimal b1 = new BigDecimal(amount);
@@ -201,6 +321,9 @@ public class Clan {
 		return b2.doubleValue();
 	}
 
+	/**
+	 * @param amount Give the clan a specified amount of power.
+	 */
 	public void givePower(double amount) {
 		Config c = dm().getFile(ConfigType.CLAN_FILE);
 		if (!c.getConfig().isDouble("bonus")) {
@@ -214,6 +337,9 @@ public class Clan {
 		System.out.println(String.format("[%s] - Gave " + '"' + amount + '"' + " power to clan " + '"' + clanID + '"', HempfestClans.getInstance().getDescription().getName()));
 	}
 
+	/**
+	 * @param amount Take a specified amount of power away from the clan.
+	 */
 	public void takePower(double amount) {
 		Config c = dm().getFile(ConfigType.CLAN_FILE);
 		if (!c.getConfig().isDouble("bonus")) {
@@ -227,6 +353,9 @@ public class Clan {
 		System.out.println(String.format("[%s] - Took " + '"' + amount + '"' + " power from clan " + '"' + clanID + '"', HempfestClans.getInstance().getDescription().getName()));
 	}
 
+	/**
+	 * @return Gets the clans power level in double format.
+	 */
 	public double getPower() {
 		Config c = dm().getFile(ConfigType.CLAN_FILE);
 		double result = 0.0;
@@ -238,6 +367,9 @@ public class Clan {
 		return result + bonus;
 	}
 
+	/**
+	 * @return Gets a list of all owned clan chunks by claimID.
+	 */
 	public String[] getOwnedClaims() {
 		DataManager dm = new DataManager("Regions", "Configuration");
 		Config regions = dm.getFile(ConfigType.MISC_FILE);

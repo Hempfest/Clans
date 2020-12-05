@@ -26,15 +26,20 @@ public class Claim {
 		this.claimID = claimID;
 	}
 
+	/**
+	 * @param p variable constructor access is deprecated and replaced by
+	 *          {@link #Claim(String claimID)}
+	 * @deprecated As of version 2.0.6
+	 */
+	@Deprecated
 	public Claim(String claimID, Player p) {
 		this.p = p;
 		this.claimID = claimID;
 	}
 
-	public void loadPlayer(Player p) {
-		this.p = p;
-	}
-
+	/**
+	 * @return Gets a new clan object regarding properties of the claim owner.
+	 */
 	public Clan getClan() {
 		Clan clan = null;
 		for (Clan clans : Clan.clanUtil.getClans) {
@@ -44,10 +49,16 @@ public class Claim {
 		return clan;
 	}
 
+	/**
+	 * @return Gets the claimID from the claim object
+	 */
 	public String getClaimID() {
 		return this.claimID;
 	}
 
+	/**
+	 * @return Gets the clanID of the claim object.
+	 */
 	public String getOwner() {
 		FileConfiguration d = this.regions.getConfig();
 		String owner = "";
@@ -60,10 +71,16 @@ public class Claim {
 		return owner;
 	}
 
+	/**
+	 * @return Gets the specific chunk of the claim location.
+	 */
 	public Chunk getChunk() {
 		return getLocation().getChunk();
 	}
 
+	/**
+	 * @return Gets the centered location of the claim objects chunk.
+	 */
 	public Location getLocation() {
 		String[] ID = claimUtil.getClaimInfo(this.claimID);
 		int[] pos = claimUtil.getClaimPosition(ID);

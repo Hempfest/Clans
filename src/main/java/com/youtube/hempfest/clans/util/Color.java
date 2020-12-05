@@ -7,6 +7,7 @@ public enum Color {
     DARK_GREEN("&2"),
     DARK_AQUA("&3"),
     DARK_RED("&4"),
+    DARK_PURPLE("&5"),
     GOLD("&6"),
     GRAY("&7"),
     DARK_GRAY("&8"),

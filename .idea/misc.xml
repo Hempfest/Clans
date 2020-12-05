@@ -5,6 +5,9 @@
       <item index="0" class="java.lang.String" itemvalue="org.bukkit.event.EventHandler" />
     </list>
   </component>
+  <component name="JavadocGenerationManager">
+    <option name="OUTPUT_DIRECTORY" value="$USER_HOME$/Documents/ClansDocs" />
+  </component>
   <component name="MavenProjectsManager">
     <option name="originalFiles">
       <list>
