@@ -1,6 +1,7 @@
 package com.youtube.hempfest.clans.metadata;
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
@@ -52,8 +53,8 @@ public class PersistentClan extends ClanMeta implements Serializable {
 	}
 
 	@Override
-	public String getClanId() {
-		return clanID;
+	public Clan getClan() {
+		return Clan.clanUtil.getClan(clanID);
 	}
 
 	public void setValue(Object o) {
@@ -87,14 +88,14 @@ public class PersistentClan extends ClanMeta implements Serializable {
 				metaData.put(huid, instance);
 				persistentClan = instance;
 			} catch (IOException | ClassNotFoundException e) {
-				Bukkit.getServer().getLogger().severe("No instance to load was found under this HUID.");
+				Bukkit.getServer().getLogger().severe("[Clans] - Instance not loadable. One or more values changed or object location changed.");
 				e.printStackTrace();
 			}
 		} else {
-			Bukkit.getServer().getLogger().severe("No saved meta data can be found. Are you sure you saved it?");
+			Bukkit.getServer().getLogger().severe("[Clans] - No saved meta data can be found. Are you sure you saved it?");
 		}
 		if (persistentClan == null) {
-			Bukkit.getServer().getLogger().severe("No instance to load was found under this HUID.");
+			Bukkit.getServer().getLogger().severe("[Clans] - No instance to load was found under this HUID.");
 		}
 		return persistentClan;
 	}
@@ -113,7 +114,7 @@ public class PersistentClan extends ClanMeta implements Serializable {
 		Arrays.stream(getMetaDataContainer()).forEach(I -> {
 			if (I.toString().equals(huid.toString())) {
 				Bukkit.getServer().getLogger().info("[Clans] - Instance for ID #" + I.toString() + " deleted.");
-				DataManager cm = new DataManager(metaData.get(I).getClanId());
+				DataManager cm = new DataManager(metaData.get(I).getClan().getClanID());
 				Config clan = cm.getFile(ConfigType.CLAN_FILE);
 				clan.getConfig().set("HUID", null);
 				clan.saveConfig();

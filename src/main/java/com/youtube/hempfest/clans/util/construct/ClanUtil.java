@@ -674,6 +674,16 @@ public class ClanUtil extends StringLibrary {
         }
     }
 
+    public Clan getClan(String clanID) {
+        Clan clan = null;
+        for (Clan c : getClans) {
+            if (c.getClanID().equals(clanID)) {
+                clan = c;
+            }
+        }
+        return clan;
+    }
+
     /**
      * @param clanID Target clan to check
      * @return Gets the list of allies for the specified clan.
