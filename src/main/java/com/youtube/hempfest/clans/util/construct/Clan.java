@@ -1,14 +1,9 @@
 package com.youtube.hempfest.clans.util.construct;
 
 import com.youtube.hempfest.clans.HempfestClans;
-import com.youtube.hempfest.clans.metadata.ClanMeta;
-import com.youtube.hempfest.clans.metadata.PersistentClan;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.hempcore.library.HFEncoded;
-import com.youtube.hempfest.hempcore.library.HUID;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
@@ -71,76 +66,6 @@ public class Clan {
 		clan.saveConfig();
 		String format = String.format(HempfestClans.getMain().getConfig().getString("Response.base"), loc.getWorld().getName());
 		messageClan(format);
-		HUID id;
-		/*
-		try {
-			id = clanUtil.getId(clanID);
-			messageClan("Value already set retrieving..");
-			ClanMetaData meta = ClanMeta.loadTempInstance(id);
-			if (meta == null) {
-				meta = ClanMeta.loadSavedInstance(id);
-				messageClan(meta.getId().toString() + "<- Current ID");
-				for (String m : getMembers()) {
-					if (Bukkit.getPlayer(m) != null) {
-
-						try {
-							Bukkit.getPlayer(m).teleport((Location) new HFEncoded(meta.value()).deserialized());
-						} catch (IOException | ClassNotFoundException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		} catch (NullPointerException e) {
-			ClanMeta metaData = new ClanMeta(clanID);
-			metaData.setValue(getBase());
-			metaData.setDebugging(true);
-			metaData.saveMeta();
-		}
-
-		 */id = clanUtil.getId(clanID);
-		if (id != null) {
-
-			messageClan("Value already set retrieving..");
-			ClanMeta meta = PersistentClan.loadTempInstance(id);
-			if (meta == null) {
-				meta = PersistentClan.loadSavedInstance(id);
-				messageClan(meta.getId().toString() + "<- Current ID");
-				for (String m : getMembers()) {
-					if (Bukkit.getPlayer(m) != null) {
-
-						try {
-							Bukkit.getPlayer(m).teleport((Location) new HFEncoded(meta.value()).deserialized());
-						} catch (IOException | ClassNotFoundException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			} else {
-				messageClan(meta.getId().toString() + "<- Current ID (Temp)");
-				for (String m : getMembers()) {
-					if (Bukkit.getPlayer(m) != null) {
-
-						try {
-							Bukkit.getPlayer(m).teleport((Location) new HFEncoded(meta.value()).deserialized());
-						} catch (IOException | ClassNotFoundException e) {
-							e.printStackTrace();
-						}
-					}
-				}
-			}
-		} else {
-			PersistentClan metaData = new PersistentClan(clanID);
-			metaData.setValue(getBase());
-			metaData.setDebugging(true);
-			metaData.storeTemp();
-			metaData.saveMeta();
-			for (HUID id2 : PersistentClan.getMetaDataContainer()) {
-				Bukkit.getServer().getLogger().info(id2.toString());
-			}
-		}
-
-
 	}
 
 	/**

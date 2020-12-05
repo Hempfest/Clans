@@ -1,8 +1,6 @@
 package com.youtube.hempfest.clans.commands;
 
 import com.youtube.hempfest.clans.HempfestClans;
-import com.youtube.hempfest.clans.metadata.ClanMeta;
-import com.youtube.hempfest.clans.metadata.PersistentClan;
 import com.youtube.hempfest.clans.util.Color;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
@@ -12,6 +10,7 @@ import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.clans.util.events.SubCommandEvent;
 import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -208,15 +207,13 @@ public class CommandClan extends BukkitCommand {
         //  /\ /\ /\ /\ /\ /\
         //
          */
+        SubCommandEvent event = new SubCommandEvent(p, args);
+        Bukkit.getPluginManager().callEvent(event);
+        if (event.isCommand()) {
+            return event.isCommand();
+        }
 
         if (length == 0) {
-            ClanMeta meta = PersistentClan.loadTempInstance(Clan.clanUtil.getId(Clan.clanUtil.getClan(p)));
-            if (meta != null) {
-                PersistentClan.deleteInstance(meta.getId());
-                lib.sendMessage(p, "&c&oInstance deleted");
-                return true;
-            }
-            lib.sendMessage(p, Clan.clanUtil.getId(Clan.clanUtil.getClan(p)).toString() + "<- ID");
             PaginatedAssortment helpAssist = new PaginatedAssortment(p, helpMenu());
             lib.sendMessage(p, "&r- Command help. (&7/clan #page&r)");
             helpAssist.setListTitle("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
