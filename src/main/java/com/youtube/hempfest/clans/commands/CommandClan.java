@@ -96,7 +96,7 @@ public class CommandClan extends BukkitCommand {
         if (args.length == 1) {
             arguments.clear();
             arguments.addAll(Arrays.asList("create", "color", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
-            TabInsertEvent event = new TabInsertEvent();
+            TabInsertEvent event = new TabInsertEvent(args);
             Bukkit.getPluginManager().callEvent(event);
             arguments.addAll(event.getArgs(1));
             for (String a : arguments) {
@@ -106,9 +106,14 @@ public class CommandClan extends BukkitCommand {
             return result;
         }
         if (args.length == 2) {
-            TabInsertEvent event = new TabInsertEvent();
+            TabInsertEvent event = new TabInsertEvent(args);
             Bukkit.getPluginManager().callEvent(event);
             arguments.addAll(event.getArgs(2));
+
+                for (String t : event.getArgs(2)) {
+                    if (t.toLowerCase().startsWith(args[1].toLowerCase()))
+                        result.add(t);
+                }
             if (args[0].equalsIgnoreCase("unclaim")) {
                 arguments.clear();
                 arguments.add("all");
@@ -166,11 +171,17 @@ public class CommandClan extends BukkitCommand {
                 }
                 return result;
             }
+            return result;
         }
         if (args.length == 3) {
-            TabInsertEvent event = new TabInsertEvent();
+            TabInsertEvent event = new TabInsertEvent(args);
             Bukkit.getPluginManager().callEvent(event);
             arguments.addAll(event.getArgs(3));
+
+            for (String t : event.getArgs(3)) {
+                if (t.toLowerCase().startsWith(args[2].toLowerCase()))
+                    result.add(t);
+            }
             if (args[0].equalsIgnoreCase("ally")) {
                 arguments.clear();
                 arguments.addAll(Clan.clanUtil.getAllClanNames());
@@ -190,6 +201,7 @@ public class CommandClan extends BukkitCommand {
                 }
                 return result;
             }
+            return result;
         }
         return null;
     }

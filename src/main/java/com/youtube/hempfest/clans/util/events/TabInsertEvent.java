@@ -18,6 +18,12 @@ public class TabInsertEvent extends ClanEventBuilder {
 
 	private final List<String> args3 = new ArrayList<>();
 
+	private final String[] commandArgs;
+
+	public TabInsertEvent(String[] commandArgs) {
+		this.commandArgs = commandArgs;
+	}
+
 	@Override
 	public HandlerList getHandlers() {
 		return handlers;
@@ -35,6 +41,10 @@ public class TabInsertEvent extends ClanEventBuilder {
 
 	public static HandlerList getHandlerList() {
 		return handlers;
+	}
+
+	public String[] getCommandArgs() {
+		return commandArgs;
 	}
 
 	public List<String> getArgs(int index) {

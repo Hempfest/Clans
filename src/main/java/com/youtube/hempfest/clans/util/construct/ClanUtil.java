@@ -62,6 +62,7 @@ public class ClanUtil extends StringLibrary {
         fc.set("members", members);
         fc.set("owner", p.getName());
         clanFile.saveConfig();
+        getClans.add(new Clan(newID));
     } else {
         sendMessage(p, alreadyInClan());
     }
@@ -82,12 +83,13 @@ public class ClanUtil extends StringLibrary {
                 regions.saveConfig();
                 String clanName = clan.getConfig().getString("name");
                 clan.delete();
+                HempfestClans.clanEnemies.remove(Clan.clanUtil.getClan(p));
+                HempfestClans.clanAllies.remove(Clan.clanUtil.getClan(p));
+                getClans.remove(getClan(Clan.clanUtil.getClan(p)));
                 user.getConfig().set("Clan", null);
                 user.saveConfig();
                 String format = String.format(HempfestClans.getMain().getConfig().getString("Response.deletion"), clanName);
                 Bukkit.broadcastMessage(color(getPrefix() + " " + format));
-                HempfestClans.clanEnemies.remove(Clan.clanUtil.getClan(p));
-                HempfestClans.clanAllies.remove(Clan.clanUtil.getClan(p));
                 HempfestClans.playerClan.remove(p.getUniqueId());
                 break;
             case "Admin":

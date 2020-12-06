@@ -116,6 +116,7 @@ public class HempfestClans extends JavaPlugin {
 			getLogger().info("- Query success! All found meta cached. (" + PersistentClan.getMetaDataContainer().length + ")");
 		} catch (NullPointerException e) {
 			getLogger().info("- Process failed. No directory found to process.");
+			getLogger().info("- Store a new instance of data for query to take effect on enable.");
 		}
 	}
 
