@@ -23,12 +23,12 @@ _**Table of contents:**_
 <dependency>
     <groupId>com.github.Hempfest</groupId>
     <artifactId>HempCore</artifactId>
-    <version>1.0.0</version>
+    <version>1.0.6</version>
 </dependency>
 <dependency>
     <groupId>com.github.Hempfest</groupId>
     <artifactId>Clans</artifactId>
-    <version>2.0.7</version>
+    <version>2.0.8-R2</version>
 </dependency>
 ```
 **Event List**
