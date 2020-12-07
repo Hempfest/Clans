@@ -54,7 +54,7 @@ public class DataManager {
     }
 
     public void performResidentEvent(){
-        if (!Bukkit.getPluginManager().isPluginEnabled("ClansBorders")) {
+        if (!Bukkit.getPluginManager().isPluginEnabled("Borders")) {
             if (Claim.claimUtil.claimingAllowed()) {
                 AsyncClaimResident asyncClaimResident = new AsyncClaimResident();
                 asyncClaimResident.runTaskTimerAsynchronously(HempfestClans.getInstance(), 2L, 20L);
