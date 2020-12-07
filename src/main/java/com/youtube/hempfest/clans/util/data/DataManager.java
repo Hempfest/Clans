@@ -60,7 +60,7 @@ public class DataManager {
                 asyncClaimResident.runTaskTimerAsynchronously(HempfestClans.getInstance(), 2L, 20L);
             }
         } else {
-            Bukkit.getLogger().info("- Alternative claim notification system found. (Borders)");
+            Bukkit.getLogger().info("[Clans] - Alternative claim notification system found. (Borders)");
         }
     }
 

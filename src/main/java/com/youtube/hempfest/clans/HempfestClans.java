@@ -110,13 +110,20 @@ public class HempfestClans extends JavaPlugin {
 		}
 		registerMetrics(9234);
 		getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+		boolean success;
 		try {
 			getLogger().info("- Attempting automatic clan meta query process..");
 			PersistentClan.querySaved();
-			getLogger().info("- Query success! All found meta cached. (" + PersistentClan.getMetaDataContainer().length + ")");
+			success = true;
 		} catch (NullPointerException e) {
 			getLogger().info("- Process failed. No directory found to process.");
 			getLogger().info("- Store a new instance of data for query to take effect on enable.");
+			success = false;
+		}
+		if (success) {
+			getLogger().info("- Query success! All found meta cached. (" + PersistentClan.getMetaDataContainer().length + ")");
+		} else {
+			getLogger().info("- Query failed! (SEE ABOVE FOR INFO)");
 		}
 	}
 
