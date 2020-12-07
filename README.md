@@ -32,6 +32,6 @@ _**Table of contents:**_
 <dependency>
     <groupId>com.github.Hempfest</groupId>
     <artifactId>Clans</artifactId>
-    <version>2.0.8-R2</version>
+    <version>2.0.8-R4</version>
 </dependency>
 ```
