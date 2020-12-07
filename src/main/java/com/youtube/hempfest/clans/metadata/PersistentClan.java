@@ -71,6 +71,12 @@ public class PersistentClan extends ClanMeta implements Serializable {
 			e.printStackTrace();
 		}
 	}
+
+	/**
+	 * Save any specified object to the meta data large container.
+	 * @param o The object to insert
+	 * @param index Insert an object into the value array at the given position.
+	 */
 	public void setValue(Object o, int index) {
 		try {
 			this.values.add(index, new HFEncoded(o).serialize());

@@ -1,6 +1,7 @@
 package com.youtube.hempfest.clans.util.construct;
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.metadata.PersistentClan;
 import com.youtube.hempfest.clans.util.Color;
 import com.youtube.hempfest.clans.util.RankPriority;
 import com.youtube.hempfest.clans.util.StringLibrary;
@@ -9,6 +10,7 @@ import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
 import com.youtube.hempfest.hempcore.formatting.string.RandomID;
+import com.youtube.hempfest.hempcore.library.HUID;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -85,6 +87,11 @@ public class ClanUtil extends StringLibrary {
                 HempfestClans.clanEnemies.remove(Clan.clanUtil.getClan(p));
                 HempfestClans.clanAllies.remove(Clan.clanUtil.getClan(p));
                 getClans.remove(getClan(Clan.clanUtil.getClan(p)));
+                if (Arrays.asList(PersistentClan.getClanContainer(Clan.clanUtil.getClan(p))).size() > 0) {
+                    for (HUID md : PersistentClan.getClanContainer(Clan.clanUtil.getClan(p))) {
+                        PersistentClan.deleteInstance(md);
+                    }
+                }
                 user.getConfig().set("Clan", null);
                 user.saveConfig();
                 String format = String.format(HempfestClans.getMain().getConfig().getString("Response.deletion"), clanName);
