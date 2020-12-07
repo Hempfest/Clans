@@ -83,15 +83,19 @@ public class ClanUtil extends StringLibrary {
                 regions.getConfig().set(getClan(p), null);
                 regions.saveConfig();
                 String clanName = clan.getConfig().getString("name");
+                try {
+                    if (Arrays.asList(PersistentClan.getClanContainer(Clan.clanUtil.getClan(p))).size() > 0) {
+                        for (HUID md : PersistentClan.getClanContainer(Clan.clanUtil.getClan(p))) {
+                            PersistentClan.deleteInstance(md);
+                        }
+                    }
+                } catch (NullPointerException e) {
+                    Bukkit.getLogger().severe("- Unable to delete meta container, no/invalid HUID link(s) found.");
+                }
                 clan.delete();
                 HempfestClans.clanEnemies.remove(Clan.clanUtil.getClan(p));
                 HempfestClans.clanAllies.remove(Clan.clanUtil.getClan(p));
                 getClans.remove(getClan(Clan.clanUtil.getClan(p)));
-                if (Arrays.asList(PersistentClan.getClanContainer(Clan.clanUtil.getClan(p))).size() > 0) {
-                    for (HUID md : PersistentClan.getClanContainer(Clan.clanUtil.getClan(p))) {
-                        PersistentClan.deleteInstance(md);
-                    }
-                }
                 user.getConfig().set("Clan", null);
                 user.saveConfig();
                 String format = String.format(HempfestClans.getMain().getConfig().getString("Response.deletion"), clanName);
