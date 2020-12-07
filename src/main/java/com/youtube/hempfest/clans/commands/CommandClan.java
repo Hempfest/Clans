@@ -433,6 +433,7 @@ public class CommandClan extends BukkitCommand {
                 return true;
             }
             try {
+
                 int page = Integer.parseInt(args0);
                 PaginatedAssortment helpAssist = new PaginatedAssortment(p, helpMenu());
                 lib.sendMessage(p, "&r- Command help. (&7/clan #page&r)");

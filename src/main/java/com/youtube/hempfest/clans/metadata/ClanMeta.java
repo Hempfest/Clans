@@ -10,6 +10,8 @@ public abstract class ClanMeta implements Serializable {
 
 	public abstract String value();
 
+	public abstract String value(int index);
+
 	public abstract Clan getClan();
 
 }

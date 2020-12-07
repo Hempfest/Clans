@@ -29,7 +29,9 @@ public class PersistentClan extends ClanMeta implements Serializable {
 
 	private final PersistentClan instance;
 
-	private boolean debugging;
+	private static boolean debugging;
+
+	private final List<String> values = new ArrayList<>();
 
 	public PersistentClan(String clanID) {
 		this.clanID = clanID;
@@ -48,6 +50,11 @@ public class PersistentClan extends ClanMeta implements Serializable {
 	}
 
 	@Override
+	public String value(int index) {
+		return values.get(index);
+	}
+
+	@Override
 	public Clan getClan() {
 		return Clan.clanUtil.getClan(clanID);
 	}
@@ -59,6 +66,14 @@ public class PersistentClan extends ClanMeta implements Serializable {
 	public void setValue(Object o) {
 		try {
 			this.value = new HFEncoded(o).serialize();
+		} catch (IOException e) {
+			Bukkit.getServer().getLogger().severe("Unable to parse object.");
+			e.printStackTrace();
+		}
+	}
+	public void setValue(Object o, int index) {
+		try {
+			this.values.add(index, new HFEncoded(o).serialize());
 		} catch (IOException e) {
 			Bukkit.getServer().getLogger().severe("Unable to parse object.");
 			e.printStackTrace();
@@ -97,7 +112,7 @@ public class PersistentClan extends ClanMeta implements Serializable {
 	 * @param b true = console information displays every action used.
 	 */
 	public void setDebugging(boolean b) {
-		this.debugging = b;
+		debugging = b;
 	}
 
 	/**
@@ -122,7 +137,7 @@ public class PersistentClan extends ClanMeta implements Serializable {
 			Bukkit.getServer().getLogger().severe("[Clans] - No saved meta data can be found. Are you sure you saved it?");
 		}
 		if (persistentClan == null) {
-			Bukkit.getServer().getLogger().severe("[Clans] - No instance to load was found under this HUID.");
+			Bukkit.getServer().getLogger().severe("[Clans] - Failed attempt at loading non existent instance of HUID link");
 		}
 		return persistentClan;
 	}
@@ -149,12 +164,14 @@ public class PersistentClan extends ClanMeta implements Serializable {
 	public static void deleteInstance(HUID huid) {
 		Arrays.stream(getMetaDataContainer()).forEach(I -> {
 			if (I.toString().equals(huid.toString())) {
-				Bukkit.getServer().getLogger().info("[Clans] - Instance for ID #" + I.toString() + " deleted.");
 				DataManager cm = new DataManager(metaDataContainer.get(I).getClan().getClanID());
 				Config clan = cm.getFile(ConfigType.CLAN_FILE);
 				if (huid.toString().equals(clan.getConfig().getString("NO-ID"))) {
 					clan.getConfig().set("NO-ID", null);
 					clan.saveConfig();
+				}
+				if (!clan.getConfig().isConfigurationSection("Data")) {
+					throw new NullPointerException("[Clans] - No data is currently saved.");
 				}
 				for (String d : clan.getConfig().getConfigurationSection("Data").getKeys(false)) {
 					if (d.equals(huid.toString())) {
@@ -166,6 +183,9 @@ public class PersistentClan extends ClanMeta implements Serializable {
 				DataManager dm = new DataManager(I.toString(), "Meta");
 				Config meta = dm.getFile(ConfigType.MISC_FILE);
 				meta.delete();
+				if (debugging) {
+					Bukkit.getServer().getLogger().info("[Clans] - Instance for ID #" + I.toString() + " deleted.");
+				}
 				metaDataContainer.remove(I);
 			}
 		});
@@ -190,7 +210,9 @@ public class PersistentClan extends ClanMeta implements Serializable {
 	 */
 	public void storeTemp() {
 		metaDataContainer.put(huid, instance);
-		Bukkit.getServer().getLogger().info("[Clans] - Instance for ID #" + huid.toString() + " cached.");
+		if (debugging) {
+			Bukkit.getServer().getLogger().info("[Clans] - Instance for ID #" + instance.huid.toString() + " cached.");
+		}
 	}
 
 	/**
@@ -201,7 +223,7 @@ public class PersistentClan extends ClanMeta implements Serializable {
 		Config clan = cm.getFile(ConfigType.CLAN_FILE);
 		clan.getConfig().set("NO-ID", instance.huid.toString());
 		clan.saveConfig();
-		DataManager dm = new DataManager(huid.toString(), "Meta");
+		DataManager dm = new DataManager(instance.huid.toString(), "Meta");
 		Config meta = dm.getFile(ConfigType.MISC_FILE);
 		try {
 			meta.getConfig().set("Data", new HFEncoded(instance).serialize());
