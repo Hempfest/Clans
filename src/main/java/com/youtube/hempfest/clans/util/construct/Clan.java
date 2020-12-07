@@ -4,6 +4,7 @@ import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.hempcore.library.HUID;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
@@ -42,6 +43,30 @@ public class Clan {
 	@Deprecated
 	public Clan(String clanID, Player p) {
 		this.clanID = clanID;
+	}
+
+	/**
+	 * @return A persistent data id.
+	 */
+	public HUID getId() {
+		DataManager dm = new DataManager(clanID);
+		Config clan = dm.getFile(ConfigType.CLAN_FILE);
+		return clan.getConfig().getString("NO-ID") != null ? HUID.fromString(clan.getConfig().getString("NO-ID")) : null;
+	}
+
+	/**
+	 * @return A persistent data id by set delimiter
+	 */
+	public HUID getId(int id) {
+		DataManager dm = new DataManager(clanID);
+		Config clan = dm.getFile(ConfigType.CLAN_FILE);
+		HUID result = null;
+		for (String d : clan.getConfig().getConfigurationSection("Data").getKeys(false)) {
+			if (clan.getConfig().getInt("Data." + d) == id) {
+				result = HUID.fromString(d);
+			}
+		}
+		return result;
 	}
 
 	/**

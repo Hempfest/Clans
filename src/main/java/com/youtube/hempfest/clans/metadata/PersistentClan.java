@@ -19,9 +19,9 @@ import org.bukkit.Bukkit;
 
 public class PersistentClan extends ClanMeta implements Serializable {
 
-	private static final Map<HUID, ClanMeta> metaData = new HashMap<>();
+	private static final Map<HUID, ClanMeta> metaDataContainer = new HashMap<>();
 
-	private String clanID;
+	private final String clanID;
 
 	private final HUID huid;
 
@@ -35,11 +35,6 @@ public class PersistentClan extends ClanMeta implements Serializable {
 		this.clanID = clanID;
 		instance = this;
 		huid = HUID.randomID();
-	}
-
-	public PersistentClan(HUID huid) {
-		this.huid = huid;
-		instance = this;
 	}
 
 	@Override
@@ -57,6 +52,10 @@ public class PersistentClan extends ClanMeta implements Serializable {
 		return Clan.clanUtil.getClan(clanID);
 	}
 
+	/**
+	 * Save any specified object to the meta data.
+	 * @param o The object data to be stored within the container.
+	 */
 	public void setValue(Object o) {
 		try {
 			this.value = new HFEncoded(o).serialize();
@@ -66,18 +65,46 @@ public class PersistentClan extends ClanMeta implements Serializable {
 		}
 	}
 
+	/**
+	 * Get all currently loaded meta id's
+	 * @return Gets an array of all loaded data id's
+	 */
 	public static HUID[] getMetaDataContainer() {
 		List<HUID> array = new ArrayList<>();
-		for (Map.Entry<HUID, ClanMeta> entry : metaData.entrySet()) {
+		for (Map.Entry<HUID, ClanMeta> entry : metaDataContainer.entrySet()) {
 			array.add(entry.getKey());
 		}
 		return array.toArray(new HUID[0]);
 	}
 
+	/**
+	 * Get all currently loaded meta id's by clan delimiter
+	 * @param clanID The clan to query
+	 * @return Gets an array of all loaded data id's by clan delimiter
+	 */
+	public static HUID[] getClanContainer(String clanID) {
+		List<HUID> array = new ArrayList<>();
+		for (HUID id : getMetaDataContainer()) {
+			ClanMeta meta = loadTempInstance(id);
+			if (meta.getClan().getClanID().equals(clanID)) {
+				array.add(id);
+			}
+		}
+		return array.toArray(new HUID[0]);
+	}
+
+	/**
+	 * @param b true = console information displays every action used.
+	 */
 	public void setDebugging(boolean b) {
 		this.debugging = b;
 	}
 
+	/**
+	 * Load an instance of meta data from hard storage.
+	 * @param huid The id to load from storage.
+	 * @return Gets a saved data instance
+	 */
 	public static PersistentClan loadSavedInstance(HUID huid) {
 		DataManager dm = new DataManager(huid.toString(), "Meta");
 		Config meta = dm.getFile(ConfigType.MISC_FILE);
@@ -85,7 +112,7 @@ public class PersistentClan extends ClanMeta implements Serializable {
 		if (meta.exists()) {
 			try {
 				PersistentClan instance = (PersistentClan) new HFEncoded(meta.getConfig().getString("Data")).deserialized();
-				metaData.put(huid, instance);
+				metaDataContainer.put(huid, instance);
 				persistentClan = instance;
 			} catch (IOException | ClassNotFoundException e) {
 				Bukkit.getServer().getLogger().severe("[Clans] - Instance not loadable. One or more values changed or object location changed.");
@@ -100,51 +127,79 @@ public class PersistentClan extends ClanMeta implements Serializable {
 		return persistentClan;
 	}
 
+	/**
+	 * Load an instance of meta data from cache
+	 * @param huid The id to load from cache
+	 * @return Gets a cached data instance.
+	 */
 	public static ClanMeta loadTempInstance(HUID huid) {
 		ClanMeta meta = null;
 		for (HUID entry : getMetaDataContainer()) {
 			if (entry.toString().equals(huid.toString())) {
-				meta = metaData.get(entry);
+				meta = metaDataContainer.get(entry);
 			}
 		}
 		return meta;
 	}
 
+	/**
+	 * Delete an instance of meta data from both cache and hard storage.
+	 * @param huid The id to delete from cache/storage
+	 */
 	public static void deleteInstance(HUID huid) {
 		Arrays.stream(getMetaDataContainer()).forEach(I -> {
 			if (I.toString().equals(huid.toString())) {
 				Bukkit.getServer().getLogger().info("[Clans] - Instance for ID #" + I.toString() + " deleted.");
-				DataManager cm = new DataManager(metaData.get(I).getClan().getClanID());
+				DataManager cm = new DataManager(metaDataContainer.get(I).getClan().getClanID());
 				Config clan = cm.getFile(ConfigType.CLAN_FILE);
-				clan.getConfig().set("HUID", null);
-				clan.saveConfig();
+				if (huid.toString().equals(clan.getConfig().getString("NO-ID"))) {
+					clan.getConfig().set("NO-ID", null);
+					clan.saveConfig();
+				}
+				for (String d : clan.getConfig().getConfigurationSection("Data").getKeys(false)) {
+					if (d.equals(huid.toString())) {
+						clan.getConfig().set("Data." + d, null);
+						clan.saveConfig();
+						break;
+					}
+				}
 				DataManager dm = new DataManager(I.toString(), "Meta");
 				Config meta = dm.getFile(ConfigType.MISC_FILE);
 				meta.delete();
-				metaData.remove(I);
+				metaDataContainer.remove(I);
 			}
 		});
 	}
 
+	/**
+	 * Load all storage saved clan meta into cache,
+	 * this should not be used as it is already logged on server enable.
+	 */
 	public static void querySaved() {
 		final File dir = new File(Config.class.getProtectionDomain().getCodeSource().getLocation().getPath().replaceAll("%20", " "));
 		File file = new File(dir.getParentFile().getPath(), HempfestClans.getInstance().getName() + "/Meta/");
 		Arrays.stream(file.listFiles()).forEach(f -> {
 			HUID id = HUID.fromString(f.getName().replace(".yml", ""));
 			PersistentClan m = loadSavedInstance(id);
-			metaData.put(id, m);
+			metaDataContainer.put(id, m);
 		});
 	}
 
+	/**
+	 * Store the clan meta into temp storage.
+	 */
 	public void storeTemp() {
-		metaData.put(huid, instance);
+		metaDataContainer.put(huid, instance);
 		Bukkit.getServer().getLogger().info("[Clans] - Instance for ID #" + huid.toString() + " cached.");
 	}
 
+	/**
+	 * Store the clan meta into hard storage.
+	 */
 	public void saveMeta() {
 		DataManager cm = new DataManager(clanID);
 		Config clan = cm.getFile(ConfigType.CLAN_FILE);
-		clan.getConfig().set("HUID", huid.toString());
+		clan.getConfig().set("NO-ID", instance.huid.toString());
 		clan.saveConfig();
 		DataManager dm = new DataManager(huid.toString(), "Meta");
 		Config meta = dm.getFile(ConfigType.MISC_FILE);
@@ -154,7 +209,33 @@ public class PersistentClan extends ClanMeta implements Serializable {
 			if (debugging) {
 				Bukkit.getServer().getLogger().info("[Clans] - Instance for ID #" + instance.huid.toString() + " saved.");
 				if (value != null) {
-					Bukkit.getServer().getLogger().info("[Clans] - Object value for ID #" + huid.toString() + " saved.");
+					Bukkit.getServer().getLogger().info("[Clans] - Object value for ID #" + instance.huid.toString() + " saved.");
+				}
+			}
+		} catch (IOException e) {
+			Bukkit.getServer().getLogger().severe("[Clans] - Unable to parse object.");
+			e.printStackTrace();
+		}
+	}
+
+	/**
+	 * Store the clan meta into hard storage under a specified delimiter.
+	 * @param id The delimiter to save the meta under.
+	 */
+	public void saveMeta(int id) {
+		DataManager cm = new DataManager(clanID);
+		Config clan = cm.getFile(ConfigType.CLAN_FILE);
+		clan.getConfig().set("Data." + instance.huid.toString(), id);
+		clan.saveConfig();
+		DataManager dm = new DataManager(huid.toString(), "Meta");
+		Config meta = dm.getFile(ConfigType.MISC_FILE);
+		try {
+			meta.getConfig().set("Data", new HFEncoded(instance).serialize());
+			meta.saveConfig();
+			if (debugging) {
+				Bukkit.getServer().getLogger().info("[Clans] - Instance for ID #" + instance.huid.toString() + " saved.");
+				if (value != null) {
+					Bukkit.getServer().getLogger().info("[Clans] - Object value for ID #" + instance.huid.toString() + " saved.");
 				}
 			}
 		} catch (IOException e) {

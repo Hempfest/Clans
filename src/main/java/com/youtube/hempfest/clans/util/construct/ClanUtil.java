@@ -9,7 +9,6 @@ import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
 import com.youtube.hempfest.hempcore.formatting.string.RandomID;
-import com.youtube.hempfest.hempcore.library.HUID;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -947,12 +946,6 @@ public class ClanUtil extends StringLibrary {
         long time = Objects.requireNonNull(server.getWorld(world)).getTime();
 
         return time <= on || time >= off;
-    }
-
-    public HUID getId(String clanId) {
-        DataManager dm = new DataManager(clanId);
-        Config clan = dm.getFile(ConfigType.CLAN_FILE);
-        return clan.getConfig().getString("HUID") != null ? HUID.fromString(clan.getConfig().getString("HUID")) : null;
     }
 
     public void getLeaderboard(Player p, int page) {

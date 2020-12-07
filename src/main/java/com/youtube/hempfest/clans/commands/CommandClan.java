@@ -10,6 +10,7 @@ import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.clans.util.events.CommandHelpEvent;
 import com.youtube.hempfest.clans.util.events.SubCommandEvent;
 import com.youtube.hempfest.clans.util.events.TabInsertEvent;
 import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
@@ -71,7 +72,9 @@ public class CommandClan extends BukkitCommand {
         help.add("&7|&e) &6/clan &fally <&aadd&7,&cremove&f> <&7clanName&f>");
         help.add("&7|&e) &6/clan &fenemy <&7clanName&f>");
         help.add("&7|&e) &6/clan &fenemy <&aadd&7,&cremove&f> <&7clanName&f>");
-        return help;
+        CommandHelpEvent e = new CommandHelpEvent(help);
+        Bukkit.getPluginManager().callEvent(e);
+        return e.getHelpMenu();
     }
 
     private boolean isAlphaNumeric(String s) {
