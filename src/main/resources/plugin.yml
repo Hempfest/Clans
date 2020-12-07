@@ -1,6 +1,7 @@
 name: Clans
 version: 2.0.8
 author: Hempfest
+api-version: 1.13
 depend: [ HempCore ]
 soft-depend: [ PlaceholderAPI, dynmap ]
 description: The new re-designed Clans [Free]
