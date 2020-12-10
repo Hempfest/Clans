@@ -5,14 +5,14 @@
 ## WIKI
 _**Table of contents:**_
 * [Plugin users](https://github.com/Hempfest/Clans/wiki)
-* * [Clan creation](https://github.com/Hempfest/Clans/wiki/Creating-a-clan.)
-* * [Clan leaving/disbanding](https://github.com/Hempfest/Clans/wiki/Leaving-a-clan.)
-* * [Clan rank management](https://github.com/Hempfest/Clans/wiki/Clan-rank-management.)
-* * [Claiming & Raid Shield](https://github.com/Hempfest/Clans/wiki/Claiming-&-Raid-Shield)
-* * [Clan Power](https://github.com/Hempfest/Clans/wiki/Clan-Power)
+    * [Clan creation](https://github.com/Hempfest/Clans/wiki/Creating-a-clan.)
+    * [Clan leaving/disbanding](https://github.com/Hempfest/Clans/wiki/Leaving-a-clan.)
+    * [Clan rank management](https://github.com/Hempfest/Clans/wiki/Clan-rank-management.)
+    * [Claiming & Raid Shield](https://github.com/Hempfest/Clans/wiki/Claiming-&-Raid-Shield)
+    * [Clan Power](https://github.com/Hempfest/Clans/wiki/Clan-Power)
 * [Developers](https://github.com/Hempfest/Clans/wiki)
-* * [API introduction](https://github.com/Hempfest/Clans/wiki/Clans-API-and-how-to-use-it.)
-* * [Persistent Clan Data](https://github.com/Hempfest/Clans/wiki/Using-the-new-Clans-PersistentDataContainer)
+    * [API introduction](https://github.com/Hempfest/Clans/wiki/Clans-API-and-how-to-use-it.)
+    * [Persistent Clan Data](https://github.com/Hempfest/Clans/wiki/Using-the-new-Clans-PersistentDataContainer)
 
 
 
