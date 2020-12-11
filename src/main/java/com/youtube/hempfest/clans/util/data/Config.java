@@ -17,11 +17,7 @@ public class Config {
     private FileConfiguration fc;
     private File file;
     private final HempfestClans plugin;
-    private static List<Config> configs;
-
-    static {
-        Config.configs = new ArrayList<Config>();
-    }
+    private static final List<Config> configs = new ArrayList<>();
 
     public Config(final String n, final String d) {
         this.plugin = HempfestClans.getInstance();
@@ -124,11 +120,6 @@ public class Config {
             e.printStackTrace();
         }
     }
-
-
-
-
-
 
 }
 
