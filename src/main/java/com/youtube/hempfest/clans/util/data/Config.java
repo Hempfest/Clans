@@ -51,7 +51,13 @@ public class Config {
 
 
     public static Config get(final String n, final String d) {
-        return Config.configs.stream().filter(c -> c.getName().equals(n)).findFirst().orElse(new Config(n, d));
+        for(final Config c: Config.configs) {
+            if(c.getName().equals(n)) {
+                return c;
+            }
+        }
+
+        return new Config(n, d);
     }
 
     public boolean delete() {
