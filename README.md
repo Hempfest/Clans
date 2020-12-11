@@ -11,7 +11,7 @@ _**Table of contents:**_
     - [Claiming & Raid Shield](https://github.com/Hempfest/Clans/wiki/Claiming-&-Raid-Shield)
     - [Clan Power](https://github.com/Hempfest/Clans/wiki/Clan-Power)
 - [**Developers**](https://github.com/Hempfest/Clans/wiki)
-    - [API introduction](https://github.com/Hempfest/Clans/wiki/Clans-API-and-how-to-use-it.)
+    - [API introduction](https://github.com/Hempfest/Clans/wiki/Clans-API-and-how-to-use-it)
     - [Persistent Clan Data](https://github.com/Hempfest/Clans/wiki/Using-the-new-Clans-PersistentDataContainer)
     - [Clan Events](https://github.com/Hempfest/Clans/wiki/Clan-Events)
 
