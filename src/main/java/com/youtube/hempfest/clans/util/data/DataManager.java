@@ -29,19 +29,19 @@ public class DataManager {
         Config result = null;
         switch (type) {
             case USER_FILE:
-                result = new Config(name, "Users");
+                result = Config.get(name, "Users");
                 break;
             case CLAN_FILE:
-                result = new Config(name, "Clans");
+                result = Config.get(name, "Clans");
                 break;
             case MISC_FILE:
-                result = new Config(name, directory);
+                result = Config.get(name, directory);
                 break;
         }
         return result;
     }
 
-    private static final Config main = new Config("Config", "Configuration");
+    private static final Config main = Config.get("Config", "Configuration");
 
     public static boolean titlesAllowed() {
        return main.getConfig().getBoolean("Clans.land-claiming.send-titles");
@@ -81,7 +81,7 @@ public class DataManager {
     }
 
     public void copyDefaults() {
-        Config main = new Config("Config", "Configuration");
+        Config main = Config.get("Config", "Configuration");
         if (!main.exists()) {
             InputStream mainGrab = HempfestClans.getInstance().getResource("Config.yml");
             Config.copy(mainGrab, main.getFile());

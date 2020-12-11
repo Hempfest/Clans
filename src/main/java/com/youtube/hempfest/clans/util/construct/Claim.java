@@ -1,14 +1,15 @@
 package com.youtube.hempfest.clans.util.construct;
 
+import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
-import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 
 public class Claim {
@@ -41,12 +42,7 @@ public class Claim {
 	 * @return Gets a new clan object regarding properties of the claim owner.
 	 */
 	public Clan getClan() {
-		Clan clan = null;
-		for (Clan clans : Clan.clanUtil.getClans) {
-			if (clans.getClanID().equals(getOwner()))
-				clan = clans;
-		}
-		return clan;
+		return Clan.clanUtil.getClan(getOwner());
 	}
 
 	/**
@@ -60,12 +56,13 @@ public class Claim {
 	 * @return Gets the clanID of the claim object.
 	 */
 	public String getOwner() {
-		FileConfiguration d = this.regions.getConfig();
 		String owner = "";
-		for (String clan : d.getKeys(false)) {
-			for (String s : d.getConfigurationSection(clan + ".Claims").getKeys(false)) {
-				if (s.equals(this.claimID))
-					owner = clan;
+		for (Map.Entry<String[], int[]> entry : HempfestClans.getInstance().claimMap.entrySet()) {
+			String[] id = entry.getKey();
+			int[] pos = entry.getValue();
+			if (id[1].equals(claimID)) {
+				owner = id[0];
+				break;
 			}
 		}
 		return owner;
