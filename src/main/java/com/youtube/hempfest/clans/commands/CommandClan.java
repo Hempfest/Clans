@@ -20,7 +20,6 @@ import java.util.IllegalFormatException;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
-import org.bukkit.Location;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
@@ -89,7 +88,7 @@ public class CommandClan extends BukkitCommand {
         return Claim.claimUtil;
     }
 
-    List<String> arguments = new ArrayList<String>();
+    private final List<String> arguments = new ArrayList<String>();
 
     @Override
     public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
@@ -207,11 +206,6 @@ public class CommandClan extends BukkitCommand {
             return result;
         }
         return null;
-    }
-
-    @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String[] args, Location location) throws IllegalArgumentException {
-        return super.tabComplete(sender, alias, args, location);
     }
 
     @Override
