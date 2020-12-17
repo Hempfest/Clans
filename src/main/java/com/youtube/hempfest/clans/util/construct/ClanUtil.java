@@ -283,7 +283,8 @@ public class ClanUtil extends StringLibrary {
 
     public double getKD(UUID playerID) {
         OfflinePlayer player = Bukkit.getOfflinePlayer(playerID);
-                if (Bukkit.getVersion().contains("1.12")) {
+                if (Bukkit.getVersion().contains("1.12") || Bukkit.getVersion().contains("1.13")
+                 || Bukkit.getVersion().contains("1.14")) {
                     return 0.0;
                 }
                     int kills = player.getStatistic(Statistic.PLAYER_KILLS);

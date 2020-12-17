@@ -5,6 +5,7 @@ import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.hempcore.library.HUID;
+import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
 import java.util.ArrayList;
@@ -15,7 +16,7 @@ import org.bukkit.Location;
 import org.bukkit.World;
 import org.bukkit.entity.Player;
 
-public class Clan {
+public class Clan implements Serializable {
 
 	private final String clanID;
 
@@ -61,10 +62,13 @@ public class Clan {
 		DataManager dm = new DataManager(clanID);
 		Config clan = dm.getFile(ConfigType.CLAN_FILE);
 		HUID result = null;
-		for (String d : clan.getConfig().getConfigurationSection("Data").getKeys(false)) {
-			if (clan.getConfig().getInt("Data." + d) == id) {
-				result = HUID.fromString(d);
+		try {
+			for (String d : clan.getConfig().getConfigurationSection("Data").getKeys(false)) {
+				if (clan.getConfig().getInt("Data." + d) == id) {
+					result = HUID.fromString(d);
+				}
 			}
+		} catch (NullPointerException ignored) {
 		}
 		return result;
 	}

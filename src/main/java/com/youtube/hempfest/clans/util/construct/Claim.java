@@ -8,6 +8,7 @@ import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
+import org.bukkit.Material;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
@@ -95,10 +96,10 @@ public class Claim {
 
 	private boolean hasSurface(Location location) {
 		Block feet = location.getBlock();
-		if (!feet.getType().isAir() && !feet.getLocation().add(0.0D, 1.0D, 0.0D).getBlock().getType().isAir())
+		if (!feet.getType().equals(Material.AIR) && !feet.getLocation().add(0.0D, 1.0D, 0.0D).getBlock().getType().equals(Material.AIR))
 			return false;
 		Block head = feet.getRelative(BlockFace.UP);
-		if (!head.getType().isAir())
+		if (!head.getType().equals(Material.AIR))
 			return false;
 		Block ground = feet.getRelative(BlockFace.DOWN);
 		return ground.getType().isSolid();

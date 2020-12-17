@@ -6,7 +6,7 @@ import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.events.AllyChatEvent;
 import com.youtube.hempfest.clans.util.events.ClanChatEvent;
 import com.youtube.hempfest.clans.util.timers.AsyncClaimResident;
-import com.youtube.hempfest.clans.util.timers.AsyncClanStatus;
+import com.youtube.hempfest.clans.util.timers.SyncClanStatus;
 import java.io.File;
 import java.io.InputStream;
 import java.util.Set;
@@ -49,8 +49,8 @@ public class DataManager {
 
     public void runCleaner() {
         HempfestClans.getInstance().getLogger().info("- Running data cache cleaner.");
-        AsyncClanStatus asyncClanStatus = new AsyncClanStatus();
-        asyncClanStatus.runTaskTimerAsynchronously(HempfestClans.getInstance(), 10L, 10L);
+        SyncClanStatus syncClanStatus = new SyncClanStatus();
+        syncClanStatus.runTaskTimer(HempfestClans.getInstance(), 10L, 10L);
     }
 
     public void performResidentEvent(){

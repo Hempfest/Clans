@@ -11,7 +11,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 
-public class AsyncClanStatus extends BukkitRunnable {
+public class SyncClanStatus extends BukkitRunnable {
 
     @Override
     public void run() {
@@ -44,11 +44,13 @@ public class AsyncClanStatus extends BukkitRunnable {
                         for (String ally : clanUtil.getAllies(clanUtil.getClan(p))) {
                             if (!clanUtil.getAllClanIDs().contains(ally)) {
                                 Clan.clanUtil.removeAlly(clanUtil.getClan(p), ally);
+                                break;
                             }
                         }
                         for (String enemy : clanUtil.getEnemies(clanUtil.getClan(p))) {
                             if (!clanUtil.getAllClanIDs().contains(enemy)) {
                                 Clan.clanUtil.removeEnemy(clanUtil.getClan(p), enemy);
+                                break;
                             }
                         }
                         for (String allyRe : clanUtil.getAllyRequests(clanUtil.getClan(p))) {
@@ -57,6 +59,7 @@ public class AsyncClanStatus extends BukkitRunnable {
                                 allies.remove(allyRe);
                                 cl.getConfig().set("ally-requests", allies);
                                 cl.saveConfig();
+                                break;
                             }
                         }
                     }
