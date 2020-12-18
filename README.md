@@ -28,4 +28,5 @@ _**Table of contents:**_
     - [Banks]
 ---
 ![](https://i.imgur.com/9Tu9JAN.png)
-Need back to the spigot page? ([CLICK](https://www.spigotmc.org/resources/clans-free-1-12-1-16-re-vamped.78415/))
+Need back to the spigot page? 
+([CLICK](https://www.spigotmc.org/resources/clans-free-1-12-1-16-re-vamped.78415/))
