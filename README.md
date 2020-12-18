@@ -13,6 +13,7 @@ _**Table of contents:**_
         - [Clan Power](https://github.com/Hempfest/Clans/wiki/Clan-Power)
     - [*Setup*]()
         - [Commands](https://github.com/Hempfest/Clans/wiki/Commands)
+        - [Config](https://github.com/Hempfest/Clans/wiki/Default-Config)
 - [**Developers**](https://github.com/Hempfest/Clans/wiki)
     - [API introduction](https://github.com/Hempfest/Clans/wiki/Clans-API-and-how-to-use-it)
     - [Persistent Clan Data](https://github.com/Hempfest/Clans/wiki/Using-the-new-Clans-PersistentDataContainer)
