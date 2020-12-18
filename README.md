@@ -1,6 +1,6 @@
 # Getting started
 
-
+[![](https://jitpack.io/v/Hempfest/Clans.svg)](https://jitpack.io/#Hempfest/Clans)
 
 ## WIKI
 _**Table of contents:**_
