@@ -513,7 +513,7 @@ public class CommandClan extends BukkitCommand {
                             lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
                             return true;
                         }
-                        if (args1.length() > HempfestClans.getMain().getConfig().getInt("Clans.tag-size")) {
+                        if (args1.length() > HempfestClans.getMain().getConfig().getInt("Formatting.tag-size")) {
                             getUtil().sendMessage(p, "&c&oThe clan name you have chosen is too long! Max tag length reached.");
                             return true;
                         }

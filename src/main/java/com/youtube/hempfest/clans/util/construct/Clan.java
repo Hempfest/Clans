@@ -52,7 +52,12 @@ public class Clan implements Serializable {
 	public HUID getId() {
 		DataManager dm = new DataManager(clanID);
 		Config clan = dm.getFile(ConfigType.CLAN_FILE);
-		return clan.getConfig().getString("NO-ID") != null ? HUID.fromString(clan.getConfig().getString("NO-ID")) : null;
+		HUID result = null;
+		try {
+			 result = HUID.fromString(clan.getConfig().getString("NO-ID"));
+		} catch (NullPointerException ignored) {
+		}
+		return result;
 	}
 
 	/**

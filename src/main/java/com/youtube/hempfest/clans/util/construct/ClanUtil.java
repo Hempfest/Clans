@@ -33,7 +33,7 @@ public class ClanUtil extends StringLibrary {
     DataManager dm = new DataManager(p.getUniqueId().toString(), null);
     Config user = dm.getFile(ConfigType.USER_FILE);
     if (getClan(p) == null) {
-        if (clanName.length() > HempfestClans.getMain().getConfig().getInt("Clans.tag-size")) {
+        if (clanName.length() > HempfestClans.getMain().getConfig().getInt("Formatting.tag-size")) {
             sendMessage(p, "&c&oThe clan name you have chosen is too long! Max tag length reached.");
             return;
         }
@@ -920,7 +920,7 @@ public class ClanUtil extends StringLibrary {
     public int baseClearance() {
         DataManager dm = new DataManager("Config", "Configuration");
         Config main = dm.getFile(ConfigType.MISC_FILE);
-        return main.getConfig().getInt("Clans.clan-base.clearance");
+        return main.getConfig().getInt("Clans.base-clearance");
     }
 
     public int kickClearance() {

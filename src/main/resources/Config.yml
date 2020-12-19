@@ -13,9 +13,6 @@
 #
 Clans:
 
-  # Change the max size a clan tag can be.
-  tag-size: 15
-
   # Turn on or off the use of land claiming.
   land-claiming:
     allow: true
@@ -41,33 +38,38 @@ Clans:
   # Change the minimum clearance needed to change the clans password.
   password-clearance: 2
 
+  # Change the minimum rank clearance needed to update the clan base.
+  base-clearance: 1
+
   # Modify the raid-shield settings
   raid-shield:
+    # Allow the raid-shield to run, enabling claim raiding?
     allow: true
     main-world: 'world'
+    # Default: 0 for dawn
     up-time: 0
+    # Default: 13000 for dusk
     down-time: 13000
-    # Decide whether to allow or deny the ability to overpower other clan claims
-    ## while the shield is up.
+    # Allow land over-powering while the shield is up.
     claiming: false
 
-  # Change the minimum rank clearance needed to update the clan base.
-  clan-base:
-    clearance: 1
 #-------------------------------------------------------------------
 #
-#----------------,,-----------------------
-#    .g8"""bgd `7MM                 mm
-#  .dP'     `M   MM                 MM
-#  dM'       `   MMpMMMb.   ,6"Yb.mmMMmm
-#  MM            MM    MM  8)   MM  MM
-#  MM.           MM    MM   ,pm9MM  MM
-#  `Mb.     ,'   MM    MM  8M   MM  MM
-#    `"bmmmd'  .JMML  JMML.`Moo9^Yo.`Mbmo
-#-----------------------------------------
+#-------------------------------------------------------------
+#  `7MM"""YMM                                           mm
+#    MM    `7                                           MM
+#    MM   d  ,pW"Wq.`7Mb,od8 `7MMpMMMb.pMMMb.   ,6"Yb.mmMMmm
+#    MM""MM 6W'   `Wb MM' "'   MM    MM    MM  8)   MM  MM
+#    MM   Y 8M     M8 MM       MM    MM    MM   ,pm9MM  MM
+#    MM     YA.   ,A9 MM       MM    MM    MM  8M   MM  MM
+#  .JMML.    `Ybmd9'.JMML.   .JMML  JMML  JMML.`Moo9^Yo.`Mbmo
+#-------------------------------------------------------------
 #
 #-------------------------------------------------------------------
 Formatting:
+  # Change the max size a clan tag can be.
+  tag-size: 15
+  # Allow the use of & symbol in clan tag's
   allow: true
   # Change the prefix displayed for the plugin.
   Prefix: '&7[&6&lClans&7]'
