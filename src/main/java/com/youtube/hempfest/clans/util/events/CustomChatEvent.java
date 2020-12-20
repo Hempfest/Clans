@@ -91,11 +91,11 @@ public class CustomChatEvent extends AsyncClanEventBuilder implements Cancellabl
 		return pingSound;
 	}
 
-	public String getStatic1() {
+	public String getPrefix() {
 		return static1;
 	}
 
-	public String getStatic2() {
+	public String getDivider() {
 		return static2;
 	}
 
@@ -103,7 +103,7 @@ public class CustomChatEvent extends AsyncClanEventBuilder implements Cancellabl
 		return highlight;
 	}
 
-	public String getPlayerMeta() {
+	public String getHoverMeta() {
 		return playerMeta;
 	}
 
@@ -111,15 +111,15 @@ public class CustomChatEvent extends AsyncClanEventBuilder implements Cancellabl
 		this.pingSound = pingSound;
 	}
 
-	public void setPlayerMeta(String playerMeta) {
+	public void setHoverMeta(String playerMeta) {
 		this.playerMeta = playerMeta;
 	}
 
-	public void setStatic1(String static1) {
+	public void setPrefix(String static1) {
 		this.static1 = static1;
 	}
 
-	public void setStatic2(String static2) {
+	public void setDivider(String static2) {
 		this.static2 = static2;
 	}
 
