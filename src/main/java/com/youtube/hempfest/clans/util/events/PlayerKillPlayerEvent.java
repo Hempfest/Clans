@@ -1,5 +1,6 @@
 package com.youtube.hempfest.clans.util.events;
 
+import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
@@ -47,17 +48,13 @@ public class PlayerKillPlayerEvent extends ClanEventBuilder {
         return new StringLibrary();
     }
 
-    public Clan getClan(String clanID, Player clanPlayer) {
-        return new Clan(clanID, clanPlayer);
-    }
-
     public void perform() {
         ClanUtil clanUtil = getUtil();
         if (clanUtil.getClan(killer) != null) {
-            Clan kill = getClan(clanUtil.getClan(killer), killer);
+            Clan kill = HempfestClans.clanManager(killer);
             if (clanUtil.getClan(victim) != null) {
                 if (!clanUtil.getClan(killer).equals(clanUtil.getClan(victim))) {
-                    Clan dead = getClan(clanUtil.getClan(victim), victim);
+                    Clan dead = HempfestClans.clanManager(victim);
                     kill.givePower(0.11);
                     dead.takePower(0.11);
                 }
@@ -68,7 +65,7 @@ public class PlayerKillPlayerEvent extends ClanEventBuilder {
         }
         if (clanUtil.getClan(killer) == null) {
             if (clanUtil.getClan(victim) != null) {
-                    Clan dead = getClan(clanUtil.getClan(victim), victim);
+                    Clan dead = HempfestClans.clanManager(victim);
                     dead.takePower(0.11);
             }
         }

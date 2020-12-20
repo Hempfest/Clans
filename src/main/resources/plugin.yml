@@ -3,6 +3,6 @@ version: 2.0.8
 author: Hempfest
 api-version: 1.13
 depend: [ HempCore ]
-soft-depend: [ PlaceholderAPI, dynmap ]
+soft-depend: [ PlaceholderAPI ]
 description: The new re-designed Clans [Free]
 main: com.youtube.hempfest.clans.HempfestClans

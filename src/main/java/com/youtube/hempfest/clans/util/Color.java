@@ -25,20 +25,14 @@ public enum Color {
     ITALIC("&o"),
     RESET("&r");
 
-    String value;
+    private final String value;
 
     Color(String value) {
         this.value = value;
     }
 
     public String toCode() {
-        String result = "";
-        switch (this) {
-            default:
-                result = value;
-                break;
-        }
-        return result;
+        return value;
     }
 
 

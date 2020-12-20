@@ -1,5 +1,6 @@
 package com.youtube.hempfest.clans.util.events;
 
+import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
@@ -15,7 +16,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
-public class ClanChatEvent extends AsyncClanEventBuilder implements Cancellable {
+public class CustomChatEvent extends AsyncClanEventBuilder implements Cancellable {
 
 	private static final HandlerList handlers = new HandlerList();
 
@@ -29,13 +30,13 @@ public class ClanChatEvent extends AsyncClanEventBuilder implements Cancellable 
 
 	private final boolean isAsync = true;
 
-	private String static1 = "&7[&3&l&nCC&7] ";
+	private String static1 = "&7[&b&l&nCC&7] ";
 
 	private String static2 = " &7: ";
 
 	private String highlight = "&f&o%s";
 
-	private String playerMeta = "&3&oClan member &b%s &3&opinged clan chat.";
+	private String playerMeta = "&3&o&b%s &3&opinged custom chat.";
 
 	private Sound pingSound = Sound.ENTITY_EXPERIENCE_ORB_PICKUP;
 
@@ -47,7 +48,7 @@ public class ClanChatEvent extends AsyncClanEventBuilder implements Cancellable 
 		}
 	}
 
-	public ClanChatEvent(Player sender, Set<Player> receivers, String message, boolean isAsync) {
+	public CustomChatEvent(Player sender, Set<Player> receivers, String message, boolean isAsync) {
 		super(isAsync);
 		this.chatting = sender;
 		this.receivers = receivers;
@@ -71,13 +72,15 @@ public class ClanChatEvent extends AsyncClanEventBuilder implements Cancellable 
 	public List<Player> getReceivers() {
 		List<Player> recipients = new ArrayList<>();
 		for (Player a : receivers) {
-			if (getUtil().getClan(a) != null) {
-				if (getUtil().getClan(a).equals(getUtil().getClan(chatting))) {
+			if (HempfestClans.chatMode.get(a).equals(getChannel())) {
 					recipients.add(a);
 				}
-			}
 		}
 		return recipients;
+	}
+
+	public String getChannel() {
+		return HempfestClans.chatMode.get(chatting);
 	}
 
 	public String getMessage() {
@@ -128,7 +131,7 @@ public class ClanChatEvent extends AsyncClanEventBuilder implements Cancellable 
 		this.message = message;
 	}
 
-	public void sendClanMessage() {
+	public void sendMessage() {
 		ClanUtil clanUtil = getUtil();
 		Player p = getChatting();
 		for (Player toGet : getReceivers()) {

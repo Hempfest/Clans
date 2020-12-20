@@ -7,20 +7,14 @@ public enum RankPriority {
     HIGHER(2),
     HIGHEST(3);
 
-    private int priNum;
+    private final int priNum;
 
     RankPriority(int priNum) {
         this.priNum = priNum;
     }
 
     public int toInt() {
-        int result = 0;
-        switch (this) {
-            default:
-                result = priNum;
-                break;
-        }
-        return result;
+        return priNum;
     }
 
 }

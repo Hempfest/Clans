@@ -9,10 +9,13 @@ import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.clans.util.events.ClaimBuildEvent;
 import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
+import com.youtube.hempfest.clans.util.events.CustomChatEvent;
 import com.youtube.hempfest.clans.util.events.PlayerKillPlayerEvent;
 import com.youtube.hempfest.clans.util.events.PlayerPunchPlayerEvent;
 import com.youtube.hempfest.clans.util.events.PlayerShootPlayerEvent;
 import java.util.ArrayList;
+import java.util.Arrays;
+import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -90,7 +93,7 @@ public class EventListener implements Listener {
         Player p = event.getPlayer();
         ClanUtil clanUtil = Clan.clanUtil;
 
-        if (chatMode(p).equals("GLOBAL")) {
+        if (chatMode(p).equalsIgnoreCase("GLOBAL")) {
             Config main = HempfestClans.getMain();
             if (main.getConfig().getBoolean("Formatting.allow")) {
                 if (clanUtil.getClan(p) != null) {
@@ -113,19 +116,30 @@ public class EventListener implements Listener {
             }
             return;
         }
-        if (chatMode(p).equals("CLAN")) {
+        if (chatMode(p).equalsIgnoreCase("CLAN")) {
             if (!event.isCancelled()) {
                 dm.formatClanChat(p, event.getRecipients(), event.getMessage());
                 event.setCancelled(true);
                 return;
             }
         }
-        if (chatMode(p).equals("ALLY")) {
+        if (chatMode(p).equalsIgnoreCase("ALLY")) {
             if (!event.isCancelled()) {
                 dm.formatAllyChat(p, event.getRecipients(), event.getMessage());
                 event.setCancelled(true);
                 return;
             }
+        }
+
+        List<String> defaults = new ArrayList<>(Arrays.asList("GLOBAL", "CLAN", "ALLY"));
+        if (!defaults.contains(chatMode(p))) {
+            // new event
+            CustomChatEvent e = new CustomChatEvent(p, event.getRecipients(), event.getMessage(), true);
+            Bukkit.getPluginManager().callEvent(e);
+            if (!e.isCancelled()) {
+                e.sendMessage();
+            }
+            event.setCancelled(true);
         }
     }
 
