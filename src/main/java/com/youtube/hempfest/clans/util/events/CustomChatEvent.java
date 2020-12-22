@@ -75,6 +75,10 @@ public class CustomChatEvent extends AsyncClanEventBuilder implements Cancellabl
 			if (HempfestClans.chatMode.get(a).equals(getChannel())) {
 					recipients.add(a);
 				}
+			if (a.hasPermission("clans.use.chat." + getChannel().toLowerCase())) {
+				if (!recipients.contains(a))
+					recipients.add(a);
+			}
 		}
 		return recipients;
 	}
