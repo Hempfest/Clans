@@ -4,6 +4,8 @@ import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
@@ -77,6 +79,27 @@ public class Claim {
 	}
 
 	/**
+	 * @return Gets a list of all known online residents within the claim.
+	 */
+	public List<Resident> getResidents() {
+		List<Resident> query = new ArrayList<>();
+		for (Resident r : HempfestClans.residents) {
+			if (r.getClaim().getClaimID().equals(claimID)) {
+				query.add(r);
+			}
+		}
+		return query;
+	}
+
+	/**
+	 * @param name The player name to search for
+	 * @return A resident object for the given claim
+	 */
+	public Resident getResident(String name) {
+		return HempfestClans.residents.stream().filter(r -> r.getPlayer().getName().equals(name)).findFirst().orElse(null);
+	}
+
+	/**
 	 * @return Gets the centered location of the claim objects chunk.
 	 */
 	public Location getLocation() {
@@ -104,4 +127,9 @@ public class Claim {
 		Block ground = feet.getRelative(BlockFace.DOWN);
 		return ground.getType().isSolid();
 	}
+
+	public static Resident getResident(Player p) {
+		return HempfestClans.residents.stream().filter(r -> r.getPlayer().getName().equals(p.getName())).findFirst().orElse(null);
+	}
+
 }

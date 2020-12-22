@@ -2,8 +2,10 @@ package com.youtube.hempfest.clans.util.listener;
 
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
+import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
+import com.youtube.hempfest.clans.util.construct.Resident;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
@@ -74,6 +76,7 @@ public class EventListener implements Listener {
                 }
             }
         }
+        HempfestClans.wildernessInhabitants.remove(p);
         HempfestClans.clanManager.remove(p.getUniqueId());
         HempfestClans.residents.removeIf(resident -> resident.getPlayer().getName().equals(p.getName()));
         HempfestClans.playerClan.remove(p.getUniqueId());
@@ -190,6 +193,11 @@ public class EventListener implements Listener {
         e.handleCheck();
         if (e.isCancelled()) {
             event.setCancelled(e.isCancelled());
+        } else {
+            if (Claim.claimUtil.isInClaim(event.getBlock().getLocation())) {
+                Resident r = Claim.getResident(event.getPlayer());
+                r.addBroken(event.getBlock());
+            }
         }
     }
 
@@ -200,6 +208,11 @@ public class EventListener implements Listener {
         e.handleCheck();
         if (e.isCancelled()) {
             event.setCancelled(e.isCancelled());
+        } else {
+            if (Claim.claimUtil.isInClaim(event.getBlock().getLocation())) {
+                Resident r = Claim.getResident(event.getPlayer());
+                r.addPlaced(event.getBlock());
+            }
         }
     }
 

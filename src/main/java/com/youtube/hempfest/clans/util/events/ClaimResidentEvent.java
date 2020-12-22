@@ -9,7 +9,9 @@ import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.construct.Resident;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.clans.util.listener.AsyncClanEventBuilder;
+import java.util.Arrays;
 import java.util.HashMap;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -24,7 +26,7 @@ public class ClaimResidentEvent extends AsyncClanEventBuilder implements Cancell
 
 	private Resident r;
 
-	private Claim claim;
+	private final Claim claim;
 
 	private boolean titlesAllowed = DataManager.titlesAllowed();
 
@@ -110,34 +112,101 @@ public class ClaimResidentEvent extends AsyncClanEventBuilder implements Cancell
 		return Claim.claimUtil;
 	}
 
+	public void playTitle() {
+		String clanName = getUtil().getClanTag(getClaim().getOwner());
+		String color = "";
+		if (getUtil().getClan(p) != null) {
+			color = getUtil().clanRelationColor(getUtil().getClan(p), getClaim().getOwner());
+		} else {
+			color = "&f&o";
+		}
+		if (titlesAllowed) {
+			p.sendTitle(getClaimUtil().color(String.format(titleContext.get("TITLE"), clanName)), getClaimUtil().color(String.format(titleContext.get("SUB-TITLE"), color + clanName)), 10, 25, 10);
+		}
+		getClaimUtil().sendMessage(p, "Now entering &a" + color + clanName + "'s&7 land @ &f(&eX:" + color + getClaim().getLocation().getChunk().getX() + " &eZ:" + color + getClaim().getLocation().getChunk().getZ() + "&f)");
+	}
+
 	public void handleUpdate() {
 		HempfestClans.wildernessInhabitants.remove(p);
-		if (!getClaimUtil().getClaimID(p.getLocation()).equals(claim.getClaimID())) {
-			this.claim = new Claim(getClaimUtil().getClaimID(p.getLocation()));
-			for (Resident r : HempfestClans.residents) {
-				if (r.getPlayer().getName().equals(p.getName())) {
-					this.r = new Resident(p, claim);
-					HempfestClans.residents.remove(r);
-					HempfestClans.residents.add(this.r);
-					break;
+		if (!getClaim().getClaimID().equals(r.getClaim().getClaimID())) {
+			if (Clan.clanUtil.getClan(p) != null) {
+				if (!HempfestClans.clanManager(p).getClanID().equals(claim.getOwner())) {
+					for (Resident r : HempfestClans.residents) {
+						if (r.getPlayer().getName().equals(p.getName())) {
+							Resident add = new Resident(p, claim);
+							add.setNotificationSent(true);
+							add.setTraversedDifferent(true);
+							add.setComingBack(true);
+							this.r = add;
+							HempfestClans.residents.remove(r);
+							HempfestClans.residents.add(this.r);
+							break;
+						}
+					}
+				}
+			} else {
+				for (Resident r : HempfestClans.residents) {
+					if (r.getPlayer().getName().equals(p.getName())) {
+						this.r = new Resident(p, claim);
+						HempfestClans.residents.remove(r);
+						HempfestClans.residents.add(this.r);
+						break;
+					}
+				}
+			}
+			if (Arrays.asList(getClaim().getClan().getMembers()).contains(p.getName())) {
+				if (r.isComingBack()) {
+					for (Resident r : HempfestClans.residents) {
+						if (r.getPlayer().getName().equals(p.getName())) {
+							Resident add = new Resident(p, claim);
+							add.setNotificationSent(false);
+							add.setTraversedDifferent(true);
+							add.setComingBack(false);
+							this.r = add;
+							HempfestClans.residents.remove(r);
+							HempfestClans.residents.add(this.r);
+							break;
+						}
+					}
+				}
+				if (r.isComingBack() && r.isNotificationSent()) {
+					for (Resident r : HempfestClans.residents) {
+						if (r.getPlayer().getName().equals(p.getName())) {
+							Resident add = new Resident(p, claim);
+							add.setNotificationSent(false);
+							add.setTraversedDifferent(false);
+							add.setComingBack(false);
+							this.r = add;
+							HempfestClans.residents.remove(r);
+							HempfestClans.residents.add(this.r);
+							break;
+						}
+					}
 				}
 			}
 		}
-
-			if (!r.isNotificationSent()) {
-				String clanName = getUtil().getClanTag(getClaim().getOwner());
-				String color = "";
-				if (getUtil().getClan(p) != null) {
-					color = getUtil().clanRelationColor(getUtil().getClan(p), getClaim().getOwner());
-				} else {
-					color = "&f&o";
+		if (!r.isNotificationSent()) {
+			playTitle();
+			if (Clan.clanUtil.getClan(p) != null) {
+				if (!HempfestClans.clanManager(p).getClanID().equals(claim.getOwner())) {
+					r.setComingBack(true);
 				}
-				if (titlesAllowed) {
-					p.sendTitle(getClaimUtil().color(String.format(titleContext.get("TITLE"), clanName)), getClaimUtil().color(String.format(titleContext.get("SUB-TITLE"), color + clanName)), 10, 25, 10);
-				}
-				getClaimUtil().sendMessage(p, "Now entering &a" + color + clanName + "'s&7 land @ &f(&eX:" + color + getClaim().getLocation().getChunk().getX() + " &eZ:" + color + getClaim().getLocation().getChunk().getZ() + "&f)");
-				r.setNotificationSent(true);
 			}
+			r.setNotificationSent(true);
+		} else {
+			if (r.hasTraversedDifferent()) {
+				if (Clan.clanUtil.getClan(p) != null) {
+					if (!HempfestClans.clanManager(p).getClanID().equals(claim.getOwner())) {
+						r.setNotificationSent(false);
+						r.setTraversedDifferent(false);
+					}
+				} else {
+					Bukkit.getLogger().info("- not in a clan");
+					r.setTraversedDifferent(false);
+					r.setNotificationSent(false);
+				}
+			}
+		}
 	}
 
 }

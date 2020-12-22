@@ -54,14 +54,10 @@ public class DataManager {
     }
 
     public void performResidentEvent(){
-        if (!Bukkit.getPluginManager().isPluginEnabled("Borders")) {
             if (Claim.claimUtil.claimingAllowed()) {
                 AsyncClaimResident asyncClaimResident = new AsyncClaimResident();
                 asyncClaimResident.runTaskTimerAsynchronously(HempfestClans.getInstance(), 2L, 20L);
             }
-        } else {
-            Bukkit.getLogger().info("[Clans] - Alternative claim notification system found. (Borders)");
-        }
     }
 
     public void formatClanChat(Player p, Set<Player> receivers, String message) {

@@ -27,887 +27,977 @@ import org.bukkit.entity.Player;
 public class CommandClan extends BukkitCommand {
 
 
-    public CommandClan() {
-        super("clan");
-        setDescription("Base command for clans.");
-        setAliases(Arrays.asList("clans", "cl", "c"));
-        setPermission("clans.use");
-    }
+	public CommandClan() {
+		super("clan");
+		setDescription("Base command for clans.");
+		setAliases(Arrays.asList("clans", "cl", "c"));
+		setPermission("clans.use");
+	}
 
-    private void sendMessage(CommandSender player, String message) {
-        player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
-    }
+	private void sendMessage(CommandSender player, String message) {
+		player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
+	}
 
-    private String notPlayer() {
-        return String.format("[%s] - You aren't a player..", HempfestClans.getInstance().getDescription().getName());
-    }
+	private String notPlayer() {
+		return String.format("[%s] - You aren't a player..", HempfestClans.getInstance().getDescription().getName());
+	}
 
-    private List<String> helpMenu() {
-        List<String> help = new ArrayList<>();
-        help.add("&7|&e) &6/clan &fcreate <&7clanName&f> <&7password&f>");
-        help.add("&7|&e) &6/clan &fpassword <&7newPassword&f>");
-        help.add("&7|&e) &6/clan &fleave");
-        help.add("&7|&e) &6/clan &fkick <&7playerName&f>");
-        help.add("&7|&e) &6/clan &fmessage <&7message&f>");
-        help.add("&7|&e) &6/clan &fchat");
-        help.add("&7|&e) &6/clan &finfo <&7clanName&f>");
-        help.add("&7|&e) &6/clan &finfo <&7playerName&f>");
-        help.add("&7|&e) &6/clan &finfo");
-        help.add("&7|&e) &6/clan &fpromote <&7playerName&f>");
-        help.add("&7|&e) &6/clan &fdemote <&7playerName&f>");
-        help.add("&7|&e) &6/clan &ftag <&7newTag&f>");
-        help.add("&7|&e) &6/clan &fnickname <&7nickName&f>");
-        help.add("&7|&e) &6/clan &flist");
-        help.add("&7|&e) &6/clan &fbase");
-        help.add("&7|&e) &6/clan &fsetbase");
-        help.add("&7|&e) &6/clan &ftop");
-        help.add("&7|&e) &6/clan &fclaim");
-        help.add("&7|&e) &6/clan &funclaim");
-        help.add("&7|&e) &6/clan &funclaim all");
-        help.add("&7|&e) &6/clan &fmap");
-        help.add("&7|&e) &6/clan &funmap");
-        help.add("&7|&e) &6/clan &fpassowner <&7playerName&f>");
-        help.add("&7|&e) &6/clan &fally <&7clanName&f>");
-        help.add("&7|&e) &6/clan &fally <&aadd&7,&cremove&f> <&7clanName&f>");
-        help.add("&7|&e) &6/clan &fenemy <&7clanName&f>");
-        help.add("&7|&e) &6/clan &fenemy <&aadd&7,&cremove&f> <&7clanName&f>");
-        CommandHelpEvent e = new CommandHelpEvent(help);
-        Bukkit.getPluginManager().callEvent(e);
-        return e.getHelpMenu();
-    }
+	private List<String> helpMenu() {
+		List<String> help = new ArrayList<>();
+		help.add("&7|&e) &6/clan &fcreate <&7clanName&f> <&7password&f>");
+		help.add("&7|&e) &6/clan &fpassword <&7newPassword&f>");
+		help.add("&7|&e) &6/clan &fleave");
+		help.add("&7|&e) &6/clan &fkick <&7playerName&f>");
+		help.add("&7|&e) &6/clan &fmessage <&7message&f>");
+		help.add("&7|&e) &6/clan &fchat");
+		help.add("&7|&e) &6/clan &finfo <&7clanName&f>");
+		help.add("&7|&e) &6/clan &finfo <&7playerName&f>");
+		help.add("&7|&e) &6/clan &finfo");
+		help.add("&7|&e) &6/clan &fpromote <&7playerName&f>");
+		help.add("&7|&e) &6/clan &fdemote <&7playerName&f>");
+		help.add("&7|&e) &6/clan &ftag <&7newTag&f>");
+		help.add("&7|&e) &6/clan &fnickname <&7nickName&f>");
+		help.add("&7|&e) &6/clan &flist");
+		help.add("&7|&e) &6/clan &fbase");
+		help.add("&7|&e) &6/clan &fsetbase");
+		help.add("&7|&e) &6/clan &ftop");
+		help.add("&7|&e) &6/clan &fclaim");
+		help.add("&7|&e) &6/clan &funclaim");
+		help.add("&7|&e) &6/clan &funclaim all");
+		help.add("&7|&e) &6/clan &fmap");
+		help.add("&7|&e) &6/clan &funmap");
+		help.add("&7|&e) &6/clan &fpassowner <&7playerName&f>");
+		help.add("&7|&e) &6/clan &fally <&7clanName&f>");
+		help.add("&7|&e) &6/clan &fally <&aadd&7,&cremove&f> <&7clanName&f>");
+		help.add("&7|&e) &6/clan &fenemy <&7clanName&f>");
+		help.add("&7|&e) &6/clan &fenemy <&aadd&7,&cremove&f> <&7clanName&f>");
+		CommandHelpEvent e = new CommandHelpEvent(help);
+		Bukkit.getPluginManager().callEvent(e);
+		return e.getHelpMenu();
+	}
 
-    private boolean isAlphaNumeric(String s) {
-        return s != null && s.matches("^[a-zA-Z0-9]*$");
-    }
-    
-    private ClanUtil getUtil() {
-        return Clan.clanUtil;
-    }
+	private boolean isAlphaNumeric(String s) {
+		return s != null && s.matches("^[a-zA-Z0-9]*$");
+	}
 
-    private ClaimUtil getClaim() {
-        return Claim.claimUtil;
-    }
+	private ClanUtil getUtil() {
+		return Clan.clanUtil;
+	}
 
-    private final List<String> arguments = new ArrayList<String>();
+	private ClaimUtil getClaim() {
+		return Claim.claimUtil;
+	}
 
-    @Override
-    public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
+	private final List<String> arguments = new ArrayList<String>();
+
+	@Override
+	public List<String> tabComplete(CommandSender sender, String alias, String[] args) throws IllegalArgumentException {
 
 
-        List<String> result = new ArrayList<>();
-        if (args.length == 1) {
-            arguments.clear();
-            arguments.addAll(Arrays.asList("create", "color", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
-            TabInsertEvent event = new TabInsertEvent(args);
-            Bukkit.getPluginManager().callEvent(event);
-            arguments.addAll(event.getArgs(1));
-            for (String a : arguments) {
-                if (a.toLowerCase().startsWith(args[0].toLowerCase()))
-                    result.add(a);
-            }
-            return result;
-        }
-        if (args.length == 2) {
-            TabInsertEvent event = new TabInsertEvent(args);
-            Bukkit.getPluginManager().callEvent(event);
-            arguments.addAll(event.getArgs(2));
+		List<String> result = new ArrayList<>();
+		if (args.length == 1) {
+			arguments.clear();
+			arguments.addAll(Arrays.asList("create", "color", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
+			TabInsertEvent event = new TabInsertEvent(args);
+			Bukkit.getPluginManager().callEvent(event);
+			arguments.addAll(event.getArgs(1));
+			for (String a : arguments) {
+				if (a.toLowerCase().startsWith(args[0].toLowerCase()))
+					result.add(a);
+			}
+			return result;
+		}
+		if (args.length == 2) {
+			TabInsertEvent event = new TabInsertEvent(args);
+			Bukkit.getPluginManager().callEvent(event);
+			arguments.addAll(event.getArgs(2));
 
-                for (String t : event.getArgs(2)) {
-                    if (t.toLowerCase().startsWith(args[1].toLowerCase()))
-                        result.add(t);
-                }
-            if (args[0].equalsIgnoreCase("unclaim")) {
-                arguments.clear();
-                arguments.add("all");
-                for (String a : arguments) {
-                    if (a.toLowerCase().startsWith(args[1].toLowerCase()))
-                        result.add(a);
-                }
-                return result;
-            }
-            if (args[0].equalsIgnoreCase("color")) {
-                arguments.clear();
-                for (Color color : Color.values()) {
-                    arguments.add(color.name().toLowerCase());
-                }
-                for (String a : arguments) {
-                    String arg = args[1];
-                    if (arg.endsWith(",")) {
-                        int stop = arg.length() - 1;
-                        arg = arg.substring(0, stop);
-                        result.add(arg + "," + a);
-                    }
-                    int len = arg.length() - 1;
-                    if (len > 4) {
-                        if (a.toLowerCase().startsWith(arg.substring(arg.length() - 4).toLowerCase())) {
-                            int stop = arg.length() - 2;
-                            int stop2 = arg.length() - 4;
-                            arg = arg.substring(0, stop);
-                            result.add(arg.substring(0, stop2) + a);
-                        }
-                    }
-                    if (a.toLowerCase().startsWith(args[1].toLowerCase())) {
-                        result.add(a);
-                    }
+			for (String t : event.getArgs(2)) {
+				if (t.toLowerCase().startsWith(args[1].toLowerCase()))
+					result.add(t);
+			}
+			if (args[0].equalsIgnoreCase("unclaim")) {
+				arguments.clear();
+				arguments.add("all");
+				for (String a : arguments) {
+					if (a.toLowerCase().startsWith(args[1].toLowerCase()))
+						result.add(a);
+				}
+				return result;
+			}
+			if (args[0].equalsIgnoreCase("color")) {
+				arguments.clear();
+				for (Color color : Color.values()) {
+					arguments.add(color.name().toLowerCase());
+				}
+				for (String a : arguments) {
+					String arg = args[1];
+					if (arg.endsWith(",")) {
+						int stop = arg.length() - 1;
+						arg = arg.substring(0, stop);
+						result.add(arg + "," + a);
+					}
+					int len = arg.length() - 1;
+					if (len > 4) {
+						if (a.toLowerCase().startsWith(arg.substring(arg.length() - 4).toLowerCase())) {
+							int stop = arg.length() - 2;
+							int stop2 = arg.length() - 4;
+							arg = arg.substring(0, stop);
+							result.add(arg.substring(0, stop2) + a);
+						}
+					}
+					if (a.toLowerCase().startsWith(args[1].toLowerCase())) {
+						result.add(a);
+					}
 
-                }
-                return result;
-            }
-            if (args[0].equalsIgnoreCase("ally")) {
-                arguments.clear();
-                arguments.add("add");
-                arguments.add("remove");
-                for (String a : arguments) {
-                    if (a.toLowerCase().startsWith(args[1].toLowerCase()))
-                        result.add(a);
-                }
-                return result;
-            }
-            if (args[0].equalsIgnoreCase("enemy")) {
-                arguments.clear();
-                arguments.add("add");
-                arguments.add("remove");
-                for (String a : arguments) {
-                    if (a.toLowerCase().startsWith(args[1].toLowerCase()))
-                        result.add(a);
-                }
-                return result;
-            }
-            return result;
-        }
-        if (args.length == 3) {
-            TabInsertEvent event = new TabInsertEvent(args);
-            Bukkit.getPluginManager().callEvent(event);
-            arguments.addAll(event.getArgs(3));
+				}
+				return result;
+			}
+			if (args[0].equalsIgnoreCase("ally")) {
+				arguments.clear();
+				arguments.add("add");
+				arguments.add("remove");
+				for (String a : arguments) {
+					if (a.toLowerCase().startsWith(args[1].toLowerCase()))
+						result.add(a);
+				}
+				return result;
+			}
+			if (args[0].equalsIgnoreCase("enemy")) {
+				arguments.clear();
+				arguments.add("add");
+				arguments.add("remove");
+				for (String a : arguments) {
+					if (a.toLowerCase().startsWith(args[1].toLowerCase()))
+						result.add(a);
+				}
+				return result;
+			}
+			return result;
+		}
+		if (args.length == 3) {
+			TabInsertEvent event = new TabInsertEvent(args);
+			Bukkit.getPluginManager().callEvent(event);
+			arguments.addAll(event.getArgs(3));
 
-            for (String t : event.getArgs(3)) {
-                if (t.toLowerCase().startsWith(args[2].toLowerCase()))
-                    result.add(t);
-            }
-            if (args[0].equalsIgnoreCase("ally")) {
-                arguments.clear();
-                arguments.addAll(Clan.clanUtil.getAllClanNames());
-                for (String a : arguments) {
-                    if (a.toLowerCase().startsWith(args[2].toLowerCase()))
-                        result.add(a);
-                }
-                return result;
-            }
+			for (String t : event.getArgs(3)) {
+				if (t.toLowerCase().startsWith(args[2].toLowerCase()))
+					result.add(t);
+			}
+			if (args[0].equalsIgnoreCase("ally")) {
+				arguments.clear();
+				arguments.addAll(Clan.clanUtil.getAllClanNames());
+				for (String a : arguments) {
+					if (a.toLowerCase().startsWith(args[2].toLowerCase()))
+						result.add(a);
+				}
+				return result;
+			}
 
-            if (args[0].equalsIgnoreCase("enemy")) {
-                arguments.clear();
-                arguments.addAll(Clan.clanUtil.getAllClanNames());
-                for (String a : arguments) {
-                    if (a.toLowerCase().startsWith(args[2].toLowerCase()))
-                        result.add(a);
-                }
-                return result;
-            }
-            return result;
-        }
-        return null;
-    }
+			if (args[0].equalsIgnoreCase("enemy")) {
+				arguments.clear();
+				arguments.addAll(Clan.clanUtil.getAllClanNames());
+				for (String a : arguments) {
+					if (a.toLowerCase().startsWith(args[2].toLowerCase()))
+						result.add(a);
+				}
+				return result;
+			}
+			return result;
+		}
+		return null;
+	}
 
-    @Override
-    public boolean execute(CommandSender commandSender, String commandLabel, String[] args) {
-        if (!(commandSender instanceof Player)) {
-            commandSender.sendMessage(notPlayer());
-            return true;
-        }
+	@Override
+	public boolean execute(CommandSender commandSender, String commandLabel, String[] args) {
+		if (!(commandSender instanceof Player)) {
+			commandSender.sendMessage(notPlayer());
+			return true;
+		}
 
         /*
         // VARIABLE CREATION
         //  \/ \/ \/ \/ \/ \/
          */
-        int length = args.length;
-        Player p = (Player) commandSender;
-        StringLibrary lib = new StringLibrary();
+		int length = args.length;
+		Player p = (Player) commandSender;
+		StringLibrary lib = new StringLibrary();
         /*
         //  /\ /\ /\ /\ /\ /\
         //
          */
-        SubCommandEvent event = new SubCommandEvent(p, args);
-        Bukkit.getPluginManager().callEvent(event);
-        if (event.isCommand()) {
-            return event.isCommand();
-        }
+		SubCommandEvent event = new SubCommandEvent(p, args);
+		Bukkit.getPluginManager().callEvent(event);
+		if (event.isCommand()) {
+			return event.isCommand();
+		}
 
-        if (length == 0) {
-            PaginatedAssortment helpAssist = new PaginatedAssortment(p, helpMenu());
-            lib.sendMessage(p, "&r- Command help. (&7/clan #page&r)");
-            helpAssist.setListTitle("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-            helpAssist.setListBorder("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-            helpAssist.setNavigateCommand("c");
-            helpAssist.setLinesPerPage(5);
-            helpAssist.export(1);
-            return true;
-        }
-        if (!p.hasPermission(this.getPermission())) {
-            lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + '"');
-            return true;
-        }
-        if (length == 1) {
-            String args0 = args[0];
-            if (args0.equalsIgnoreCase("create")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan create <clanName> <password>");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("password") || args0.equalsIgnoreCase("pass")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan password <newPassword>");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("join")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan join <clanName> <password>");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("top")) {
-                getUtil().getLeaderboard(p, 1);
-                return true;
-            }
-            if (args0.equalsIgnoreCase("list")) {
-                
-                lib.sendMessage(p, "&r- Clan roster. (&7/clan info clanName&r)");
-                lib.paginatedClanList(p, getUtil().getAllClanNames(), "c list", 1, 10);
-                return true;
-            }
-            if (args0.equalsIgnoreCase("claim")) {
-                
-                if (Claim.claimUtil.claimingAllowed()) {
-                    if (getUtil().getClan(p) != null) {
-                        if (getUtil().getRankPower(p) >= getUtil().claimingClearance()) {
-                            getClaim().obtain(p);
-                            HempfestClans.getInstance().claimMap.clear();
-                            Claim.claimUtil.loadClaims();
-                        } else {
-                            lib.sendMessage(p, "&c&oYou do not have clan clearance.");
-                            return true;
-                        }
-                    } else {
-                        lib.sendMessage(p, lib.notInClan());
-                        return true;
-                    }
-                } else {
-                    lib.sendMessage(p, "&c&oYour server doesn't allow the use of clan land-claiming.");
-                    return true;
-                }
-                return true;
-            }
+		if (length == 0) {
+			PaginatedAssortment helpAssist = new PaginatedAssortment(p, helpMenu());
+			lib.sendMessage(p, "&r- Command help. (&7/clan #page&r)");
+			helpAssist.setListTitle("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+			helpAssist.setListBorder("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+			helpAssist.setNavigateCommand("c");
+			helpAssist.setLinesPerPage(5);
+			helpAssist.export(1);
+			return true;
+		}
+		if (!p.hasPermission(this.getPermission())) {
+			lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + '"');
+			return true;
+		}
+		if (length == 1) {
+			String args0 = args[0];
+			if (args0.equalsIgnoreCase("create")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan create <clanName> <password>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("password") || args0.equalsIgnoreCase("pass")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan password <newPassword>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("join")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan join <clanName> <password>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("top")) {
+				if (!p.hasPermission(this.getPermission() + ".top")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".top" + '"');
+					return true;
+				}
+				getUtil().getLeaderboard(p, 1);
+				return true;
+			}
+			if (args0.equalsIgnoreCase("list")) {
+				if (!p.hasPermission(this.getPermission() + ".roster")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".roster" + '"');
+					return true;
+				}
+				lib.sendMessage(p, "&r- Clan roster. (&7/clan info clanName&r)");
+				lib.paginatedClanList(p, getUtil().getAllClanNames(), "c list", 1, 10);
+				return true;
+			}
+			if (args0.equalsIgnoreCase("claim")) {
+				if (!p.hasPermission(this.getPermission() + ".claim")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".claim" + '"');
+					return true;
+				}
+				if (Claim.claimUtil.claimingAllowed()) {
+					if (getUtil().getClan(p) != null) {
+						if (getUtil().getRankPower(p) >= getUtil().claimingClearance()) {
+							getClaim().obtain(p);
+							HempfestClans.getInstance().claimMap.clear();
+							Claim.claimUtil.loadClaims();
+						} else {
+							lib.sendMessage(p, "&c&oYou do not have clan clearance.");
+							return true;
+						}
+					} else {
+						lib.sendMessage(p, lib.notInClan());
+						return true;
+					}
+				} else {
+					lib.sendMessage(p, "&c&oYour server doesn't allow the use of clan land-claiming.");
+					return true;
+				}
+				return true;
+			}
 
-            if (args0.equalsIgnoreCase("unclaim")) {
-                
-                if (Claim.claimUtil.claimingAllowed()) {
-                    if (getUtil().getClan(p) != null) {
-                        if (getUtil().getRankPower(p) >= getUtil().claimingClearance()) {
-                            getClaim().remove(p);
-                            HempfestClans.getInstance().claimMap.clear();
-                            Claim.claimUtil.loadClaims();
-                        } else {
-                            lib.sendMessage(p, "&c&oYou do not have clan clearance.");
-                        }
-                    } else {
-                        lib.sendMessage(p, lib.notInClan());
-                        return true;
-                    }
-                } else {
-                    lib.sendMessage(p, "&c&oYour server doesn't allow the use of clan land-claiming.");
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("chat")) {
-                
-                if (getUtil().getClan(p) != null) {
-                    switch (HempfestClans.chatMode.get(p)) {
-                        case "GLOBAL":
-                            HempfestClans.chatMode.put(p, "CLAN");
-                            lib.sendMessage(p, "&7&oSwitched to &3CLAN &7&ochat channel.");
-                            return true;
-                        case "CLAN":
-                            HempfestClans.chatMode.put(p, "ALLY");
-                            lib.sendMessage(p, "&7&oSwitched to &aALLY &7&ochat channel.");
-                            return true;
-                        case "ALLY":
-                            HempfestClans.chatMode.put(p, "GLOBAL");
-                            lib.sendMessage(p, "&7&oSwitched to &fGLOBAL &7&ochat channel.");
-                            return true;
-                        default:
-                            HempfestClans.chatMode.put(p, "GLOBAL");
-                            lib.sendMessage(p, "&7&oSwitched to &fGLOBAL &7&ochat channel.");
-                            return true;
-                    }
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("kick")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan kick <playerName>");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("passowner")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan passowner <playerName>");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("tag")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan tag <newTag>");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("color")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan color <newTagColor>");
-                for (Color color : Color.values()) {
-                    lib.sendMessage(p, "&7|&e)&r " + getUtil().getColor(color.name().replaceAll("_", "")) + color.name());
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("nick") || args0.equalsIgnoreCase("nickname")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan nickname <newNickname>");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("promote")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan promote <playerName>");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("demote")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan demote <playerName>");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("ally")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan ally <clanName>");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("enemy")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan enemy <clanName>");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("leave")) {
-                
-                getUtil().leave(p);
-                HempfestClans.chatMode.put(p, "GLOBAL");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("message")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan message <message>");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("base")) {
-                
-                if (getUtil().getClan(p) != null) {
-                    getUtil().teleportBase(p);
-                    lib.sendMessage(p, "&e&oWelcome to the clan base... i think..");
-                } else {
-                    lib.sendMessage(p, lib.notInClan());
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("setbase")) {
-                
-                Clan clan = HempfestClans.clanManager(p);
-                if (getUtil().getRankPower(p) >= getUtil().baseClearance()) {
-                    clan.updateBase(p.getLocation());
-                } else {
-                    lib.sendMessage(p, "&c&oYou do not have clan clearance.");
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("info") || args0.equalsIgnoreCase("i")) {
-                
-                if (getUtil().getClan(p) != null) {
-                    getUtil().getMyClanInfo(p, 1);
-                } else {
-                    lib.sendMessage(p, lib.notInClan());
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("members")) {
-                
-                if (getUtil().getClan(p) != null) {
-                    getUtil().getMyClanInfo(p, 1);
-                } else {
-                    lib.sendMessage(p, lib.notInClan());
-                    return true;
-                }
-                return true;
-            }
-            try {
+			if (args0.equalsIgnoreCase("unclaim")) {
+				if (!p.hasPermission(this.getPermission() + ".claim.remove")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".claim.remove" + '"');
+					return true;
+				}
+				if (Claim.claimUtil.claimingAllowed()) {
+					if (getUtil().getClan(p) != null) {
+						if (getUtil().getRankPower(p) >= getUtil().claimingClearance()) {
+							getClaim().remove(p);
+							HempfestClans.getInstance().claimMap.clear();
+							Claim.claimUtil.loadClaims();
+						} else {
+							lib.sendMessage(p, "&c&oYou do not have clan clearance.");
+						}
+					} else {
+						lib.sendMessage(p, lib.notInClan());
+						return true;
+					}
+				} else {
+					lib.sendMessage(p, "&c&oYour server doesn't allow the use of clan land-claiming.");
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("chat")) {
+				if (!p.hasPermission(this.getPermission() + ".chat")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".chat" + '"');
+					return true;
+				}
+				if (getUtil().getClan(p) != null) {
+					switch (HempfestClans.chatMode.get(p)) {
+						case "GLOBAL":
+							HempfestClans.chatMode.put(p, "CLAN");
+							lib.sendMessage(p, "&7&oSwitched to &3CLAN &7&ochat channel.");
+							return true;
+						case "CLAN":
+							HempfestClans.chatMode.put(p, "ALLY");
+							lib.sendMessage(p, "&7&oSwitched to &aALLY &7&ochat channel.");
+							return true;
+						default:
+							HempfestClans.chatMode.put(p, "GLOBAL");
+							lib.sendMessage(p, "&7&oSwitched to &fGLOBAL &7&ochat channel.");
+							return true;
+					}
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("kick")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan kick <playerName>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("passowner")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan passowner <playerName>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("tag")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan tag <newTag>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("color")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan color <newTagColor>");
+				for (Color color : Color.values()) {
+					lib.sendMessage(p, "&7|&e)&r " + getUtil().getColor(color.name().replaceAll("_", "")) + color.name());
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("nick") || args0.equalsIgnoreCase("nickname")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan nickname <newNickname>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("promote")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan promote <playerName>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("demote")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan demote <playerName>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("ally")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan ally <clanName>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("enemy")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan enemy <clanName>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("leave")) {
+				if (!p.hasPermission(this.getPermission() + ".leave")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".roster" + '"');
+					return true;
+				}
+				getUtil().leave(p);
+				HempfestClans.chatMode.put(p, "GLOBAL");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("message")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan message <message>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("base")) {
+				if (!p.hasPermission(this.getPermission() + ".base")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".base" + '"');
+					return true;
+				}
+				if (getUtil().getClan(p) != null) {
+					if (HempfestClans.clanManager(p).getBase() != null) {
+						getUtil().teleportBase(p);
+						lib.sendMessage(p, "&e&oWelcome to the clan base.");
+					} else {
+						lib.sendMessage(p, "&c&oYour clan doesn't have a set base.");
+						return true;
+					}
+				} else {
+					lib.sendMessage(p, lib.notInClan());
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("setbase")) {
+				if (!p.hasPermission(this.getPermission() + ".base.set")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".base.set" + '"');
+					return true;
+				}
+				Clan clan = HempfestClans.clanManager(p);
+				if (getUtil().getRankPower(p) >= getUtil().baseClearance()) {
+					clan.updateBase(p.getLocation());
+				} else {
+					lib.sendMessage(p, "&c&oYou do not have clan clearance.");
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("info") || args0.equalsIgnoreCase("i")) {
+				if (!p.hasPermission(this.getPermission() + ".info")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".info" + '"');
+					return true;
+				}
+				if (getUtil().getClan(p) != null) {
+					getUtil().getMyClanInfo(p, 1);
+				} else {
+					lib.sendMessage(p, lib.notInClan());
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("members")) {
 
-                int page = Integer.parseInt(args0);
-                PaginatedAssortment helpAssist = new PaginatedAssortment(p, helpMenu());
-                lib.sendMessage(p, "&r- Command help. (&7/clan #page&r)");
-                helpAssist.setListTitle("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-                helpAssist.setListBorder("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
-                helpAssist.setNavigateCommand("c");
-                helpAssist.setLinesPerPage(5);
-                helpAssist.export(page);
-            } catch (NumberFormatException e) {
-                lib.sendMessage(p, "&c&oInvalid page number!");
-            }
-            return true;
-        }
+				if (getUtil().getClan(p) != null) {
+					getUtil().getMyClanInfo(p, 1);
+				} else {
+					lib.sendMessage(p, lib.notInClan());
+					return true;
+				}
+				return true;
+			}
+			try {
 
-        if (length == 2) {
-            String args0 = args[0];
-            String args1 = args[1];
-            if (args0.equalsIgnoreCase("create")) {
-                
-                if (!isAlphaNumeric(args1)) {
-                    lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
-                    return true;
-                }
-                if (Clan.clanUtil.getAllClanNames().contains(args1)) {
-                    lib.sendMessage(p, "&c&oA clan with this name already exists! Try another.");
-                    return true;
-                }
-                getUtil().create(p, args1, null);
-                return true;
-            }
-            if (args0.equalsIgnoreCase("nick") || args0.equalsIgnoreCase("nickname")) {
-                
-                if (getUtil().getClan(p) != null) {
-                    if (!isAlphaNumeric(args1)) {
-                        lib.sendMessage(p, "&c&oInvalid nickname. Must contain only Alpha-numeric characters.");
-                        return true;
-                    }
-                    getUtil().changeNickname(p, args1);
-                } else {
-                    lib.sendMessage(p, lib.notInClan());
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("top")) {
-                
-                try {
-                    getUtil().getLeaderboard(p, Integer.parseInt(args1));
-                } catch (IllegalFormatException e) {
-                lib.sendMessage(p, "&c&oInvalid page number!");
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("passowner")) {
-                
-                if (getUtil().getClan(p) != null) {
-                    getUtil().transferOwner(p, args1);
-                } else {
-                    lib.sendMessage(p, lib.notInClan());
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("list")) {
-                
-                try {
-                    lib.paginatedClanList(p, getUtil().getAllClanNames(), "c list", Integer.parseInt(args1), 10);
-                } catch (NumberFormatException e) {
-                    lib.sendMessage(p, "&c&oInvalid page number!");
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("join")) {
-                
-                getUtil().joinClan(p, args1, "none");
-                return true;
-            }
-            if (args0.equalsIgnoreCase("tag")) {
+				int page = Integer.parseInt(args0);
+				PaginatedAssortment helpAssist = new PaginatedAssortment(p, helpMenu());
+				lib.sendMessage(p, "&r- Command help. (&7/clan #page&r)");
+				helpAssist.setListTitle("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+				helpAssist.setListBorder("&7&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+				helpAssist.setNavigateCommand("c");
+				helpAssist.setLinesPerPage(5);
+				helpAssist.export(page);
+			} catch (NumberFormatException e) {
+				lib.sendMessage(p, "&c&oInvalid page number!");
+			}
+			return true;
+		}
 
-                if (getUtil().getClan(p) != null) {
-                    Clan clan = HempfestClans.clanManager(p);
-                    if (getUtil().getRankPower(p) >= getUtil().tagChangeClearance()) {
-                        if (!isAlphaNumeric(args1)) {
-                            lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
-                            return true;
-                        }
-                        if (args1.length() > HempfestClans.getMain().getConfig().getInt("Formatting.tag-size")) {
-                            getUtil().sendMessage(p, "&c&oThe clan name you have chosen is too long! Max tag length reached.");
-                            return true;
-                        }
-                        clan.changeTag(args1);
-                    } else {
-                        lib.sendMessage(p, "&c&oYou do not have clan clearance.");
-                    }
-                } else {
-                    lib.sendMessage(p, lib.notInClan());
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("color")) {
+		if (length == 2) {
+			String args0 = args[0];
+			String args1 = args[1];
+			if (args0.equalsIgnoreCase("create")) {
+				if (!p.hasPermission(this.getPermission() + ".create")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".create" + '"');
+					return true;
+				}
+				if (!isAlphaNumeric(args1)) {
+					lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
+					return true;
+				}
+				if (Clan.clanUtil.getAllClanNames().contains(args1)) {
+					lib.sendMessage(p, "&c&oA clan with this name already exists! Try another.");
+					return true;
+				}
+				getUtil().create(p, args1, null);
+				return true;
+			}
+			if (args0.equalsIgnoreCase("nick") || args0.equalsIgnoreCase("nickname")) {
+				if (!p.hasPermission(this.getPermission() + ".nick")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".nick" + '"');
+					return true;
+				}
+				if (getUtil().getClan(p) != null) {
+					if (!isAlphaNumeric(args1)) {
+						lib.sendMessage(p, "&c&oInvalid nickname. Must contain only Alpha-numeric characters.");
+						return true;
+					}
+					getUtil().changeNickname(p, args1);
+				} else {
+					lib.sendMessage(p, lib.notInClan());
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("top")) {
+				if (!p.hasPermission(this.getPermission() + ".top")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".top" + '"');
+					return true;
+				}
+				try {
+					getUtil().getLeaderboard(p, Integer.parseInt(args1));
+				} catch (IllegalFormatException e) {
+					lib.sendMessage(p, "&c&oInvalid page number!");
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("passowner")) {
+				if (!p.hasPermission(this.getPermission() + ".passowner")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".passowner" + '"');
+					return true;
+				}
+				if (getUtil().getClan(p) != null) {
+					getUtil().transferOwner(p, args1);
+				} else {
+					lib.sendMessage(p, lib.notInClan());
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("list")) {
+				if (!p.hasPermission(this.getPermission() + ".roster")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".roster" + '"');
+					return true;
+				}
+				try {
+					lib.paginatedClanList(p, getUtil().getAllClanNames(), "c list", Integer.parseInt(args1), 10);
+				} catch (NumberFormatException e) {
+					lib.sendMessage(p, "&c&oInvalid page number!");
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("join")) {
+				if (!p.hasPermission(this.getPermission() + ".join")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".join" + '"');
+					return true;
+				}
+				getUtil().joinClan(p, args1, "none");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("tag")) {
+				if (!p.hasPermission(this.getPermission() + ".tag")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".tag" + '"');
+					return true;
+				}
+				if (getUtil().getClan(p) != null) {
+					Clan clan = HempfestClans.clanManager(p);
+					if (getUtil().getRankPower(p) >= getUtil().tagChangeClearance()) {
+						if (!isAlphaNumeric(args1)) {
+							lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
+							return true;
+						}
+						if (args1.length() > HempfestClans.getMain().getConfig().getInt("Formatting.tag-size")) {
+							getUtil().sendMessage(p, "&c&oThe clan name you have chosen is too long! Max tag length reached.");
+							return true;
+						}
+						clan.changeTag(args1);
+					} else {
+						lib.sendMessage(p, "&c&oYou do not have clan clearance.");
+					}
+				} else {
+					lib.sendMessage(p, lib.notInClan());
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("color")) {
+				if (!p.hasPermission(this.getPermission() + ".color")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".color" + '"');
+					return true;
+				}
+				Clan clan = HempfestClans.clanManager(p);
+				if (getUtil().getClan(p) != null) {
+					if (getUtil().getRankPower(p) >= getUtil().colorChangeClearance()) {
+						clan.changeColor(args1.replaceAll("_", ""));
+					} else {
+						lib.sendMessage(p, "&c&oYou do not have clan clearance.");
+					}
+				} else {
+					lib.sendMessage(p, lib.notInClan());
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("promote")) {
+				if (!p.hasPermission(this.getPermission() + ".promote")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".promote" + '"');
+					return true;
+				}
+				DataManager dm = new DataManager("Config", "Configuration");
+				Config main = dm.getFile(ConfigType.MISC_FILE);
+				String adminRank = main.getConfig().getString("Formatting.Styles.Full.Admin");
+				String ownerRank = main.getConfig().getString("Formatting.Styles.Full.Owner");
+				if (getUtil().getClan(p) != null) {
+					if (getUtil().getRankPower(p) >= getUtil().positionClearance()) {
+						Player target = Bukkit.getPlayer(args1);
+						if (target == null) {
+							lib.sendMessage(p, "&c&oPlayer not online. Unable to promote.");
+							return true;
+						}
+						if (getUtil().getRankPower(target) >= 2) {
+							lib.sendMessage(p, "&c&oThis player is rank &b&o" + adminRank.toUpperCase() + " &c&omost powerful next to &b&l" + ownerRank);
+							return true;
+						}
+						getUtil().promotePlayer(target);
+					} else {
+						lib.sendMessage(p, "&c&oYou do not have clan clearance.");
+						return true;
+					}
+				} else {
+					lib.sendMessage(p, lib.notInClan());
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("demote")) {
+				if (!p.hasPermission(this.getPermission() + ".demote")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".demote" + '"');
+					return true;
+				}
+				if (getUtil().getClan(p) != null) {
+					if (getUtil().getRankPower(p) >= getUtil().positionClearance()) {
+						Player target = Bukkit.getPlayer(args1);
+						if (target == null) {
+							lib.sendMessage(p, "&c&oPlayer not online. Unable to demote.");
+							return true;
+						}
+						if (getUtil().getRankPower(target) >= getUtil().getRankPower(p)) {
+							lib.sendMessage(p, "&c&oThis player has more or the same level power as you.");
+							return true;
+						}
+						getUtil().demotePlayer(target);
+					} else {
+						lib.sendMessage(p, "&c&oYou do not have clan clearance.");
+						return true;
+					}
+				} else {
+					lib.sendMessage(p, lib.notInClan());
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("unclaim")) {
+				if (Claim.claimUtil.claimingAllowed()) {
+					if (args1.equalsIgnoreCase("all")) {
+						if (!p.hasPermission(this.getPermission() + ".claim.removeall")) {
+							lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".claim.removeall" + '"');
+							return true;
+						}
+						if (getUtil().getClan(p) != null) {
+							if (getUtil().getRankPower(p) >= getUtil().unclaimAllClearance()) {
+								getClaim().removeAll(p);
+								HempfestClans.getInstance().claimMap.clear();
+								Claim.claimUtil.loadClaims();
+							} else {
+								lib.sendMessage(p, "&c&oYou do not have clan clearance.");
+								return true;
+							}
+						} else {
+							lib.sendMessage(p, lib.notInClan());
+							return true;
+						}
+						return true;
+					}
+				} else {
+					lib.sendMessage(p, "&c&oYour server doesn't allow the use of clan land-claiming.");
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("password") || args0.equalsIgnoreCase("pass")) {
+				if (!p.hasPermission(this.getPermission() + ".password")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".password" + '"');
+					return true;
+				}
+				Clan clan = HempfestClans.clanManager(p);
+				if (getUtil().getClan(p) != null) {
+					if (getUtil().getRankPower(p) >= getUtil().passwordClearance()) {
+						if (!isAlphaNumeric(args1)) {
+							lib.sendMessage(p, "&c&oInvalid password. Must contain only Alpha-numeric characters.");
+							return true;
+						}
+						clan.changePassword(args1);
+					} else {
+						lib.sendMessage(p, "&c&oYou do not have clan clearance.");
+						return true;
+					}
+				} else {
+					lib.sendMessage(p, lib.notInClan());
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("kick")) {
+				if (!p.hasPermission(this.getPermission() + ".kick")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".kick" + '"');
+					return true;
+				}
+				if (getUtil().getClan(p) != null) {
+					if (getUtil().getRankPower(p) >= getUtil().kickClearance()) {
+						Player target = Bukkit.getPlayer(args1);
+						if (target == null) {
+							lib.sendMessage(p, "&c&oThis player doesn't exist or isn't online.");
+							return true;
+						}
+						Clan clan = HempfestClans.clanManager(p);
+						if (!Arrays.asList(clan.getMembers()).contains(target.getName())) {
+							lib.sendMessage(p, "&c&oThis player isn't a member of your clan.");
+							return true;
+						}
+						if (getUtil().getRankPower(target) > getUtil().getRankPower(p)) {
+							lib.sendMessage(p, "&c&oThis player has more power than you.");
+							return true;
+						}
+						getUtil().kickPlayer(target);
+						String format = String.format(HempfestClans.getMain().getConfig().getString("Response.kick-out"), target.getName());
+						String format1 = String.format(HempfestClans.getMain().getConfig().getString("Response.kick-in"), getUtil().getClanTag(getUtil().getClan(p)));
+						clan.messageClan(format);
+						lib.sendMessage(target, format1);
+					} else {
+						lib.sendMessage(p, "&c&oYou do not have clan clearance.");
+						return true;
+					}
+				} else {
+					lib.sendMessage(p, lib.notInClan());
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("members")) {
 
-                Clan clan = HempfestClans.clanManager(p);
-                if (getUtil().getClan(p) != null) {
-                    if (getUtil().getRankPower(p) >= getUtil().colorChangeClearance()) {
-                        clan.changeColor(args1.replaceAll("_", ""));
-                    } else {
-                        lib.sendMessage(p, "&c&oYou do not have clan clearance.");
-                    }
-                } else {
-                    lib.sendMessage(p, lib.notInClan());
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("promote")) {
-                
-                DataManager dm = new DataManager("Config", "Configuration");
-                Config main = dm.getFile(ConfigType.MISC_FILE);
-                String adminRank = main.getConfig().getString("Formatting.Styles.Full.Admin");
-                String ownerRank = main.getConfig().getString("Formatting.Styles.Full.Owner");
-                if (getUtil().getClan(p) != null) {
-                    if (getUtil().getRankPower(p) >= getUtil().positionClearance()) {
-                        Player target = Bukkit.getPlayer(args1);
-                        if (target == null) {
-                            lib.sendMessage(p, "&c&oPlayer not online. Unable to promote.");
-                            return true;
-                        }
-                        if (getUtil().getRankPower(target) >= 2) {
-                            lib.sendMessage(p, "&c&oThis player is rank &b&o" + adminRank.toUpperCase() + " &c&omost powerful next to &b&l" + ownerRank);
-                            return true;
-                        }
-                        getUtil().promotePlayer(target);
-                    } else {
-                        lib.sendMessage(p, "&c&oYou do not have clan clearance.");
-                        return true;
-                    }
-                } else {
-                    lib.sendMessage(p, lib.notInClan());
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("demote")) {
-                
-                if (getUtil().getClan(p) != null) {
-                    if (getUtil().getRankPower(p) >= getUtil().positionClearance()) {
-                        Player target = Bukkit.getPlayer(args1);
-                        if (target == null) {
-                            lib.sendMessage(p, "&c&oPlayer not online. Unable to demote.");
-                            return true;
-                        }
-                        if (getUtil().getRankPower(target) >= getUtil().getRankPower(p)) {
-                            lib.sendMessage(p, "&c&oThis player has more or the same level power as you.");
-                            return true;
-                        }
-                        getUtil().demotePlayer(target);
-                    } else {
-                        lib.sendMessage(p, "&c&oYou do not have clan clearance.");
-                        return true;
-                    }
-                } else {
-                    lib.sendMessage(p, lib.notInClan());
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("unclaim")) {
-                if (Claim.claimUtil.claimingAllowed()) {
-                    if (args1.equalsIgnoreCase("all")) {
-                        
-                        if (getUtil().getClan(p) != null) {
-                            if (getUtil().getRankPower(p) >= getUtil().unclaimAllClearance()) {
-                                getClaim().removeAll(p);
-                                HempfestClans.getInstance().claimMap.clear();
-                                Claim.claimUtil.loadClaims();
-                            } else {
-                                lib.sendMessage(p, "&c&oYou do not have clan clearance.");
-                                return true;
-                            }
-                        } else {
-                            lib.sendMessage(p, lib.notInClan());
-                            return true;
-                        }
-                        return true;
-                    }
-                } else {
-                    lib.sendMessage(p, "&c&oYour server doesn't allow the use of clan land-claiming.");
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("password") || args0.equalsIgnoreCase("pass")) {
-                
-                Clan clan = HempfestClans.clanManager(p);
-                if (getUtil().getClan(p) != null) {
-                    if (getUtil().getRankPower(p) >= getUtil().passwordClearance()) {
-                        if (!isAlphaNumeric(args1)) {
-                            lib.sendMessage(p, "&c&oInvalid password. Must contain only Alpha-numeric characters.");
-                            return true;
-                        }
-                        clan.changePassword(args1);
-                    } else {
-                        lib.sendMessage(p, "&c&oYou do not have clan clearance.");
-                        return true;
-                    }
-                } else {
-                    lib.sendMessage(p, lib.notInClan());
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("kick")) {
-                
-                if (getUtil().getClan(p) != null) {
-                    if (getUtil().getRankPower(p) >= getUtil().kickClearance()) {
-                        Player target = Bukkit.getPlayer(args1);
-                        if (target == null) {
-                            lib.sendMessage(p, "&c&oThis player doesn't exist or isn't online.");
-                            return true;
-                        }
-                        Clan clan = HempfestClans.clanManager(p);
-                        if (!Arrays.asList(clan.getMembers()).contains(target.getName())) {
-                            lib.sendMessage(p, "&c&oThis player isn't a member of your clan.");
-                            return true;
-                        }
-                        if (getUtil().getRankPower(target) > getUtil().getRankPower(p)) {
-                            lib.sendMessage(p, "&c&oThis player has more power than you.");
-                            return true;
-                        }
-                        getUtil().kickPlayer(target);
-                        String format = String.format(HempfestClans.getMain().getConfig().getString("Response.kick-out"), target.getName());
-                        String format1 = String.format(HempfestClans.getMain().getConfig().getString("Response.kick-in"), getUtil().getClanTag(getUtil().getClan(p)));
-                        clan.messageClan(format);
-                        lib.sendMessage(target, format1);
-                    } else {
-                        lib.sendMessage(p, "&c&oYou do not have clan clearance.");
-                        return true;
-                    }
-                } else {
-                    lib.sendMessage(p, lib.notInClan());
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("members")) {
-                
-                if (getUtil().getClan(p) != null) {
-                    try {
-                        int page = Integer.parseInt(args1);
-                        getUtil().getMyClanInfo(p, page);
-                    } catch (NumberFormatException e) {
-                        lib.sendMessage(p, "&c&oInvalid page number!");
-                    }
-                } else {
-                    lib.sendMessage(p, lib.notInClan());
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("info") || args0.equalsIgnoreCase("i")) {
-                
-                Player target = Bukkit.getPlayer(args1);
-                if (target == null) {
-                    if (!getUtil().getAllClanNames().contains(args1)) {
-                        lib.sendMessage(p, "&c&oThis clan does not exist!");
-                        return true;
-                    }
-                    if (args1.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
-                        getUtil().getMyClanInfo(p, 1);
-                        return true;
-                    }
-                    Clan clan = new Clan(getUtil().getClanID(args1));
-                        for (String info : clan.getClanInfo()) {
-                            sendMessage(p, info);
-                        }
-                    if (HempfestClans.idMode.containsKey(p) && HempfestClans.idMode.get(p).equals("ENABLED")) {
-                        lib.sendMessage(p, "&7#&fID &7of clan " + '"' + args1 + '"' + " is: &e&o" + getUtil().getClanID(args1));
-                    }
-                return true;
-                }
-                if (getUtil().getClan(target) != null) {
-                    Clan clanIndex = HempfestClans.clanManager(target);
-                    String clanName = getUtil().getClanTag(getUtil().getClan(target));
-                        for (String info : clanIndex.getClanInfo()) {
-                            sendMessage(p, info);
-                        }
-                    if (HempfestClans.idMode.containsKey(p) && HempfestClans.idMode.get(p).equals("ENABLED")) {
-                        lib.sendMessage(p, "&7#&fID &7of player " + '"' + target.getName() + '"' +  " clan " + '"' + clanName + '"' + " is: &e&o" + getUtil().getClanID(clanName));
-                    }
-                } else {
-                    lib.sendMessage(p, target.getName() + " &c&oisn't in a clan.");
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("message")) {
-                
-                Clan clan = HempfestClans.clanManager(p);
-                if (getUtil().getClan(p) != null)
-                clan.messageClan(p.getName() + " say's : " + args1);
-                return true;
-            }
-            if (args0.equalsIgnoreCase("ally")) {
-                Bukkit.dispatchCommand(p, "c ally add " + args1);
-                return true;
-            }
-            if (args0.equalsIgnoreCase("enemy")) {
-                Bukkit.dispatchCommand(p, "c enemy add " + args1);
-                return true;
-            }
-            lib.sendMessage(p, "Unknown sub-command. Use " + '"' + "/clan" + '"' + " for help.");
-            return true;
-        }
+				if (getUtil().getClan(p) != null) {
+					try {
+						int page = Integer.parseInt(args1);
+						getUtil().getMyClanInfo(p, page);
+					} catch (NumberFormatException e) {
+						lib.sendMessage(p, "&c&oInvalid page number!");
+					}
+				} else {
+					lib.sendMessage(p, lib.notInClan());
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("info") || args0.equalsIgnoreCase("i")) {
+				if (!p.hasPermission(this.getPermission() + ".info")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".info" + '"');
+					return true;
+				}
+				Player target = Bukkit.getPlayer(args1);
+				if (target == null) {
+					if (!getUtil().getAllClanNames().contains(args1)) {
+						lib.sendMessage(p, "&c&oThis clan does not exist!");
+						return true;
+					}
+					if (args1.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
+						getUtil().getMyClanInfo(p, 1);
+						return true;
+					}
+					Clan clan = new Clan(getUtil().getClanID(args1));
+					for (String info : clan.getClanInfo()) {
+						sendMessage(p, info);
+					}
+					if (HempfestClans.idMode.containsKey(p) && HempfestClans.idMode.get(p).equals("ENABLED")) {
+						lib.sendMessage(p, "&7#&fID &7of clan " + '"' + args1 + '"' + " is: &e&o" + getUtil().getClanID(args1));
+					}
+					return true;
+				}
+				if (getUtil().getClan(target) != null) {
+					Clan clanIndex = HempfestClans.clanManager(target);
+					String clanName = getUtil().getClanTag(getUtil().getClan(target));
+					for (String info : clanIndex.getClanInfo()) {
+						sendMessage(p, info);
+					}
+					if (HempfestClans.idMode.containsKey(p) && HempfestClans.idMode.get(p).equals("ENABLED")) {
+						lib.sendMessage(p, "&7#&fID &7of player " + '"' + target.getName() + '"' + " clan " + '"' + clanName + '"' + " is: &e&o" + getUtil().getClanID(clanName));
+					}
+				} else {
+					lib.sendMessage(p, target.getName() + " &c&oisn't in a clan.");
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("message")) {
+				if (!p.hasPermission(this.getPermission() + ".broadcast")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".broadcast" + '"');
+					return true;
+				}
+				Clan clan = HempfestClans.clanManager(p);
+				if (getUtil().getClan(p) != null)
+					clan.messageClan(p.getName() + " say's : " + args1);
+				return true;
+			}
+			if (args0.equalsIgnoreCase("ally")) {
+				Bukkit.dispatchCommand(p, "c ally add " + args1);
+				return true;
+			}
+			if (args0.equalsIgnoreCase("enemy")) {
+				Bukkit.dispatchCommand(p, "c enemy add " + args1);
+				return true;
+			}
+			lib.sendMessage(p, "Unknown sub-command. Use " + '"' + "/clan" + '"' + " for help.");
+			return true;
+		}
 
-        if (length == 3) {
-            String args0 = args[0];
-            String args1 = args[1];
-            String args2 = args[2];
-            if (args0.equalsIgnoreCase("create")) {
-                if (!isAlphaNumeric(args1)) {
-                    lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
-                    return true;
-                }
-                if (Clan.clanUtil.getAllClanNames().contains(args1)) {
-                    lib.sendMessage(p, "&c&oA clan with this name already exists! Try another.");
-                    return true;
-                }
-                getUtil().create(p, args1, args2);
-                return true;
-            }
-            if (args0.equalsIgnoreCase("join")) {
-                
-                getUtil().joinClan(p, args1, args2);
-                return true;
-            }
-            if (args0.equalsIgnoreCase("message")) {
-                
-                if (getUtil().getClan(p) != null) {
-                    Clan clan = HempfestClans.clanManager(p);
-                    clan.messageClan(p.getName() + " say's : " + args1 + " " + args2);
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("enemy")) {
-                
-                if (args1.equalsIgnoreCase("add")) {
-                    if (getUtil().getClan(p) != null) {
-                        if (!getUtil().getAllClanNames().contains(args2)) {
-                            lib.sendMessage(p, "&c&oThis clan does not exist!");
-                            return true;
-                        }
-                        if (args2.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
-                            lib.sendMessage(p, "&c&oYou can not ally your own clan!");
-                            return true;
-                        }
-                        String targetClan = getUtil().getClanID(args2);
-                        if (getUtil().getEnemies(getUtil().getClan(p)).contains(targetClan)) {
-                            lib.sendMessage(p, "&c&oYou are already enemies with this clan.\nTo become neutral type &7/clan enemy remove " + args2);
-                            return true;
-                        }
-                        if (getUtil().isNeutral(getUtil().getClan(p), targetClan)) {
-                            getUtil().addEnemy(getUtil().getClan(p), targetClan);
-                            return true;
-                        }
-                        if (getUtil().getAllies(getUtil().getClan(p)).contains(targetClan)) {
-                            getUtil().addEnemy(getUtil().getClan(p), targetClan);
-                            return true;
-                        }
-                    }
-                    return true;
-                }
-                if (args1.equalsIgnoreCase("remove")) {
-                    if (getUtil().getClan(p) != null) {
-                        if (!getUtil().getAllClanNames().contains(args2)) {
-                            lib.sendMessage(p, "&c&oThis clan does not exist!");
-                            return true;
-                        }
-                        if (args2.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
-                            lib.sendMessage(p, "&c&oYou can not ally your own clan!");
-                            return true;
-                        }
-                        String targetClan = getUtil().getClanID(args2);
-                        if (getUtil().getEnemies(targetClan).contains(getUtil().getClan(p))) {
-                            lib.sendMessage(p, "&c&oThis clan has marked you as an &4enemy");
-                            return true;
-                        }
-                        if (!getUtil().getEnemies(getUtil().getClan(p)).contains(targetClan)) {
-                            lib.sendMessage(p, "&f&oYou are not enemies with this clan.");
-                            return true;
-                        }
-                        getUtil().removeEnemy(getUtil().getClan(p), targetClan);
-                    } else {
-                        lib.sendMessage(p, lib.notInClan());
-                        return true;
-                    }
-                    return true;
-                }
-                return true;
-            }
-            if (args0.equalsIgnoreCase("ally")) {
-                
-                if (args1.equalsIgnoreCase("add")) {
-                    if (getUtil().getClan(p) != null) {
-                        if (!getUtil().getAllClanNames().contains(args2)) {
-                            lib.sendMessage(p, "&c&oThis clan does not exist!");
-                            return true;
-                        }
-                        if (args2.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
-                            lib.sendMessage(p, "&c&oYou can not ally your own clan!");
-                            return true;
-                        }
-                        String targetClan = getUtil().getClanID(args2);
-                        if (getUtil().getAllies(getUtil().getClan(p)).contains(targetClan)) {
-                            lib.sendMessage(p, "&a&oYou are already allies\nTo become neutral type &7/clan ally remove " + args2);
-                            return true;
-                        }
-                        if (getUtil().getEnemies(targetClan).contains(getUtil().getClan(p))) {
-                            lib.sendMessage(p, "&c&oClan " + '"' + "&4" + args2 + "&c&o" + '"' + " is currently enemies with you.");
-                            return true;
-                        }
-                        if (getUtil().isNeutral(getUtil().getClan(p), targetClan)) {
-                            getUtil().sendAllyRequest(p, getUtil().getClan(p), targetClan);
-                            return true;
-                        }
-                        getUtil().addAlly(getUtil().getClan(p), targetClan);
-                    } else {
-                        lib.sendMessage(p, lib.notInClan());
-                        return true;
-                    }
-                    return true;
-                }
-                if (args1.equalsIgnoreCase("remove")) {
-                    if (getUtil().getClan(p) != null) {
-                        if (!getUtil().getAllClanNames().contains(args2)) {
-                            lib.sendMessage(p, "&c&oThis clan does not exist!");
-                            return true;
-                        }
-                        if (args2.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
-                            lib.sendMessage(p, "&c&oYou can not ally your own clan!");
-                            return true;
-                        }
-                        String targetClan = getUtil().getClanID(args2);
-                        if (getUtil().isNeutral(getUtil().getClan(p), targetClan)) {
-                            lib.sendMessage(p, "&f&oYou are currently neutral with this clan.");
-                            return true;
-                        }
-                        getUtil().removeAlly(getUtil().getClan(p), targetClan);
-                        getUtil().removeAlly(targetClan, getUtil().getClan(p));
-                        Clan clan = HempfestClans.clanManager(p);
-                        Clan clan2 = new Clan(targetClan);
-                        clan.messageClan("&f&oNow neutral with clan " + '"' + "&e" + getUtil().getClanTag(targetClan) + "&f&o" + '"');
-                        clan2.messageClan("&f&oNow neutral with clan " + '"' + "&e" + getUtil().getClanTag(getUtil().getClan(p)) + "&f&o" + '"');
-                    } else {
-                        lib.sendMessage(p, lib.notInClan());
-                        return true;
-                    }
-                    return true;
-                }
-            }
-            lib.sendMessage(p, "Unknown sub-command. Use " + '"' + "/clan" + '"' + " for help.");
-            return true;
-        }
+		if (length == 3) {
+			String args0 = args[0];
+			String args1 = args[1];
+			String args2 = args[2];
+			if (args0.equalsIgnoreCase("create")) {
+				if (!p.hasPermission(this.getPermission() + ".create")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".create" + '"');
+					return true;
+				}
+				if (!isAlphaNumeric(args1)) {
+					lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
+					return true;
+				}
+				if (Clan.clanUtil.getAllClanNames().contains(args1)) {
+					lib.sendMessage(p, "&c&oA clan with this name already exists! Try another.");
+					return true;
+				}
+				getUtil().create(p, args1, args2);
+				return true;
+			}
+			if (args0.equalsIgnoreCase("join")) {
+				if (!p.hasPermission(this.getPermission() + ".join")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".join" + '"');
+					return true;
+				}
+				getUtil().joinClan(p, args1, args2);
+				return true;
+			}
+			if (args0.equalsIgnoreCase("message")) {
+				if (!p.hasPermission(this.getPermission() + ".broadcast")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".broadcast" + '"');
+					return true;
+				}
+				if (getUtil().getClan(p) != null) {
+					Clan clan = HempfestClans.clanManager(p);
+					clan.messageClan(p.getName() + " say's : " + args1 + " " + args2);
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("enemy")) {
+				if (!p.hasPermission(this.getPermission() + ".enemy")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".enemy" + '"');
+					return true;
+				}
+				if (args1.equalsIgnoreCase("add")) {
+					if (getUtil().getClan(p) != null) {
+						if (!getUtil().getAllClanNames().contains(args2)) {
+							lib.sendMessage(p, "&c&oThis clan does not exist!");
+							return true;
+						}
+						if (args2.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
+							lib.sendMessage(p, "&c&oYou can not ally your own clan!");
+							return true;
+						}
+						String targetClan = getUtil().getClanID(args2);
+						if (getUtil().getEnemies(getUtil().getClan(p)).contains(targetClan)) {
+							lib.sendMessage(p, "&c&oYou are already enemies with this clan.\nTo become neutral type &7/clan enemy remove " + args2);
+							return true;
+						}
+						if (getUtil().isNeutral(getUtil().getClan(p), targetClan)) {
+							getUtil().addEnemy(getUtil().getClan(p), targetClan);
+							return true;
+						}
+						if (getUtil().getAllies(getUtil().getClan(p)).contains(targetClan)) {
+							getUtil().addEnemy(getUtil().getClan(p), targetClan);
+							return true;
+						}
+					}
+					return true;
+				}
+				if (args1.equalsIgnoreCase("remove")) {
+					if (getUtil().getClan(p) != null) {
+						if (!getUtil().getAllClanNames().contains(args2)) {
+							lib.sendMessage(p, "&c&oThis clan does not exist!");
+							return true;
+						}
+						if (args2.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
+							lib.sendMessage(p, "&c&oYou can not ally your own clan!");
+							return true;
+						}
+						String targetClan = getUtil().getClanID(args2);
+						if (getUtil().getEnemies(targetClan).contains(getUtil().getClan(p))) {
+							lib.sendMessage(p, "&c&oThis clan has marked you as an &4enemy");
+							return true;
+						}
+						if (!getUtil().getEnemies(getUtil().getClan(p)).contains(targetClan)) {
+							lib.sendMessage(p, "&f&oYou are not enemies with this clan.");
+							return true;
+						}
+						getUtil().removeEnemy(getUtil().getClan(p), targetClan);
+					} else {
+						lib.sendMessage(p, lib.notInClan());
+						return true;
+					}
+					return true;
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("ally")) {
+				if (!p.hasPermission(this.getPermission() + ".ally")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".ally" + '"');
+					return true;
+				}
+				if (args1.equalsIgnoreCase("add")) {
+					if (getUtil().getClan(p) != null) {
+						if (!getUtil().getAllClanNames().contains(args2)) {
+							lib.sendMessage(p, "&c&oThis clan does not exist!");
+							return true;
+						}
+						if (args2.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
+							lib.sendMessage(p, "&c&oYou can not ally your own clan!");
+							return true;
+						}
+						String targetClan = getUtil().getClanID(args2);
+						if (getUtil().getAllies(getUtil().getClan(p)).contains(targetClan)) {
+							lib.sendMessage(p, "&a&oYou are already allies\nTo become neutral type &7/clan ally remove " + args2);
+							return true;
+						}
+						if (getUtil().getEnemies(targetClan).contains(getUtil().getClan(p))) {
+							lib.sendMessage(p, "&c&oClan " + '"' + "&4" + args2 + "&c&o" + '"' + " is currently enemies with you.");
+							return true;
+						}
+						if (getUtil().isNeutral(getUtil().getClan(p), targetClan)) {
+							getUtil().sendAllyRequest(p, getUtil().getClan(p), targetClan);
+							return true;
+						}
+						getUtil().addAlly(getUtil().getClan(p), targetClan);
+					} else {
+						lib.sendMessage(p, lib.notInClan());
+						return true;
+					}
+					return true;
+				}
+				if (args1.equalsIgnoreCase("remove")) {
+					if (getUtil().getClan(p) != null) {
+						if (!getUtil().getAllClanNames().contains(args2)) {
+							lib.sendMessage(p, "&c&oThis clan does not exist!");
+							return true;
+						}
+						if (args2.equals(getUtil().getClanTag(getUtil().getClan(p)))) {
+							lib.sendMessage(p, "&c&oYou can not ally your own clan!");
+							return true;
+						}
+						String targetClan = getUtil().getClanID(args2);
+						if (getUtil().isNeutral(getUtil().getClan(p), targetClan)) {
+							lib.sendMessage(p, "&f&oYou are currently neutral with this clan.");
+							return true;
+						}
+						getUtil().removeAlly(getUtil().getClan(p), targetClan);
+						getUtil().removeAlly(targetClan, getUtil().getClan(p));
+						Clan clan = HempfestClans.clanManager(p);
+						Clan clan2 = new Clan(targetClan);
+						clan.messageClan("&f&oNow neutral with clan " + '"' + "&e" + getUtil().getClanTag(targetClan) + "&f&o" + '"');
+						clan2.messageClan("&f&oNow neutral with clan " + '"' + "&e" + getUtil().getClanTag(getUtil().getClan(p)) + "&f&o" + '"');
+					} else {
+						lib.sendMessage(p, lib.notInClan());
+						return true;
+					}
+					return true;
+				}
+			}
+			lib.sendMessage(p, "Unknown sub-command. Use " + '"' + "/clan" + '"' + " for help.");
+			return true;
+		}
 
-        String args0 = args[0];
-        StringBuilder rsn = new StringBuilder();
-        for (int i = 1; i < args.length; i++)
-            rsn.append(args[i]).append(" ");
-        int stop = rsn.length() - 1;
-        if (args0.equalsIgnoreCase("message")) {
-            Clan clan = HempfestClans.clanManager(p);
-            clan.messageClan(p.getName() + " say's : " + rsn.substring(0, stop));
-            return true;
-        }
+		String args0 = args[0];
+		StringBuilder rsn = new StringBuilder();
+		for (int i = 1; i < args.length; i++)
+			rsn.append(args[i]).append(" ");
+		int stop = rsn.length() - 1;
+		if (args0.equalsIgnoreCase("message")) {
+			Clan clan = HempfestClans.clanManager(p);
+			clan.messageClan(p.getName() + " say's : " + rsn.substring(0, stop));
+			return true;
+		}
 
-        lib.sendMessage(p, "Unknown sub-command. Use " + '"' + "/clan" + '"' + " for help.");
-        return true;
+		lib.sendMessage(p, "Unknown sub-command. Use " + '"' + "/clan" + '"' + " for help.");
+		return true;
 
 
-    }
+	}
 }

@@ -77,16 +77,20 @@ public class ClaimInteractEvent extends ClanEventBuilder {
         if (getClaimUtil().isInClaim(location)) {
             if (getUtil().getClan(p) != null) {
                 if (!getClaim().getOwner().equals(getUtil().getClan(p))) {
-                    if (!getUtil().getAllies(getClaim().getOwner()).contains(getUtil().getClan(p))) {
-                        setCancelled(true);
-                        StringLibrary stringLibrary = new StringLibrary();
-                        stringLibrary.sendMessage(p, "&c&oYou cannot do this here, land owned by: " + getUtil().clanRelationColor(getUtil().getClan(p), getClaim().getOwner()) + getUtil().getClanTag(getClaim().getOwner()));
+                    if (!p.hasPermission("clans.claim.bypass")) {
+                        if (!getUtil().getAllies(getClaim().getOwner()).contains(getUtil().getClan(p))) {
+                            setCancelled(true);
+                            StringLibrary stringLibrary = new StringLibrary();
+                            stringLibrary.sendMessage(p, "&c&oYou cannot do this here, land owned by: " + getUtil().clanRelationColor(getUtil().getClan(p), getClaim().getOwner()) + getUtil().getClanTag(getClaim().getOwner()));
+                        }
                     }
                 }
             } else {
-                setCancelled(true);
-                StringLibrary stringLibrary = new StringLibrary();
-                stringLibrary.sendMessage(p, "&c&oYou cannot do this here, land owned by: &e&o&n" + getUtil().getClanTag(getClaim().getOwner()));
+                if (!p.hasPermission("clans.claim.bypass")) {
+                    setCancelled(true);
+                    StringLibrary stringLibrary = new StringLibrary();
+                    stringLibrary.sendMessage(p, "&c&oYou cannot do this here, land owned by: &e&o&n" + getUtil().getClanTag(getClaim().getOwner()));
+                }
             }
         }
     }

@@ -182,9 +182,9 @@ public class StringLibrary {
 					if ((((page * 6) + i + 1) == k) && (k != ((page * 6) + 6 + 1))) {
 						i++;
 						if (Bukkit.getServer().getVersion().contains("1.16")) {
-							sendComponent(p, new Text().textHoverable("&f- ", "&b&l" + entry, "&rRank: " + '"' + "&b" + clanUtil.getRankTag(clanUtil.getMemberRank(clanUtil.getClan(p), entry)) + "&r" + '"' + "\nK/D: &b&o" + clanUtil.getKD(clanUtil.getUserID(entry))));
+							sendComponent(p, new Text().textHoverable("&f- ", "&#2eab92&l" + entry, "&rRank: " + '"' + "&b" + clanUtil.getRankTag(clanUtil.getMemberRank(clanUtil.getClan(p), entry)) + "&r" + '"' + "\nK/D: &b&o" + clanUtil.getKD(clanUtil.getUserID(entry)) + "\n&rOnline: &b" + Bukkit.getOfflinePlayer(clanUtil.getUserID(entry)).isOnline()));
 						} else {
-							sendComponent(p, Text_R2.textHoverable("&f- ", "&b&l" + entry, "&rRank: " + '"' + "&b" + clanUtil.getRankTag(clanUtil.getMemberRank(clanUtil.getClan(p), entry)) + "&r" + '"' + "\nK/D: &b&o" + clanUtil.getKD(clanUtil.getUserID(entry))));
+							sendComponent(p, Text_R2.textHoverable("&f- ", "&b&l" + entry, "&rRank: " + '"' + "&b" + clanUtil.getRankTag(clanUtil.getMemberRank(clanUtil.getClan(p), entry)) + "&r" + '"' + "\nK/D: &b&o" + clanUtil.getKD(clanUtil.getUserID(entry)) + "\n&rOnline: &b" + Bukkit.getOfflinePlayer(clanUtil.getUserID(entry)).isOnline()));
 						}
 					}
 				}
