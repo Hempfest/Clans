@@ -84,6 +84,9 @@ public class WildernessInhabitantEvent extends AsyncClanEventBuilder implements 
 		return handlers;
 	}
 
+	public Player getPlayer() {
+		return p;
+	}
 
 	public boolean isTitlesAllowed() {
 		return titlesAllowed;
