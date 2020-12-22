@@ -317,20 +317,23 @@ public class CommandClan extends BukkitCommand {
             if (args0.equalsIgnoreCase("chat")) {
                 
                 if (getUtil().getClan(p) != null) {
-                    if (HempfestClans.chatMode.get(p).equals("GLOBAL")) {
-                        HempfestClans.chatMode.put(p, "CLAN");
-                        lib.sendMessage(p, "&7&oSwitched to &3CLAN &7&ochat channel.");
-                        return true;
-                    }
-                    if (HempfestClans.chatMode.get(p).equals("CLAN")) {
-                        HempfestClans.chatMode.put(p, "ALLY");
-                        lib.sendMessage(p, "&7&oSwitched to &aALLY &7&ochat channel.");
-                        return true;
-                    }
-                    if (HempfestClans.chatMode.get(p).equals("ALLY")) {
-                        HempfestClans.chatMode.put(p, "GLOBAL");
-                        lib.sendMessage(p, "&7&oSwitched to &fGLOBAL &7&ochat channel.");
-                        return true;
+                    switch (HempfestClans.chatMode.get(p)) {
+                        case "GLOBAL":
+                            HempfestClans.chatMode.put(p, "CLAN");
+                            lib.sendMessage(p, "&7&oSwitched to &3CLAN &7&ochat channel.");
+                            return true;
+                        case "CLAN":
+                            HempfestClans.chatMode.put(p, "ALLY");
+                            lib.sendMessage(p, "&7&oSwitched to &aALLY &7&ochat channel.");
+                            return true;
+                        case "ALLY":
+                            HempfestClans.chatMode.put(p, "GLOBAL");
+                            lib.sendMessage(p, "&7&oSwitched to &fGLOBAL &7&ochat channel.");
+                            return true;
+                        default:
+                            HempfestClans.chatMode.put(p, "GLOBAL");
+                            lib.sendMessage(p, "&7&oSwitched to &fGLOBAL &7&ochat channel.");
+                            return true;
                     }
                 }
                 return true;

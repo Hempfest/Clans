@@ -41,7 +41,6 @@ public class CommandHelpEvent extends ClanEventBuilder {
 		return helpMenu;
 	}
 
-
 	public void insert(String line) {
 		helpMenu.add(stringLibrary().color(line));
 	}

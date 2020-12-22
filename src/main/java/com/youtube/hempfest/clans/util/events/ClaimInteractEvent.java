@@ -7,10 +7,12 @@ import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.listener.ClanEventBuilder;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
 import org.bukkit.event.HandlerList;
+import org.bukkit.inventory.ItemStack;
 
-public class ClaimBuildEvent extends ClanEventBuilder {
+public class ClaimInteractEvent extends ClanEventBuilder {
 
     private static final HandlerList handlers = new HandlerList();
 
@@ -19,7 +21,7 @@ public class ClaimBuildEvent extends ClanEventBuilder {
 
     private boolean cancelled;
 
-    public ClaimBuildEvent(Player p, Location location) {
+    public ClaimInteractEvent(Player p, Location location) {
         this.p = p;
         this.location = location;
     }
@@ -60,7 +62,15 @@ public class ClaimBuildEvent extends ClanEventBuilder {
     }
 
     public Claim getClaim() {
-        return new Claim(getClaimUtil().getClaimID(location), p);
+        return new Claim(getClaimUtil().getClaimID(location));
+    }
+
+    public Block getBlock() {
+        return location.getBlock();
+    }
+
+    public ItemStack getItemInMainHand() {
+        return p.getInventory().getItemInMainHand();
     }
 
     public void handleCheck() {

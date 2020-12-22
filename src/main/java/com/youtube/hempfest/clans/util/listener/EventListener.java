@@ -7,8 +7,7 @@ import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.clans.util.events.ClaimBuildEvent;
-import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
+import com.youtube.hempfest.clans.util.events.ClaimInteractEvent;
 import com.youtube.hempfest.clans.util.events.CustomChatEvent;
 import com.youtube.hempfest.clans.util.events.PlayerKillPlayerEvent;
 import com.youtube.hempfest.clans.util.events.PlayerPunchPlayerEvent;
@@ -62,7 +61,7 @@ public class EventListener implements Listener {
     public void onPlayerLeave(PlayerQuitEvent e) {
         Player p = e.getPlayer();
         if (Clan.clanUtil.getClan(p) != null) {
-            Clan c = new Clan(Clan.clanUtil.getClan(p), p);
+            Clan c = HempfestClans.clanManager(p);
             for (String player : c.getMembers()) {
                 int clanSize = c.getMembers().length;
                 int offlineSize = 0;
@@ -75,10 +74,8 @@ public class EventListener implements Listener {
                 }
             }
         }
-        ClaimResidentEvent.claimID.remove(p.getName());
-        ClaimResidentEvent.invisibleResident.remove(p.getUniqueId());
-        ClaimResidentEvent.residents.remove(p.getName());
-        ClaimResidentEvent.tempStorage.remove(p.getUniqueId());
+        HempfestClans.clanManager.remove(p.getUniqueId());
+        HempfestClans.residents.removeIf(resident -> resident.getPlayer().getName().equals(p.getName()));
         HempfestClans.playerClan.remove(p.getUniqueId());
     }
 
@@ -148,7 +145,7 @@ public class EventListener implements Listener {
     public void onProjectileHit(ProjectileHitEvent event) {
     if (event.getEntity().getShooter() instanceof Player) {
         Player p = (Player) event.getEntity().getShooter();
-        ClaimBuildEvent e = new ClaimBuildEvent(p, event.getEntity().getLocation());
+        ClaimInteractEvent e = new ClaimInteractEvent(p, event.getEntity().getLocation());
         Bukkit.getPluginManager().callEvent(e);
         e.handleCheck();
         if (e.isCancelled()) {
@@ -159,7 +156,7 @@ public class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBucketRelease(PlayerBucketEmptyEvent event) {
-        ClaimBuildEvent e = new ClaimBuildEvent(event.getPlayer(), event.getBlock().getLocation());
+        ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
         e.handleCheck();
         event.setCancelled(e.isCancelled());
@@ -167,7 +164,7 @@ public class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBucketFill(PlayerBucketFillEvent event) {
-        ClaimBuildEvent e = new ClaimBuildEvent(event.getPlayer(), event.getBlock().getLocation());
+        ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
         e.handleCheck();
         event.setCancelled(e.isCancelled());
@@ -176,7 +173,7 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
-                ClaimBuildEvent e = new ClaimBuildEvent(event.getPlayer(), event.getClickedBlock().getLocation());
+                ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getClickedBlock().getLocation());
                 Bukkit.getPluginManager().callEvent(e);
                 e.handleCheck();
                 if (e.isCancelled()) {
@@ -188,7 +185,7 @@ public class EventListener implements Listener {
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockBreak(BlockBreakEvent event) {
 
-        ClaimBuildEvent e = new ClaimBuildEvent(event.getPlayer(), event.getBlock().getLocation());
+        ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
         e.handleCheck();
         if (e.isCancelled()) {
@@ -198,7 +195,7 @@ public class EventListener implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void onBlockPlace(BlockPlaceEvent event) {
-        ClaimBuildEvent e = new ClaimBuildEvent(event.getPlayer(), event.getBlock().getLocation());
+        ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
         e.handleCheck();
         if (e.isCancelled()) {

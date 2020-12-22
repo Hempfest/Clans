@@ -8,10 +8,10 @@ import com.youtube.hempfest.clans.util.Placeholders;
 import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
+import com.youtube.hempfest.clans.util.construct.Resident;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.clans.util.events.ClaimResidentEvent;
 import com.youtube.hempfest.clans.util.timers.SyncRaidShield;
 import com.youtube.hempfest.hempcore.command.CommandBuilder;
 import com.youtube.hempfest.hempcore.event.EventBuilder;
@@ -37,8 +37,6 @@ public class HempfestClans extends JavaPlugin {
 
 	public DataManager dataManager = new DataManager();
 
-	public List<String> tabList = new ArrayList<>();
-
 	public static HashMap<UUID, String> playerClan = new HashMap<>();
 
 	public static HashMap<UUID, Clan> clanManager = new HashMap<>();
@@ -52,6 +50,10 @@ public class HempfestClans extends JavaPlugin {
 	public static HashMap<String, List<String>> clanEnemies = new HashMap<>();
 
 	public static HashMap<String, List<String>> clanAllies = new HashMap<>();
+
+	public static List<Resident> residents = new ArrayList<>();
+
+	public static List<Player> wildernessInhabitants = new ArrayList<>();
 
 	public void onEnable() {
 		getLogger().info("▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
@@ -142,10 +144,7 @@ public class HempfestClans extends JavaPlugin {
 			stopMessage = messages.get(new Random().nextInt(messages.size())).replaceAll("\"", "");
 			log.info(String.format("[%s] - " + stopMessage, getDescription().getName()));
 		}
-		ClaimResidentEvent.claimID.clear();
-		ClaimResidentEvent.invisibleResident.clear();
-		ClaimResidentEvent.residents.clear();
-		ClaimResidentEvent.tempStorage.clear();
+		residents.clear();
 		idMode.clear();
 		playerClan.clear();
 		claimMap.clear();
@@ -153,6 +152,7 @@ public class HempfestClans extends JavaPlugin {
 		clanAllies.clear();
 		clanEnemies.clear();
 		clanManager.clear();
+		wildernessInhabitants.clear();
 		Clan.clanUtil.getClans.clear();
 	}
 
