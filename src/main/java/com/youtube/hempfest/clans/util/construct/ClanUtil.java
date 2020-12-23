@@ -381,7 +381,7 @@ public class ClanUtil extends StringLibrary {
 	}
 
 	public String getRankUpgrade(int rankPower) {
-		String result = "";
+		String result = null;
 		switch (rankPower) {
 			case 0:
 				result = "moderators";
@@ -394,7 +394,7 @@ public class ClanUtil extends StringLibrary {
 	}
 
 	public String getRankDowngrade(int rankPower) {
-		String result = "";
+		String result = null;
 		switch (rankPower) {
 			case 1:
 				result = "members";
@@ -453,12 +453,12 @@ public class ClanUtil extends StringLibrary {
 			if (clanUtil.getRankPower(target) != 3 || clanUtil.getRankPower(target) != 0) {
 				String currentRank = clanUtil.getCurrentRank(clanUtil.getRankPower(target));
 				List<String> array = clan.getConfig().getStringList(clanUtil.getRankDowngrade(clanUtil.getRankPower(target)));
-				List<String> array2 = clan.getConfig().getStringList(currentRank);
-				array2.remove(target.getName());
-				clan.getConfig().set(currentRank, array2);
 				if (!clanUtil.getRankDowngrade(clanUtil.getRankPower(target)).equals("members"))
 					array.add(target.getName());
 				clan.getConfig().set(clanUtil.getRankDowngrade(clanUtil.getRankPower(target)), array);
+				List<String> array2 = clan.getConfig().getStringList(currentRank);
+				array2.remove(target.getName());
+				clan.getConfig().set(currentRank, array2);
 				clan.saveConfig();
 				Clan clanIndex = HempfestClans.clanManager(target);
 				String format = String.format(HempfestClans.getMain().getConfig().getString("Response.demotion"), target.getName(), getRankTag(getRank(target)));
@@ -476,11 +476,12 @@ public class ClanUtil extends StringLibrary {
 				String currentRank = clanUtil.getCurrentRank(clanUtil.getRankPower(target));
 				List<String> array = clan.getConfig().getStringList(clanUtil.getRankUpgrade(clanUtil.getRankPower(target)));
 				List<String> array2 = clan.getConfig().getStringList(currentRank);
-				if (!currentRank.equals("members"))
+				if (!currentRank.equals("members")) {
 					array2.remove(target.getName());
-				clan.getConfig().set(currentRank, array2);
+				}
 				array.add(target.getName());
 				clan.getConfig().set(clanUtil.getRankUpgrade(clanUtil.getRankPower(target)), array);
+				clan.getConfig().set(currentRank, array2);
 				clan.saveConfig();
 				Clan clanIndex = HempfestClans.clanManager(target);
 				String format = String.format(HempfestClans.getMain().getConfig().getString("Response.promotion"), target.getName(), getRankTag(getRank(target)));
@@ -582,7 +583,7 @@ public class ClanUtil extends StringLibrary {
 	 * @return Gets the rank of the specified player in default format.
 	 */
 	public String getRank(Player p) {
-		DataManager dm = new DataManager(getClan(p), null);
+		DataManager dm = new DataManager(getClan(p));
 		Config clan = dm.getFile(ConfigType.CLAN_FILE);
 		String rank = "";
 		FileConfiguration fc = clan.getConfig();

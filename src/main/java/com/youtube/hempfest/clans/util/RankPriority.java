@@ -14,7 +14,9 @@ public enum RankPriority {
     }
 
     public int toInt() {
-        return priNum;
+        int result;
+        result = this.priNum;
+        return result;
     }
 
 }

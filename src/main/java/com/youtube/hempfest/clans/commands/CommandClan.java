@@ -782,6 +782,10 @@ public class CommandClan extends BukkitCommand {
 							lib.sendMessage(p, "&c&oThis player has more or the same level power as you.");
 							return true;
 						}
+						if (getUtil().getRankPower(target) == 0) {
+							lib.sendMessage(p, "&c&oThis player is already the lowest rank possible.");
+							return true;
+						}
 						getUtil().demotePlayer(target);
 					} else {
 						lib.sendMessage(p, "&c&oYou do not have clan clearance.");
