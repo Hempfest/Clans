@@ -9,6 +9,7 @@ import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.clans.util.events.ClanInformationAdaptEvent;
 import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
 import com.youtube.hempfest.hempcore.formatting.string.RandomID;
 import com.youtube.hempfest.hempcore.library.HUID;
@@ -860,7 +861,9 @@ public class ClanUtil extends StringLibrary {
 			array.add("&6Enemies [&b" + 0 + "&6]");
 		array.add("&f&m---------------------------");
 		array.add("&n" + getRankTag("Member") + "s&r [&7" + members.size() + "&r]");
-		printArray(p, array);
+		ClanInformationAdaptEvent event = new ClanInformationAdaptEvent(array);
+		Bukkit.getPluginManager().callEvent(event);
+		printArray(p, event.getInsertions());
 		paginatedMemberList(p, members, page);
 		p.sendMessage(" ");
 	}

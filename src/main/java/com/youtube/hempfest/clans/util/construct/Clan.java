@@ -7,6 +7,7 @@ import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.clans.util.events.OtherInformationAdaptEvent;
 import com.youtube.hempfest.hempcore.library.HUID;
 import java.io.Serializable;
 import java.math.BigDecimal;
@@ -140,7 +141,6 @@ public class Clan implements Serializable {
 	 * @return Get the clans information list as an array.
 	 */
 	public String[] getClanInfo() {
-
 		Config clan = dm().getFile(ConfigType.CLAN_FILE);
 		List<String> array = new ArrayList<>();
 		String password = clan.getConfig().getString("password");
@@ -191,7 +191,9 @@ public class Clan implements Serializable {
 		array.add("&f&m---------------------------");
 		array.add("&n" + clanUtil.getRankTag("Member") + "s&r [&7" + members.size() + "&r] - " + members.toString());
 		array.add(" ");
-		return array.toArray(new String[0]);
+		OtherInformationAdaptEvent event = new OtherInformationAdaptEvent(array);
+		Bukkit.getPluginManager().callEvent(event);
+		return event.getInsertions().toArray(new String[0]);
 	}
 
 	/**
