@@ -1,5 +1,8 @@
 package com.youtube.hempfest.clans.util.construct;
 
+import com.github.ms5984.clans.clansbanks.ClansBanks;
+import com.github.ms5984.clans.clansbanks.api.BanksAPI;
+import com.github.ms5984.clans.clansbanks.api.ClanBank;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
@@ -328,6 +331,12 @@ public class Clan implements Serializable {
 	 * @return Gets the clans power level in double format.
 	 */
 	public double getPower() {
+		double bal = 0;
+		if (Bukkit.getPluginManager().isPluginEnabled("ClansBanks")) {
+			BanksAPI api = ClansBanks.getAPI();
+			ClanBank bank = api.getBank(Clan.clanUtil.getClan(clanID));
+			bal = bank.getBalance().doubleValue();
+		}
 		Config c = dm().getFile(ConfigType.CLAN_FILE);
 		double result = 0.0;
 		double multiplier = 1.4;
@@ -335,6 +344,11 @@ public class Clan implements Serializable {
 		int claimAmount = getOwnedClaims().length;
 		result = result + add + (claimAmount * multiplier);
 		double bonus = c.getConfig().getDouble("bonus");
+		if (bal != 0) {
+			if (HempfestClans.getMain().getConfig().getBoolean("Clans.bank-influence")) {
+				bonus = bonus + (bal / 3.14);
+			}
+		}
 		return result + bonus;
 	}
 

@@ -15,6 +15,9 @@ Clans:
   # Max amount of clans the server can have
   max-clans: 60
 
+  # Allow clan bank balances to effect clan power (Requires 'Banks' addon).
+  bank-influence: true
+
   # Worlds allowed to use clans features.
   world-whitelist:
     - world
@@ -49,7 +52,7 @@ Clans:
   # Change the minimum rank clearance needed to update the clan base.
   base-clearance: 1
 
-  # Change the minimum rank clearance needed to use the clan stash (Addon needed).
+  # Change the minimum rank clearance needed to use the clan stash (Requires 'Stash' addon).
   stash-clearance: 2
 
   # Change the minimum rank clearance needed to invite players to the clan.
@@ -81,6 +84,8 @@ Clans:
 #
 #-------------------------------------------------------------------
 Formatting:
+  # Let the plugin include chat formatting?
+  allow: true
   # Allow clans to put prefixes before player names above heads.
   nametag-prefix: true
   # Change number formatting lang. [en = English, fr = French, de = german]

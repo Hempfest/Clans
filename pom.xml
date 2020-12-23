@@ -85,5 +85,10 @@
 			<artifactId>HempCore</artifactId>
 			<version>1.0.6-R2</version>
 		</dependency>
+		<dependency>
+			<groupId>com.github.ms5984</groupId>
+			<artifactId>ClansBanks</artifactId>
+			<version>1.0.0-pre</version>
+		</dependency>
     </dependencies>
 </project>
