@@ -8,13 +8,13 @@ import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.construct.Resident;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.clans.util.listener.AsyncClanEventBuilder;
+import com.youtube.hempfest.clans.util.listener.ClanEventBuilder;
 import java.util.HashMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
 
-public class WildernessInhabitantEvent extends AsyncClanEventBuilder implements Cancellable {
+public class WildernessInhabitantEvent extends ClanEventBuilder implements Cancellable {
 
 	private static final HandlerList handlers = new HandlerList();
 
@@ -26,8 +26,7 @@ public class WildernessInhabitantEvent extends AsyncClanEventBuilder implements 
 
 	private boolean cancelled;
 
-	public WildernessInhabitantEvent(Player p, boolean isAsync) {
-		super(isAsync);
+	public WildernessInhabitantEvent(Player p) {
 		this.p = p;
 		if (HempfestClans.residents.stream().anyMatch(r -> r.getPlayer().getName().equals(p.getName()))) {
 			for (Resident res : HempfestClans.residents) {

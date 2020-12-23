@@ -274,7 +274,7 @@ public class Clan implements Serializable {
 
 	/**
 	 * @param amount Format a number to ##.## format
-	 * @return Gets the formatted result as a double.
+	 * @return Gets the formatted result as a string.
 	 */
 	public String format(String amount) {
 		// Assigning value to BigDecimal object b1

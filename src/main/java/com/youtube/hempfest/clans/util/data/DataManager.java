@@ -5,7 +5,7 @@ import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.events.AllyChatEvent;
 import com.youtube.hempfest.clans.util.events.ClanChatEvent;
-import com.youtube.hempfest.clans.util.timers.AsyncClaimResident;
+import com.youtube.hempfest.clans.util.timers.SyncClaimResident;
 import com.youtube.hempfest.clans.util.timers.SyncClanStatus;
 import java.io.File;
 import java.io.InputStream;
@@ -74,8 +74,8 @@ public class DataManager {
 
     public void performResidentEvent(){
             if (Claim.claimUtil.claimingAllowed()) {
-                AsyncClaimResident asyncClaimResident = new AsyncClaimResident();
-                asyncClaimResident.runTaskTimerAsynchronously(HempfestClans.getInstance(), 2L, 20L);
+                SyncClaimResident syncClaimResident = new SyncClaimResident();
+                syncClaimResident.runTaskTimer(HempfestClans.getInstance(), 2L, 20L);
             }
     }
 

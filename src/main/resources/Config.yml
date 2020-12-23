@@ -89,6 +89,7 @@ Formatting:
   # Allow clans to put prefixes before player names above heads.
   nametag-prefix: true
   # Change number formatting lang. [en = English, fr = French, de = german]
+  # Warning: REQUIRES a full server restart.
   locale: en
   # Change the max size a clan tag can be.
   tag-size: 15
