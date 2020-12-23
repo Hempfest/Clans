@@ -1,6 +1,7 @@
 package com.youtube.hempfest.clans.util.construct;
 
 import com.google.common.collect.MapMaker;
+import java.util.Map;
 import java.util.concurrent.ConcurrentMap;
 import org.bukkit.block.Block;
 import org.bukkit.entity.Player;
@@ -8,8 +9,6 @@ import org.bukkit.entity.Player;
 public class Resident {
 
 	private final Player inhabitant;
-
-	private final Claim claim;
 
 	private final long joinTime;
 
@@ -29,9 +28,8 @@ public class Resident {
 			weakValues().
 			makeMap();
 
-	public Resident(Player inhabitant, Claim claim) {
+	public Resident(Player inhabitant) {
 		this.inhabitant = inhabitant;
-		this.claim = claim;
 		this.joinTime = System.currentTimeMillis();
 	}
 
@@ -40,7 +38,7 @@ public class Resident {
 	}
 
 	public Claim getClaim() {
-		return claim;
+		return new Claim(Claim.claimUtil.getClaimID(inhabitant.getLocation()));
 	}
 
 	public boolean isNotificationSent() {
@@ -85,6 +83,14 @@ public class Resident {
 	 */
 	public void addBroken(Block broken) {
 		lastBroken.put(broken, System.currentTimeMillis());
+	}
+
+	public Map<Block, Long> getPlacedHistory() {
+		return lastPlaced;
+	}
+
+	public Map<Block, Long> getBrokenHistory() {
+		return lastBroken;
 	}
 
 }

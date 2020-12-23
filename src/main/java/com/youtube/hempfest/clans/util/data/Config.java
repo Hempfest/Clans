@@ -107,10 +107,19 @@ public class Config {
     }
 
     public void reload() {
-        this.fc = YamlConfiguration.loadConfiguration(getFile());
-        final File defConfigStream = new File(plugin.getDataFolder(), this.getName() + ".yml");
-        final YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
-        this.fc.setDefaults(defConfig);
+        if (this.file == null) {
+            this.file = new File(getDataFolder(), getName() + ".yml");
+            if (!this.file.exists())
+                try {
+                    this.file.createNewFile();
+                } catch (IOException e) {
+                    e.printStackTrace();
+                }
+            this.fc = YamlConfiguration.loadConfiguration(this.file);
+            File defConfigStream = new File(this.plugin.getDataFolder(), getName() + ".yml");
+            YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
+            this.fc.setDefaults(defConfig);
+        }
     }
 
     public void saveConfig() {

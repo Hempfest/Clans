@@ -8,8 +8,10 @@ import com.youtube.hempfest.hempcore.library.HUID;
 import java.io.Serializable;
 import java.math.BigDecimal;
 import java.math.MathContext;
+import java.text.NumberFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
 import java.util.Objects;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
@@ -271,13 +273,23 @@ public class Clan implements Serializable {
 	 * @param amount Format a number to ##.## format
 	 * @return Gets the formatted result as a double.
 	 */
-	public double format(String amount) {
+	public String format(String amount) {
 		// Assigning value to BigDecimal object b1
 		BigDecimal b1 = new BigDecimal(amount);
 		MathContext m = new MathContext(3); // 4 precision
 		// b1 is rounded using m
 		BigDecimal b2 = b1.round(m);
-		return b2.doubleValue();
+		Locale loc = Locale.US;
+		switch (HempfestClans.getMain().getConfig().getString("Formatting.locale")) {
+			case "fr":
+				loc = Locale.FRANCE;
+				break;
+
+			case "de":
+				loc = Locale.GERMANY;
+				break;
+		}
+		return NumberFormat.getNumberInstance(loc).format(b2.doubleValue());
 	}
 
 	/**

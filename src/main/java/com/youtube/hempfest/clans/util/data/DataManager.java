@@ -9,8 +9,11 @@ import com.youtube.hempfest.clans.util.timers.AsyncClaimResident;
 import com.youtube.hempfest.clans.util.timers.SyncClanStatus;
 import java.io.File;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 import java.util.Set;
 import org.bukkit.Bukkit;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 
 public class DataManager {
@@ -51,6 +54,22 @@ public class DataManager {
         HempfestClans.getInstance().getLogger().info("- Running data cache cleaner.");
         SyncClanStatus syncClanStatus = new SyncClanStatus();
         syncClanStatus.runTaskTimer(HempfestClans.getInstance(), 10L, 10L);
+    }
+
+    public List<World> getAllowedWorlds() {
+        List<World> array = new ArrayList<>();
+        for (String name : HempfestClans.getMain().getConfig().getStringList("Clans.world-whitelist")) {
+            array.add(Bukkit.getWorld(name));
+        }
+        return array;
+    }
+
+    public boolean prefixedTagsAllowed() {
+        return HempfestClans.getMain().getConfig().getBoolean("Formatting.nametag-prefix");
+    }
+
+    public boolean symbolsAllowed() {
+        return HempfestClans.getMain().getConfig().getBoolean("Formatting.symbols");
     }
 
     public void performResidentEvent(){

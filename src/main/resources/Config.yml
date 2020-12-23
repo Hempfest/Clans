@@ -12,6 +12,14 @@
 ## Clearance levels: [Member: 0, Moderator: 1, Admin: 2, Owner:3]
 #
 Clans:
+  # Max amount of clans the server can have
+  max-clans: 60
+
+  # Worlds allowed to use clans features.
+  world-whitelist:
+    - world
+    - world_nether
+    - world_the_end
 
   # Turn on or off the use of land claiming.
   land-claiming:
@@ -41,6 +49,12 @@ Clans:
   # Change the minimum rank clearance needed to update the clan base.
   base-clearance: 1
 
+  # Change the minimum rank clearance needed to use the clan stash (Addon needed).
+  stash-clearance: 2
+
+  # Change the minimum rank clearance needed to invite players to the clan.
+  invite-clearance: 1
+
   # Modify the raid-shield settings
   raid-shield:
     # Allow the raid-shield to run, enabling claim raiding?
@@ -67,10 +81,14 @@ Clans:
 #
 #-------------------------------------------------------------------
 Formatting:
+  # Allow clans to put prefixes before player names above heads.
+  nametag-prefix: true
+  # Change number formatting lang. [en = English, fr = French, de = german]
+  locale: en
   # Change the max size a clan tag can be.
   tag-size: 15
   # Allow the use of & symbol in clan tag's
-  allow: true
+  symbols: false
   # Change the prefix displayed for the plugin.
   Prefix: '&7[&6&lClans&7]'
   # Rank presentation style: [FULL, WORDLESS]

@@ -88,16 +88,16 @@ public class CommandClanAdmin extends BukkitCommand {
                 try {
                     if (HempfestClans.getMain().getConfig().getString("Version").equals(HempfestClans.getInstance().getDescription().getVersion())) {
                         lib.sendMessage(p, "&3&oThe configuration is already up to date.");
-                        return true;
                     } else {
                         InputStream mainGrab = HempfestClans.getInstance().getResource("Config.yml");
                         Config.copy(mainGrab, HempfestClans.getMain().getFile());
-                        lib.sendMessage(p, "&b&oUpdate configuration to the latest plugin version.");
+                        lib.sendMessage(p, "&b&oUpdated configuration to the latest plugin version.");
+                        return true;
                     }
                 }catch (NullPointerException e) {
                     InputStream mainGrab = HempfestClans.getInstance().getResource("Config.yml");
                     Config.copy(mainGrab, HempfestClans.getMain().getFile());
-                    lib.sendMessage(p, "&b&oUpdate configuration to the latest plugin version.");
+                    lib.sendMessage(p, "&b&oUpdated configuration to the latest plugin version.");
                 }
                 return true;
             }

@@ -11,7 +11,6 @@ import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.clans.util.listener.AsyncClanEventBuilder;
 import java.util.Arrays;
 import java.util.HashMap;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
 import org.bukkit.event.HandlerList;
@@ -37,7 +36,7 @@ public class ClaimResidentEvent extends AsyncClanEventBuilder implements Cancell
 		this.p = p;
 		this.claim = new Claim(Claim.claimUtil.getClaimID(p.getLocation()));
 		if (HempfestClans.residents.stream().noneMatch(r -> r.getPlayer().getName().equals(p.getName()))) {
-			r = new Resident(p, claim);
+			r = new Resident(p);
 			HempfestClans.residents.add(r);
 		} else {
 			r = HempfestClans.residents.stream().filter(r -> r.getPlayer().getName().equals(p.getName())).findFirst().orElse(null);
@@ -133,7 +132,7 @@ public class ClaimResidentEvent extends AsyncClanEventBuilder implements Cancell
 				if (!HempfestClans.clanManager(p).getClanID().equals(claim.getOwner())) {
 					for (Resident r : HempfestClans.residents) {
 						if (r.getPlayer().getName().equals(p.getName())) {
-							Resident add = new Resident(p, claim);
+							Resident add = new Resident(p);
 							add.setNotificationSent(true);
 							add.setTraversedDifferent(true);
 							add.setComingBack(true);
@@ -147,7 +146,7 @@ public class ClaimResidentEvent extends AsyncClanEventBuilder implements Cancell
 			} else {
 				for (Resident r : HempfestClans.residents) {
 					if (r.getPlayer().getName().equals(p.getName())) {
-						this.r = new Resident(p, claim);
+						this.r = new Resident(p);
 						HempfestClans.residents.remove(r);
 						HempfestClans.residents.add(this.r);
 						break;
@@ -158,7 +157,7 @@ public class ClaimResidentEvent extends AsyncClanEventBuilder implements Cancell
 				if (r.isComingBack()) {
 					for (Resident r : HempfestClans.residents) {
 						if (r.getPlayer().getName().equals(p.getName())) {
-							Resident add = new Resident(p, claim);
+							Resident add = new Resident(p);
 							add.setNotificationSent(false);
 							add.setTraversedDifferent(true);
 							add.setComingBack(false);
@@ -172,7 +171,7 @@ public class ClaimResidentEvent extends AsyncClanEventBuilder implements Cancell
 				if (r.isComingBack() && r.isNotificationSent()) {
 					for (Resident r : HempfestClans.residents) {
 						if (r.getPlayer().getName().equals(p.getName())) {
-							Resident add = new Resident(p, claim);
+							Resident add = new Resident(p);
 							add.setNotificationSent(false);
 							add.setTraversedDifferent(false);
 							add.setComingBack(false);
@@ -201,7 +200,6 @@ public class ClaimResidentEvent extends AsyncClanEventBuilder implements Cancell
 						r.setTraversedDifferent(false);
 					}
 				} else {
-					Bukkit.getLogger().info("- not in a clan");
 					r.setTraversedDifferent(false);
 					r.setNotificationSent(false);
 				}

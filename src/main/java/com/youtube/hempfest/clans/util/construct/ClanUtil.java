@@ -3,6 +3,7 @@ package com.youtube.hempfest.clans.util.construct;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.metadata.PersistentClan;
 import com.youtube.hempfest.clans.util.Color;
+import com.youtube.hempfest.clans.util.Member;
 import com.youtube.hempfest.clans.util.RankPriority;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.data.Config;
@@ -37,6 +38,12 @@ public class ClanUtil extends StringLibrary {
 				sendMessage(p, "&c&oThe clan name you have chosen is too long! Max tag length reached.");
 				return;
 			}
+			if (getAllClanIDs().size() >= HempfestClans.getMain().getConfig().getInt("Clans.max-clans")) {
+				if (!p.hasPermission("clans.create.bypass")) {
+					sendMessage(p, "&c&oYour server has already reached its max clan limit.");
+					return;
+				}
+			}
 			FileConfiguration local = user.getConfig();
 			String newID = clanCode();
 			local.set("Clan", newID);
@@ -64,6 +71,9 @@ public class ClanUtil extends StringLibrary {
 			fc.set("owner", p.getName());
 			clanFile.saveConfig();
 			getClans.add(new Clan(newID));
+			if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+				Member.setPrefix(p, "&7[&6&l" + HempfestClans.clanManager(p).getClanTag() + "&7]");
+			}
 		} else {
 			sendMessage(p, alreadyInClan());
 		}
@@ -78,6 +88,9 @@ public class ClanUtil extends StringLibrary {
 			Config user = data.getFile(ConfigType.USER_FILE);
 			switch (getRank(p)) {
 				case "Owner":
+					if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+						Member.removePrefix(p);
+					}
 					DataManager dataManager = new DataManager("Regions", "Configuration");
 					Config regions = dataManager.getFile(ConfigType.MISC_FILE);
 					regions.getConfig().set(getClan(p), null);
@@ -103,6 +116,9 @@ public class ClanUtil extends StringLibrary {
 					HempfestClans.playerClan.remove(p.getUniqueId());
 					break;
 				case "Admin":
+					if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+						Member.removePrefix(p);
+					}
 					clanIndex.messageClan("&e&oPlayer " + '"' + p.getName() + '"' + " left the clan..");
 					List<String> admins = clan.getConfig().getStringList("admins");
 					admins.remove(p.getName());
@@ -113,6 +129,9 @@ public class ClanUtil extends StringLibrary {
 					HempfestClans.playerClan.remove(p.getUniqueId());
 					break;
 				case "Moderator":
+					if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+						Member.removePrefix(p);
+					}
 					clanIndex.messageClan("&e&oPlayer " + '"' + p.getName() + '"' + " left the clan..");
 					List<String> moderators = clan.getConfig().getStringList("moderators");
 					moderators.remove(p.getName());
@@ -123,6 +142,9 @@ public class ClanUtil extends StringLibrary {
 					HempfestClans.playerClan.remove(p.getUniqueId());
 					break;
 				case "Member":
+					if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+						Member.removePrefix(p);
+					}
 					clanIndex.messageClan("&e&oPlayer " + '"' + p.getName() + '"' + " left the clan..");
 					List<String> members = clan.getConfig().getStringList("members");
 					members.remove(p.getName());
@@ -159,6 +181,9 @@ public class ClanUtil extends StringLibrary {
 				clan.saveConfig();
 				Clan clanIndex = HempfestClans.clanManager(p);
 				clanIndex.messageClan("&a&oPlayer " + '"' + p.getName() + '"' + " joined the clan.");
+				if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+					Member.updatePrefix(p, "&7[&6&l" + HempfestClans.clanManager(p).getClanTag() + "&7]");
+				}
 				return;
 			}
 			if (getClanPassword(getClanID(clanName)) != null && password.equals("none")) {
@@ -180,6 +205,9 @@ public class ClanUtil extends StringLibrary {
 				clan.saveConfig();
 				Clan clanIndex = HempfestClans.clanManager(p);
 				clanIndex.messageClan("&a&oPlayer " + '"' + p.getName() + '"' + " joined the clan.");
+				if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+					Member.updatePrefix(p, "&7[&6&l" + HempfestClans.clanManager(p).getClanTag() + "&7]");
+				}
 			} else {
 				sendMessage(p, wrongPassword());
 			}
@@ -470,6 +498,9 @@ public class ClanUtil extends StringLibrary {
 		List<String> members = fc.getStringList("members");
 		List<String> admins = fc.getStringList("admins");
 		List<String> moderators = fc.getStringList("moderators");
+		if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+			Member.removePrefix(target);
+		}
 		if (fc.getStringList("members").contains(target.getName())) {
 			members.remove(target.getName());
 			fc.set("members", members);
@@ -838,12 +869,13 @@ public class ClanUtil extends StringLibrary {
 	 * @return Gets the ID of a specified clan by name.
 	 */
 	public String getClanID(String clanName) {
-		String result = "N?A";
+		String result = null;
 		for (String ID : getAllClanIDs()) {
 			DataManager dm = new DataManager(ID, null);
 			Config clan = dm.getFile(ConfigType.CLAN_FILE);
 			if (Objects.equals(clan.getConfig().getString("name"), clanName)) {
 				result = ID;
+				break;
 			}
 		}
 		return result;
@@ -885,6 +917,12 @@ public class ClanUtil extends StringLibrary {
 		DataManager dm = new DataManager("Config", "Configuration");
 		Config main = dm.getFile(ConfigType.MISC_FILE);
 		return main.getConfig().getBoolean("Clans.raid-shield.claiming");
+	}
+
+	public int invitationClearance() {
+		DataManager dm = new DataManager("Config", "Configuration");
+		Config main = dm.getFile(ConfigType.MISC_FILE);
+		return main.getConfig().getInt("Clans.invite-clearance");
 	}
 
 	public int tagChangeClearance() {

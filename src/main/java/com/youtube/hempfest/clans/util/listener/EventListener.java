@@ -1,6 +1,7 @@
 package com.youtube.hempfest.clans.util.listener;
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.util.Member;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.construct.Clan;
@@ -53,6 +54,9 @@ public class EventListener implements Listener {
             Config clan = dm.getFile(ConfigType.CLAN_FILE);
             HempfestClans.clanEnemies.put(Clan.clanUtil.getClan(p), new ArrayList<>(clan.getConfig().getStringList("enemies")));
             HempfestClans.clanAllies.put(Clan.clanUtil.getClan(p), new ArrayList<>(clan.getConfig().getStringList("allies")));
+            if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+                Member.setPrefix(p, "&7[&6&l" + HempfestClans.clanManager(p).getClanTag() + "&7]");
+            }
         }
         ClanUtil.updateUsername(p);
         HempfestClans.chatMode.put(p, "GLOBAL");
@@ -74,6 +78,9 @@ public class EventListener implements Listener {
                     HempfestClans.clanEnemies.clear();
                     HempfestClans.clanAllies.clear();
                 }
+            }
+            if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+                Member.removePrefix(p);
             }
         }
         HempfestClans.wildernessInhabitants.remove(p);

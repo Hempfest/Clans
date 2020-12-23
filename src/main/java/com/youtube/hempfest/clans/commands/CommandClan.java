@@ -1,5 +1,6 @@
 package com.youtube.hempfest.clans.commands;
 
+import com.google.common.collect.MapMaker;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.Color;
 import com.youtube.hempfest.clans.util.StringLibrary;
@@ -18,6 +19,13 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.List;
+import java.util.UUID;
+import java.util.concurrent.ConcurrentMap;
+import net.md_5.bungee.api.chat.ClickEvent;
+import net.md_5.bungee.api.chat.ComponentBuilder;
+import net.md_5.bungee.api.chat.HoverEvent;
+import net.md_5.bungee.api.chat.TextComponent;
+import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.command.CommandSender;
@@ -34,6 +42,11 @@ public class CommandClan extends BukkitCommand {
 		setPermission("clans.use");
 	}
 
+	private final ConcurrentMap<Player, List<UUID>> blockedUsers = new MapMaker().
+			weakKeys().
+			weakValues().
+			makeMap();
+
 	private void sendMessage(CommandSender player, String message) {
 		player.sendMessage(ChatColor.translateAlternateColorCodes('&', message));
 	}
@@ -45,6 +58,10 @@ public class CommandClan extends BukkitCommand {
 	private List<String> helpMenu() {
 		List<String> help = new ArrayList<>();
 		help.add("&7|&e) &6/clan &fcreate <&7clanName&f> <&7password&f>");
+		help.add("&7|&e) &6/clan &fjoin <&7clanName&f>");
+		help.add("&7|&e) &6/clan &frequest <&7playerName&f>");
+		help.add("&7|&e) &6/clan &fblock <&7playerName&f>");
+		help.add("&7|&e) &6/clan &fjoin <&7clanName&f> <&7password?&f>");
 		help.add("&7|&e) &6/clan &fpassword <&7newPassword&f>");
 		help.add("&7|&e) &6/clan &fleave");
 		help.add("&7|&e) &6/clan &fkick <&7playerName&f>");
@@ -97,7 +114,7 @@ public class CommandClan extends BukkitCommand {
 		List<String> result = new ArrayList<>();
 		if (args.length == 1) {
 			arguments.clear();
-			arguments.addAll(Arrays.asList("create", "color", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
+			arguments.addAll(Arrays.asList("create", "request", "block", "color", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
 			TabInsertEvent event = new TabInsertEvent(args);
 			Bukkit.getPluginManager().callEvent(event);
 			arguments.addAll(event.getArgs(1));
@@ -246,6 +263,10 @@ public class CommandClan extends BukkitCommand {
 			lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + '"');
 			return true;
 		}
+		if (HempfestClans.getInstance().dataManager.getAllowedWorlds().stream().noneMatch(w -> w.getName().equals(p.getWorld().getName()))) {
+			lib.sendMessage(p, "&4&oClan features have been locked within this world.");
+			return true;
+		}
 		if (length == 1) {
 			String args0 = args[0];
 			if (args0.equalsIgnoreCase("create")) {
@@ -258,6 +279,14 @@ public class CommandClan extends BukkitCommand {
 			}
 			if (args0.equalsIgnoreCase("join")) {
 				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan join <clanName> <password>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("request")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan request <playerName>");
+				return true;
+			}
+			if (args0.equalsIgnoreCase("block")) {
+				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan block <playerName>");
 				return true;
 			}
 			if (args0.equalsIgnoreCase("top")) {
@@ -477,14 +506,118 @@ public class CommandClan extends BukkitCommand {
 		if (length == 2) {
 			String args0 = args[0];
 			String args1 = args[1];
+			if (args0.equalsIgnoreCase("block")) {
+				if (!p.hasPermission(this.getPermission() + ".block")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".block" + '"');
+					return true;
+				}
+				Player target = Bukkit.getPlayer(args1);
+				if (target != null) {
+					if (blockedUsers.containsKey(p)) {
+						List<UUID> a = blockedUsers.get(p);
+						if (a.contains(target.getUniqueId())) {
+							// already blocked
+							a.remove(target.getUniqueId());
+							blockedUsers.put(p, a);
+							lib.sendMessage(p, target.getName() + " &a&ohas been unblocked.");
+						} else {
+							a.add(target.getUniqueId());
+							blockedUsers.put(p, a);
+							lib.sendMessage(p, target.getName() + " &c&ohas been blocked.");
+							return true;
+						}
+					} else {
+						// make it
+						List<UUID> ids = new ArrayList<>();
+						ids.add(target.getUniqueId());
+						blockedUsers.put(p, ids);
+						lib.sendMessage(p, target.getName() + " &c&ohas been blocked.");
+						return true;
+					}
+				}
+				return true;
+			}
+			if (args0.equalsIgnoreCase("request")) {
+				if (!p.hasPermission(this.getPermission() + ".request")) {
+					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".request" + '"');
+					return true;
+				}
+				Player target = Bukkit.getPlayer(args1);
+				if (target != null) {
+					if (Clan.clanUtil.getClan(p) != null) {
+						if (Clan.clanUtil.getClan(target) != null) {
+							lib.sendMessage(p, "&c&oThis user is already in a clan.");
+							return true;
+						}
+						if (Clan.clanUtil.getRankPower(p) >= Clan.clanUtil.invitationClearance()) {
+							if (blockedUsers.containsKey(target)) {
+								List<UUID> users = blockedUsers.get(target);
+								if (users.contains(p.getUniqueId())) {
+									lib.sendMessage(p, "&c&oThis person has you blocked. Unable to send invitation.");
+									return true;
+								}
+							}
+							HempfestClans.clanManager(p).messageClan(p.getName() + " &e&ohas invited player &6&l" + target.getName());
+							lib.sendMessage(target, "&b&o" + p.getName() + " &3invites you to their clan.");
+							if (Bukkit.getVersion().contains("1.16")) {
+								TextComponent text = new TextComponent("§3|§7> §3Click a button to respond. ");
+								TextComponent click = new TextComponent("§b[§nACCEPT§b]");
+								TextComponent clickb = new TextComponent(" §7| ");
+								TextComponent click2 = new TextComponent("§4[§nDENY§4]");
+								click.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (new Text("§3Click to accept the request from '" + p.getName() + "'."))));
+								click2.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (new Text("§3Click to deny the request from '" + p.getName() + "'."))));
+								if (Clan.clanUtil.getClanPassword(Clan.clanUtil.getClan(p)) != null) {
+									click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/c join " + HempfestClans.clanManager(p).getClanTag() + " " + Clan.clanUtil.getClanPassword(Clan.clanUtil.getClan(p))));
+								} else {
+									click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/c join " + HempfestClans.clanManager(p).getClanTag()));
+								}
+								click2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/msg " + p.getName() + " Nah im good, thank you though."));
+								text.addExtra(click);
+								text.addExtra(clickb);
+								text.addExtra(click2);
+								target.spigot().sendMessage(text);
+							} else {
+								TextComponent text = new TextComponent("§3|§7> §3Click a button to respond. ");
+								TextComponent click = new TextComponent("§b[§nACCEPT§b]");
+								TextComponent clickb = new TextComponent(" §7| ");
+								TextComponent click2 = new TextComponent("§4[§nDENY§4]");
+								click.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (new ComponentBuilder("§3Click to accept the request from '" + p.getName() + "'.")).create()));
+								click2.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (new ComponentBuilder("§3Click to deny the request from '" + p.getName() + "'.")).create()));
+								if (Clan.clanUtil.getClanPassword(Clan.clanUtil.getClan(p)) != null) {
+									click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/c join " + HempfestClans.clanManager(p).getClanTag() + " " + Clan.clanUtil.getClanPassword(Clan.clanUtil.getClan(p))));
+								} else {
+									click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/c join " + HempfestClans.clanManager(p).getClanTag()));
+								}
+								click2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/msg " + p.getName() + " Nah im good, thank you though."));
+								text.addExtra(click);
+								text.addExtra(clickb);
+								text.addExtra(click2);
+								target.spigot().sendMessage(text);
+							}
+						} else {
+							lib.sendMessage(p, "&c&oYou do not have clan clearance.");
+							return true;
+						}
+					} else {
+						lib.sendMessage(p, lib.notInClan());
+						return true;
+					}
+				} else {
+					lib.sendMessage(p, "&c&oTarget not found.");
+					return true;
+				}
+				return true;
+			}
 			if (args0.equalsIgnoreCase("create")) {
 				if (!p.hasPermission(this.getPermission() + ".create")) {
 					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".create" + '"');
 					return true;
 				}
-				if (!isAlphaNumeric(args1)) {
-					lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
-					return true;
+				if (!HempfestClans.getInstance().dataManager.symbolsAllowed()) {
+					if (!isAlphaNumeric(args1)) {
+						lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
+						return true;
+					}
 				}
 				if (Clan.clanUtil.getAllClanNames().contains(args1)) {
 					lib.sendMessage(p, "&c&oA clan with this name already exists! Try another.");
@@ -588,6 +721,10 @@ public class CommandClan extends BukkitCommand {
 				Clan clan = HempfestClans.clanManager(p);
 				if (getUtil().getClan(p) != null) {
 					if (getUtil().getRankPower(p) >= getUtil().colorChangeClearance()) {
+						if (HempfestClans.getInstance().dataManager.symbolsAllowed()) {
+							lib.sendMessage(p, "&c&oSymbols are allowed. Use '&' to color your clans tag.");
+							return true;
+						}
 						clan.changeColor(args1.replaceAll("_", ""));
 					} else {
 						lib.sendMessage(p, "&c&oYou do not have clan clearance.");
@@ -828,9 +965,11 @@ public class CommandClan extends BukkitCommand {
 					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".create" + '"');
 					return true;
 				}
-				if (!isAlphaNumeric(args1)) {
-					lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
-					return true;
+				if (!HempfestClans.getInstance().dataManager.symbolsAllowed()) {
+					if (!isAlphaNumeric(args1)) {
+						lib.sendMessage(p, "&c&oInvalid clan name. Must contain only Alpha-numeric characters.");
+						return true;
+					}
 				}
 				if (Clan.clanUtil.getAllClanNames().contains(args1)) {
 					lib.sendMessage(p, "&c&oA clan with this name already exists! Try another.");
