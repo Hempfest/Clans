@@ -191,7 +191,7 @@ public class Clan implements Serializable {
 		array.add("&f&m---------------------------");
 		array.add("&n" + clanUtil.getRankTag("Member") + "s&r [&7" + members.size() + "&r] - " + members.toString());
 		array.add(" ");
-		OtherInformationAdaptEvent event = new OtherInformationAdaptEvent(array);
+		OtherInformationAdaptEvent event = new OtherInformationAdaptEvent(array, clanID);
 		Bukkit.getPluginManager().callEvent(event);
 		return event.getInsertions().toArray(new String[0]);
 	}

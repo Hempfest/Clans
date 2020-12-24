@@ -14,8 +14,11 @@ public class OtherInformationAdaptEvent extends ClanEventBuilder {
 
 	private final List<String> info;
 
-	public OtherInformationAdaptEvent(List<String> commandArgs) {
+	private final String clanID;
+
+	public OtherInformationAdaptEvent(List<String> commandArgs, String clanID) {
 		this.info = commandArgs;
+		this.clanID = clanID;
 	}
 
 	@Override
@@ -39,6 +42,10 @@ public class OtherInformationAdaptEvent extends ClanEventBuilder {
 
 	public List<String> getInsertions() {
 		return info;
+	}
+
+	public Clan getClan() {
+		return Clan.clanUtil.getClan(clanID);
 	}
 
 	public void insert(String line) {
