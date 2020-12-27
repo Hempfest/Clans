@@ -84,6 +84,7 @@ public class CommandClan extends BukkitCommand {
 		help.add("&7|&e) &6/clan &funclaim");
 		help.add("&7|&e) &6/clan &funclaim all");
 		help.add("&7|&e) &6/clan &fmap");
+		help.add("&7|&e) &6/clan &ffriendlyfire");
 		help.add("&7|&e) &6/clan &funmap");
 		help.add("&7|&e) &6/clan &fpassowner <&7playerName&f>");
 		help.add("&7|&e) &6/clan &fally <&7clanName&f>");
@@ -116,7 +117,7 @@ public class CommandClan extends BukkitCommand {
 		List<String> result = new ArrayList<>();
 		if (args.length == 1) {
 			arguments.clear();
-			arguments.addAll(Arrays.asList("create", "request", "block", "color", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
+			arguments.addAll(Arrays.asList("create", "request", "block", "friendlyfire", "color", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
 			TabInsertEvent event = new TabInsertEvent(args);
 			Bukkit.getPluginManager().callEvent(event);
 			arguments.addAll(event.getArgs(1));
