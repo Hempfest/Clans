@@ -20,16 +20,16 @@ _**Table of contents:**_
     - [Clan Events](https://github.com/Hempfest/Clans/wiki/Clan-Events)
     - [Chat + Commands](https://github.com/Hempfest/Clans/wiki/Chat-Channels)
 ---
-- [**Official addons**] Soon to come.
-    - [Vaults]
-    - [Stashes]
-    - [Dynmap]
+- [**Official addons**](https://github.com/Hempfest/Clans/wiki/All-official-clans-addons.)
+    - [[Vaults]](https://github.com/Hempfest/Clans/wiki/Vaults-%5BAddon%5D)
+    - [Stashes](https://github.com/Hempfest/Clans/wiki/Stashes-%5BAddon%5D)
+    - [[Dynmap]](https://github.com/Hempfest/Clans/wiki/Dynmap-%5BAddon%5D)
     - [[Villages]](https://github.com/Hempfest/Clans/wiki/Villages-%5BAddon%5D)
     - [Gui+]
     - [Radar]
-    - [Borders]
+    - [[Borders]](https://github.com/Hempfest/Clans/wiki/Borders-%5BAddon%5D)
     - [TradingPosts]
-    - [Banks]
+    - [[Banks]](https://github.com/Hempfest/Clans/wiki/Banks-%5BAddon%5D)
 ---
 ![](https://i.imgur.com/9Tu9JAN.png)
 
