@@ -11,6 +11,8 @@ import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.clans.util.events.ClanBaseUpdateEvent;
+import com.youtube.hempfest.clans.util.events.ClanCreateEvent;
 import com.youtube.hempfest.clans.util.events.CommandHelpEvent;
 import com.youtube.hempfest.clans.util.events.SubCommandEvent;
 import com.youtube.hempfest.clans.util.events.TabInsertEvent;
@@ -273,6 +275,28 @@ public class CommandClan extends BukkitCommand {
 				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan create <clanName> <password>");
 				return true;
 			}
+			if (args0.equalsIgnoreCase("friendlyfire") || args0.equalsIgnoreCase("ff")) {
+					if (Clan.clanUtil.getClan(p) != null) {
+						if (Clan.clanUtil.getRankPower(p) >= Clan.clanUtil.friendfireClearance()) {
+							Clan c = HempfestClans.clanManager(p);
+							if (c.isFriendlyFire()) {
+								c.messageClan(p.getName() + " &aturned friendly-fire off.");
+								c.setFriendlyFire(false);
+							} else {
+								c.messageClan(p.getName() + " &4turned friendly-fire on.");
+								c.setFriendlyFire(true);
+								return true;
+							}
+						} else {
+							lib.sendMessage(p, "&c&oYou don't have clan clearance.");
+							return true;
+						}
+					} else {
+						lib.sendMessage(p, lib.notInClan());
+						return true;
+					}
+				return true;
+			}
 			if (args0.equalsIgnoreCase("password") || args0.equalsIgnoreCase("pass")) {
 				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan password <newPassword>");
 				return true;
@@ -457,7 +481,11 @@ public class CommandClan extends BukkitCommand {
 				}
 				Clan clan = HempfestClans.clanManager(p);
 				if (getUtil().getRankPower(p) >= getUtil().baseClearance()) {
-					clan.updateBase(p.getLocation());
+					ClanBaseUpdateEvent e = new ClanBaseUpdateEvent(p, p.getLocation());
+					Bukkit.getPluginManager().callEvent(e);
+					if (!e.isCancelled()) {
+						clan.updateBase(p.getLocation());
+					}
 				} else {
 					lib.sendMessage(p, "&c&oYou do not have clan clearance.");
 					return true;
@@ -623,7 +651,11 @@ public class CommandClan extends BukkitCommand {
 					lib.sendMessage(p, "&c&oA clan with this name already exists! Try another.");
 					return true;
 				}
-				getUtil().create(p, args1, null);
+				ClanCreateEvent e = new ClanCreateEvent(p, args1, null);
+				Bukkit.getPluginManager().callEvent(e);
+				if (!e.isCancelled()) {
+					getUtil().create(p, args1, null);
+				}
 				return true;
 			}
 			if (args0.equalsIgnoreCase("nick") || args0.equalsIgnoreCase("nickname")) {
@@ -979,7 +1011,11 @@ public class CommandClan extends BukkitCommand {
 					lib.sendMessage(p, "&c&oA clan with this name already exists! Try another.");
 					return true;
 				}
-				getUtil().create(p, args1, args2);
+				ClanCreateEvent e = new ClanCreateEvent(p, args1, args2);
+				Bukkit.getPluginManager().callEvent(e);
+				if (!e.isCancelled()) {
+					getUtil().create(p, args1, args2);
+				}
 				return true;
 			}
 			if (args0.equalsIgnoreCase("join")) {

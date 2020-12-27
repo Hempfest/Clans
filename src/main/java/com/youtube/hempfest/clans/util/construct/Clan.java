@@ -85,6 +85,22 @@ public class Clan implements Serializable {
 	}
 
 	/**
+	 * @return true if friendly fire
+	 */
+	public boolean isFriendlyFire() {
+		DataManager dm = new DataManager(clanID);
+		Config clan = dm.getFile(ConfigType.CLAN_FILE);
+		return clan.getConfig().getBoolean("friendly-fire");
+	}
+
+	public void setFriendlyFire(boolean friendlyFire) {
+		DataManager dm = new DataManager(clanID);
+		Config clan = dm.getFile(ConfigType.CLAN_FILE);
+		clan.getConfig().set("friendly-fire", friendlyFire);
+		clan.saveConfig();
+	}
+
+	/**
 	 * @param loc Update the clans base to a specified location.
 	 */
 	public void updateBase(Location loc) {
@@ -194,6 +210,15 @@ public class Clan implements Serializable {
 		OtherInformationAdaptEvent event = new OtherInformationAdaptEvent(array, clanID);
 		Bukkit.getPluginManager().callEvent(event);
 		return event.getInsertions().toArray(new String[0]);
+	}
+
+	/**
+	 * @return The specified clan's password.
+	 */
+	public String getPassword() {
+		DataManager dm = new DataManager(clanID, null);
+		Config clan = dm.getFile(ConfigType.CLAN_FILE);
+		return clan.getConfig().getString("password");
 	}
 
 	/**
@@ -348,7 +373,7 @@ public class Clan implements Serializable {
 		double bonus = c.getConfig().getDouble("bonus");
 		if (bal != 0) {
 			if (HempfestClans.getMain().getConfig().getBoolean("Clans.bank-influence")) {
-				bonus = bonus + (bal / 3.14);
+				bonus = bonus + (bal / 6.17);
 			}
 		}
 		return result + bonus;
@@ -370,6 +395,30 @@ public class Clan implements Serializable {
 			}
 		}
 		return array.toArray(new String[0]);
+	}
+
+	/**
+	 * @return Gets the list of allies for the specified clan.
+	 */
+	public List<String> getAllies() {
+		if (!HempfestClans.clanAllies.containsKey(clanID)) {
+			DataManager dm = new DataManager(clanID, null);
+			Config clan = dm.getFile(ConfigType.CLAN_FILE);
+			return new ArrayList<>(clan.getConfig().getStringList("allies"));
+		}
+		return HempfestClans.clanAllies.get(clanID);
+	}
+
+	/**
+	 * @return Gets the list of enemies for the specified clan.
+	 */
+	public List<String> getEnemies() {
+		if (!HempfestClans.clanEnemies.containsKey(clanID)) {
+			DataManager dm = new DataManager(clanID, null);
+			Config clan = dm.getFile(ConfigType.CLAN_FILE);
+			return new ArrayList<>(clan.getConfig().getStringList("enemies"));
+		}
+		return HempfestClans.clanEnemies.get(clanID);
 	}
 
 

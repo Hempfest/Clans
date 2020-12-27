@@ -5,7 +5,7 @@
 
 	<groupId>com.youtube.hempfest.clans</groupId>
 	<artifactId>hEssentialsClans</artifactId>
-	<version>2.0.8</version>
+	<version>2.0.9</version>
 	<packaging>jar</packaging>
 
 	<name>hEssentialsClans</name>
@@ -83,12 +83,18 @@
 		<dependency>
 			<groupId>com.github.Hempfest</groupId>
 			<artifactId>HempCore</artifactId>
-			<version>1.0.6-R2</version>
+			<version>1.0.7</version>
 		</dependency>
 		<dependency>
 			<groupId>com.github.ms5984</groupId>
 			<artifactId>ClansBanks</artifactId>
-			<version>1.0.0-pre</version>
+			<version>1.1.0</version>
+		</dependency>
+		<dependency>
+			<groupId>com.github.MilkBowl</groupId>
+			<artifactId>VaultAPI</artifactId>
+			<version>1.7</version>
+			<scope>provided</scope>
 		</dependency>
     </dependencies>
 </project>

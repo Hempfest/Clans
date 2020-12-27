@@ -1,5 +1,6 @@
 package com.youtube.hempfest.clans.util.events;
 
+import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
@@ -35,14 +36,14 @@ public class PlayerPunchPlayerEvent extends ClanEventBuilder {
         if (clanUtil.getClan(attacker) != null) {
             if (clanUtil.getClan(victim) != null) {
                 if (clanUtil.getClan(attacker).equals(clanUtil.getClan(victim))) {
-                    setCanHurt(false);
+                    Clan at = HempfestClans.clanManager(attacker);
+                    setCanHurt(at.isFriendlyFire());
                     clanUtil.sendMessage(attacker, "&c&oYou cannot hurt allies!");
                     return;
                 }
                 if (clanUtil.getAllies(clanUtil.getClan(attacker)).contains(clanUtil.getClan(victim))) {
                     setCanHurt(false);
                     clanUtil.sendMessage(attacker, "&c&oYou cannot hurt allies!");
-                    return;
                 }
             }
         }
@@ -53,9 +54,9 @@ public class PlayerPunchPlayerEvent extends ClanEventBuilder {
     }
 
     public void setCanHurt(boolean b) {
-        if (b == true)
+        if (b)
             this.cancelled = false;
-        if (b == false)
+        if (!b)
             this.cancelled = true;
     }
 

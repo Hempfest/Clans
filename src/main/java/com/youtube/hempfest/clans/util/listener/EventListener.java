@@ -11,13 +11,16 @@ import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.clans.util.events.ClaimInteractEvent;
+import com.youtube.hempfest.clans.util.events.ClanCreateEvent;
 import com.youtube.hempfest.clans.util.events.CustomChatEvent;
 import com.youtube.hempfest.clans.util.events.PlayerKillPlayerEvent;
 import com.youtube.hempfest.clans.util.events.PlayerPunchPlayerEvent;
 import com.youtube.hempfest.clans.util.events.PlayerShootPlayerEvent;
+import com.youtube.hempfest.hempcore.data.VaultHook;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
@@ -93,9 +96,20 @@ public class EventListener implements Listener {
         return HempfestClans.chatMode.get(p);
     }
 
+    @EventHandler
+    public void onClanBuy(ClanCreateEvent event) {
+        Player p = event.getMaker();
+        double amount = HempfestClans.getMain().getConfig().getDouble("Clans.creation.amount");
+        EconomyResponse takeMoney = VaultHook.getEconomy().withdrawPlayer(p, amount);
+        if (!takeMoney.transactionSuccess()) {
+            event.setCancelled(true);
+            event.stringLibrary().sendMessage(p, "&c&oYou don't have enough money. Amount needed: &6" + amount);
+        }
+    }
+
     private static final DataManager dm = new DataManager();
 
-    @EventHandler(priority = EventPriority.HIGH)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void onPrefixApply(AsyncPlayerChatEvent event) {
         Player p = event.getPlayer();
         ClanUtil clanUtil = Clan.clanUtil;
@@ -151,7 +165,7 @@ public class EventListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onProjectileHit(ProjectileHitEvent event) {
     if (event.getEntity().getShooter() instanceof Player) {
         Player p = (Player) event.getEntity().getShooter();
@@ -164,7 +178,7 @@ public class EventListener implements Listener {
     }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onBucketRelease(PlayerBucketEmptyEvent event) {
         ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
@@ -172,7 +186,7 @@ public class EventListener implements Listener {
         event.setCancelled(e.isCancelled());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onBucketFill(PlayerBucketFillEvent event) {
         ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
@@ -180,7 +194,7 @@ public class EventListener implements Listener {
         event.setCancelled(e.isCancelled());
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onBlockInteract(PlayerInteractEvent event) {
         if (event.getAction() == Action.RIGHT_CLICK_BLOCK) {
                 ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getClickedBlock().getLocation());
@@ -192,7 +206,7 @@ public class EventListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onBlockBreak(BlockBreakEvent event) {
 
         ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
@@ -208,7 +222,7 @@ public class EventListener implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onBlockPlace(BlockPlaceEvent event) {
         ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
@@ -224,7 +238,7 @@ public class EventListener implements Listener {
     }
 
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerHit(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
             Player target = (Player)event.getEntity();
@@ -248,7 +262,7 @@ public class EventListener implements Listener {
 
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onPlayerDeath(PlayerDeathEvent event) {
         if (event.getEntity().getKiller() != null) {
             Player p = event.getEntity().getKiller();

@@ -12,8 +12,14 @@
 ## Clearance levels: [Member: 0, Moderator: 1, Admin: 2, Owner:3]
 #
 Clans:
+
   # Max amount of clans the server can have
   max-clans: 60
+
+  # Charge for clan creation? If so how much.
+  creation:
+    charge: false
+    amount: 420.0
 
   # Allow clan bank balances to effect clan power (Requires 'Banks' addon).
   bank-influence: true
@@ -36,6 +42,9 @@ Clans:
 
   # Change the minimum clearance required to change the clans name.
   rename-clearance: 3
+
+  # Change the minimum clearance required to toggle clan friendly fire.
+  friendlyfire-clearance: 3
 
   # Change the minimum clearance required to change the clans name COLOR.
   recolor-clearance: 1
@@ -88,7 +97,7 @@ Formatting:
   allow: true
   # Allow clans to put prefixes before player names above heads.
   nametag-prefix: true
-  # Change number formatting lang. [en = English, fr = French, de = german]
+  # Change number formatting lang. [en = English, fr = French, de = german, nl = Dutch]
   # Warning: REQUIRES a full server restart.
   locale: en
   # Change the max size a clan tag can be.
@@ -99,23 +108,24 @@ Formatting:
   Prefix: '&7[&6&lClans&7]'
   # Rank presentation style: [FULL, WORDLESS]
   Rank-Style: WORDLESS
-  
+
   Styles:
     Full:
+      # Note: Changing these styles will have an effect regardless of rank style.
       Member: 'Member'
       Moderator: 'Moderator'
       Admin: 'Admin'
       Owner: 'Owner'
     Wordless:
-      Member: '❀'
-      Moderator: '❃'
-      Admin: '❁'
-      Owner: '❂'
+      Member: '•'
+      Moderator: '••'
+      Admin: '•••'
+      Owner: '&4•❂•'
 
   # Change the formatting for global chat clan prefix
   # Two "%s" need placement in order for the formatting to work correctly
   ### The first one is the clan RANK and the second one is the clan NAME
-  Chat: '&r(&e%s&r) [&6%s&r]'
+  Chat: '&8(&b%s&8)&r &8[&3%s&8]&r'
 #-------------------------------------------------------------------
 #
 # ----------------------------------------------------------------------------
@@ -131,7 +141,7 @@ Formatting:
 #
 #-------------------------------------------------------------------
 Response:
-  creation: '&a&o%s created an &f%s &a&oclan &7%s'
+  creation: '&a&o%s created a &f%s &a&oclan &7%s'
   deletion: '&c&oClan "%s" has fallen...'
   kick-out: '&e&oPlayer "%s" was kicked from the clan.'
   kick-in: '&4&o%s kicked you from the clan.'
@@ -144,6 +154,6 @@ Response:
 ## -- DO NOT EDIT BELOW --
 # Authors: Hempfest, Modify
 # Contributors: Coolmike35
-# Pro link: ??
+# Pro link: Coming to a spigot near you.
 ##------------------------
-Version: 2.0.8
+Version: 2.0.9

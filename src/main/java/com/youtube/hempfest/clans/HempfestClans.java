@@ -7,7 +7,6 @@ import com.youtube.hempfest.clans.util.Metrics;
 import com.youtube.hempfest.clans.util.Placeholders;
 import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.construct.Clan;
-import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.construct.Resident;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
@@ -165,12 +164,12 @@ public class HempfestClans extends JavaPlugin {
 	public static Clan clanManager(Player p) {
 		Clan clan;
 		if (!clanManager.containsKey(p.getUniqueId())) {
-			clan = new Clan(new ClanUtil().getClan(p));
+			clan = new Clan(Clan.clanUtil.getClan(p));
 			clanManager.put(p.getUniqueId(), clan);
 			return clan;
 		} else {
 			if (!clanManager.get(p.getUniqueId()).getClanID().equals(playerClan.get(p.getUniqueId()))) {
-				clan = new Clan(new ClanUtil().getClan(p));
+				clan = new Clan(Clan.clanUtil.getClan(p));
 				clanManager.put(p.getUniqueId(), clan);
 				return clan;
 			}

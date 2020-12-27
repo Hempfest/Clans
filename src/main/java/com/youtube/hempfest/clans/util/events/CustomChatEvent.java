@@ -87,6 +87,10 @@ public class CustomChatEvent extends AsyncClanEventBuilder implements Cancellabl
 		return HempfestClans.chatMode.get(chatting);
 	}
 
+	public String getChannel(Player target) {
+		return HempfestClans.chatMode.get(target);
+	}
+
 	public String getMessage() {
 		return message;
 	}

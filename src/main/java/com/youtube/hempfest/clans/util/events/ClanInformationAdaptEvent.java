@@ -14,8 +14,11 @@ public class ClanInformationAdaptEvent extends ClanEventBuilder {
 
 	private final List<String> info;
 
-	public ClanInformationAdaptEvent(List<String> commandArgs) {
+	private final String clanID;
+
+	public ClanInformationAdaptEvent(List<String> commandArgs, String clanID) {
 		this.info = commandArgs;
+		this.clanID = clanID;
 	}
 
 	@Override
@@ -26,6 +29,10 @@ public class ClanInformationAdaptEvent extends ClanEventBuilder {
 	@Override
 	public ClanUtil getUtil() {
 		return Clan.clanUtil;
+	}
+
+	public Clan getClan() {
+		return Clan.clanUtil.getClan(clanID);
 	}
 
 	@Override

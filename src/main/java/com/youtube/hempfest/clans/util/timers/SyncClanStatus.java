@@ -38,6 +38,10 @@ public class SyncClanStatus extends BukkitRunnable {
                                 clanUtil.sendMessage(p, "&e&oConsult a developer for this issue could be a bug or mis-use of API through third party use.");
                             }
                             HempfestClans.getInstance().getLogger().info("- Clearing clan data for un-known clan " + '"' + cl.getName() + '"');
+                            DataManager dm = new DataManager(p.getUniqueId().toString());
+                            Config user = dm.getFile(ConfigType.USER_FILE);
+                            user.getConfig().set("Clan", null);
+                            user.saveConfig();
                             cl.delete();
                             return;
                         }
