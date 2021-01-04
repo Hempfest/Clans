@@ -52,6 +52,9 @@ public class Update {
 			return true;
 		}
 		if (zstart == vstart && zmid == vmid) {
+			if (zlast == vlast) {
+				return false;
+			}
 			if (zlast > vlast) {
 				return true;
 			}
