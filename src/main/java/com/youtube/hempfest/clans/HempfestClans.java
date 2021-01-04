@@ -36,7 +36,7 @@ public class HempfestClans extends JavaPlugin {
 
 	public DataManager dataManager = new DataManager();
 
-	public static HashMap<UUID, String> playerClan = new HashMap<>();
+	public HashMap<UUID, String> playerClan = new HashMap<>();
 
 	public static HashMap<UUID, Clan> clanManager = new HashMap<>();
 
@@ -126,6 +126,13 @@ public class HempfestClans extends JavaPlugin {
 		} else {
 			getLogger().info("- Query failed! (SEE ABOVE FOR INFO)");
 		}
+		Update updater = new Update(this);
+		try {
+			if (updater.hasUpdate())
+				getLogger().info("- An update was found! New version: " + updater.getLatestVersion() + " download: " + updater.getResourceURL());
+		} catch (Exception e) {
+			getLogger().warning("- There was a problem while checking for updates.");
+		}
 	}
 
 	private List<String> logo() {
@@ -163,17 +170,17 @@ public class HempfestClans extends JavaPlugin {
 
 	public static Clan clanManager(Player p) {
 		Clan clan;
-		if (!clanManager.containsKey(p.getUniqueId())) {
+		if (!HempfestClans.clanManager.containsKey(p.getUniqueId())) {
 			clan = new Clan(Clan.clanUtil.getClan(p));
-			clanManager.put(p.getUniqueId(), clan);
+			HempfestClans.clanManager.put(p.getUniqueId(), clan);
 			return clan;
 		} else {
-			if (!clanManager.get(p.getUniqueId()).getClanID().equals(playerClan.get(p.getUniqueId()))) {
+			if (!HempfestClans.clanManager.get(p.getUniqueId()).getClanID().equals(instance.playerClan.get(p.getUniqueId()))) {
 				clan = new Clan(Clan.clanUtil.getClan(p));
-				clanManager.put(p.getUniqueId(), clan);
+				HempfestClans.clanManager.put(p.getUniqueId(), clan);
 				return clan;
 			}
-			return clanManager.get(p.getUniqueId());
+			return HempfestClans.clanManager.get(p.getUniqueId());
 		}
 	}
 

@@ -35,7 +35,9 @@ public class ClaimResidentEvent extends ClanEventBuilder implements Cancellable 
 		this.p = p;
 		this.claim = new Claim(Claim.claimUtil.getClaimID(p.getLocation()));
 		if (HempfestClans.residents.stream().noneMatch(r -> r.getPlayer().getName().equals(p.getName()))) {
-			r = new Resident(p);
+			Resident res = new Resident(p);
+			res.setClaim(this.claim);
+			r = res;
 			HempfestClans.residents.add(r);
 		} else {
 			r = HempfestClans.residents.stream().filter(r -> r.getPlayer().getName().equals(p.getName())).findFirst().orElse(null);
@@ -135,6 +137,7 @@ public class ClaimResidentEvent extends ClanEventBuilder implements Cancellable 
 							add.setNotificationSent(true);
 							add.setTraversedDifferent(true);
 							add.setComingBack(true);
+							add.setClaim(this.claim);
 							this.r = add;
 							HempfestClans.residents.remove(r);
 							HempfestClans.residents.add(this.r);
@@ -145,7 +148,9 @@ public class ClaimResidentEvent extends ClanEventBuilder implements Cancellable 
 			} else {
 				for (Resident r : HempfestClans.residents) {
 					if (r.getPlayer().getName().equals(p.getName())) {
-						this.r = new Resident(p);
+						Resident add = new Resident(p);
+						add.setClaim(this.claim);
+						this.r = add;
 						HempfestClans.residents.remove(r);
 						HempfestClans.residents.add(this.r);
 						break;
@@ -160,6 +165,7 @@ public class ClaimResidentEvent extends ClanEventBuilder implements Cancellable 
 							add.setNotificationSent(false);
 							add.setTraversedDifferent(true);
 							add.setComingBack(false);
+							add.setClaim(this.claim);
 							this.r = add;
 							HempfestClans.residents.remove(r);
 							HempfestClans.residents.add(this.r);
@@ -168,18 +174,14 @@ public class ClaimResidentEvent extends ClanEventBuilder implements Cancellable 
 					}
 				}
 				if (r.isComingBack() && r.isNotificationSent()) {
-					for (Resident r : HempfestClans.residents) {
-						if (r.getPlayer().getName().equals(p.getName())) {
-							Resident add = new Resident(p);
-							add.setNotificationSent(false);
-							add.setTraversedDifferent(false);
-							add.setComingBack(false);
-							this.r = add;
-							HempfestClans.residents.remove(r);
-							HempfestClans.residents.add(this.r);
-							break;
-						}
-					}
+					HempfestClans.residents.removeIf(r -> r.getPlayer().getName().equals(p.getName()));
+					Resident add = new Resident(p);
+					add.setNotificationSent(false);
+					add.setTraversedDifferent(false);
+					add.setComingBack(false);
+					add.setClaim(this.claim);
+					this.r = add;
+					HempfestClans.residents.add(this.r);
 				}
 			}
 		}

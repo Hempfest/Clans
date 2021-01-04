@@ -50,7 +50,7 @@ public class ClanUtil extends StringLibrary {
 			FileConfiguration local = user.getConfig();
 			String newID = clanCode();
 			local.set("Clan", newID);
-			HempfestClans.playerClan.put(p.getUniqueId(), newID);
+			HempfestClans.getInstance().playerClan.put(p.getUniqueId(), newID);
 			user.saveConfig();
 			String status = "OPEN";
 			if (password == null) {
@@ -75,7 +75,8 @@ public class ClanUtil extends StringLibrary {
 			clanFile.saveConfig();
 			getClans.add(new Clan(newID));
 			if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
-				Member.setPrefix(p, "&7[&6&l" + HempfestClans.clanManager(p).getClanTag() + "&7]");
+				Clan c = HempfestClans.clanManager(p);
+				Member.setPrefix(p, "&7[" + Clan.clanUtil.getColor(c.getChatColor()) + c.getClanTag() + "&7] ");
 			}
 		} else {
 			sendMessage(p, alreadyInClan());
@@ -94,7 +95,6 @@ public class ClanUtil extends StringLibrary {
 			if (!event.isCancelled()) {
 				switch (getRank(p)) {
 					case "Owner":
-						Bukkit.dispatchCommand(p, "c unclaim all");
 						if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
 							Member.removePrefix(p);
 						}
@@ -120,7 +120,9 @@ public class ClanUtil extends StringLibrary {
 						user.saveConfig();
 						String format = String.format(HempfestClans.getMain().getConfig().getString("Response.deletion"), clanName);
 						Bukkit.broadcastMessage(color(getPrefix() + " " + format));
-						HempfestClans.playerClan.remove(p.getUniqueId());
+						HempfestClans.getInstance().playerClan.remove(p.getUniqueId());
+						HempfestClans.getInstance().claimMap.clear();
+						Claim.claimUtil.loadClaims();
 						break;
 					case "Admin":
 						if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
@@ -133,7 +135,7 @@ public class ClanUtil extends StringLibrary {
 						user.getConfig().set("Clan", null);
 						clan.saveConfig();
 						user.saveConfig();
-						HempfestClans.playerClan.remove(p.getUniqueId());
+						HempfestClans.getInstance().playerClan.remove(p.getUniqueId());
 						break;
 					case "Moderator":
 						if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
@@ -146,7 +148,7 @@ public class ClanUtil extends StringLibrary {
 						user.getConfig().set("Clan", null);
 						clan.saveConfig();
 						user.saveConfig();
-						HempfestClans.playerClan.remove(p.getUniqueId());
+						HempfestClans.getInstance().playerClan.remove(p.getUniqueId());
 						break;
 					case "Member":
 						if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
@@ -159,7 +161,7 @@ public class ClanUtil extends StringLibrary {
 						user.getConfig().set("Clan", null);
 						clan.saveConfig();
 						user.saveConfig();
-						HempfestClans.playerClan.remove(p.getUniqueId());
+						HempfestClans.getInstance().playerClan.remove(p.getUniqueId());
 						break;
 				}
 			}
@@ -182,7 +184,7 @@ public class ClanUtil extends StringLibrary {
 					Config user = data.getFile(ConfigType.USER_FILE);
 					user.getConfig().set("Clan", getClanID(clanName));
 					user.saveConfig();
-					HempfestClans.playerClan.put(p.getUniqueId(), getClanID(clanName));
+					HempfestClans.getInstance().playerClan.put(p.getUniqueId(), getClanID(clanName));
 					DataManager dm = new DataManager(getClan(p), null);
 					Config clan = dm.getFile(ConfigType.CLAN_FILE);
 					FileConfiguration fc = clan.getConfig();
@@ -192,9 +194,7 @@ public class ClanUtil extends StringLibrary {
 					clan.saveConfig();
 					Clan clanIndex = HempfestClans.clanManager(p);
 					clanIndex.messageClan("&a&oPlayer " + '"' + p.getName() + '"' + " joined the clan.");
-					if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
-						Member.updatePrefix(p, "&7[&6&l" + HempfestClans.clanManager(p).getClanTag() + "&7]");
-					}
+					Member.setPrefix(p, "&7[" + getColor(clanIndex.getChatColor()) + clanIndex.getClanTag() + "&7] ");
 					return;
 				}
 			}
@@ -210,7 +210,7 @@ public class ClanUtil extends StringLibrary {
 					Config user = data.getFile(ConfigType.USER_FILE);
 					user.getConfig().set("Clan", getClanID(clanName));
 					user.saveConfig();
-					HempfestClans.playerClan.put(p.getUniqueId(), getClanID(clanName));
+					HempfestClans.getInstance().playerClan.put(p.getUniqueId(), getClanID(clanName));
 					DataManager dm = new DataManager(getClan(p), null);
 					Config clan = dm.getFile(ConfigType.CLAN_FILE);
 					FileConfiguration fc = clan.getConfig();
@@ -221,7 +221,7 @@ public class ClanUtil extends StringLibrary {
 					Clan clanIndex = HempfestClans.clanManager(p);
 					clanIndex.messageClan("&a&oPlayer " + '"' + p.getName() + '"' + " joined the clan.");
 					if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
-						Member.updatePrefix(p, "&7[&6&l" + HempfestClans.clanManager(p).getClanTag() + "&7]");
+						Member.setPrefix(p, "&7[" + Clan.clanUtil.getColor(clanIndex.getChatColor()) + clanIndex.getClanTag() + "&7] ");
 					}
 				}
 			} else {
@@ -533,7 +533,7 @@ public class ClanUtil extends StringLibrary {
 		clan.saveConfig();
 		user.getConfig().set("Clan", null);
 		user.saveConfig();
-		HempfestClans.playerClan.remove(target.getUniqueId());
+		HempfestClans.getInstance().playerClan.remove(target.getUniqueId());
 	}
 
 	public void teleportBase(Player p) {
@@ -565,10 +565,17 @@ public class ClanUtil extends StringLibrary {
 	 * @return Gets the specified players clanID
 	 */
 	public String getClan(Player p) {
-		if (!HempfestClans.playerClan.containsKey(p.getUniqueId())) {
+		if (!HempfestClans.getInstance().playerClan.containsKey(p.getUniqueId())) {
+			DataManager dm = new DataManager(p.getUniqueId().toString());
+			Config user = dm.getFile(ConfigType.USER_FILE);
+			if (user.exists()) {
+				if (user.getConfig().getString("Clan") != null) {
+					return user.getConfig().getString("Clan");
+				}
+			}
 			return null;
 		}
-		return HempfestClans.playerClan.get(p.getUniqueId());
+		return HempfestClans.getInstance().playerClan.get(p.getUniqueId());
 	}
 
 	public void changeNickname(Player p, String newName) {
@@ -713,10 +720,10 @@ public class ClanUtil extends StringLibrary {
 		StringBuilder result = new StringBuilder();
 		for (String c : color.split(",")) {
 			for (Color a : Color.values()) {
-				if (c.replace(",", "").matches(a.name().toLowerCase())) {
+				if (c.replace(",", "").matches(a.name().toLowerCase().replace(",", "").replace("_", ""))) {
 					result.append(a.toCode());
 				}
-				if (c.replace(",", "").matches(a.name())) {
+				if (c.replace(",", "").matches(a.name().replace(",", "").replace("_", ""))) {
 					result.append(a.toCode());
 				}
 			}
@@ -839,11 +846,17 @@ public class ClanUtil extends StringLibrary {
 		if (clanIndex.getBase() == null)
 			array.add("&6Base: &7Not set");
 		array.add("&6Color: " + getColor(clanIndex.getChatColor()) + clanIndex.getChatColor());
-		array.add("&6Password: &f" + password);
+		if (getRankPower(p) >= viewPassClearance()) {
+			array.add("&6Password: &f" + password);
+		}
 		array.add("&6&lPower [&e" + clanIndex.format(String.valueOf(clanIndex.getPower())) + "&6&l]");
 		array.add("&6" + getRankTag("Admin") + "s [&b" + admins.size() + "&6]");
 		array.add("&6" + getRankTag("Moderator") + "s [&e" + mods.size() + "&6]");
-		array.add("&6Claims [&e" + clanIndex.getOwnedClaims().length + "&6]");
+		if (HempfestClans.getInstance().dataManager.claimEffect()) {
+			array.add("&6Claims [&e" + clanIndex.getOwnedClaims().length + "&f / &e" + clanIndex.maxClaims() + "&6]");
+		} else {
+			array.add("&6Claims [&e" + clanIndex.getOwnedClaims().length + "&6]");
+		}
 		array.add("&f&m---------------------------");
 		if (allyRequests.size() > 0) {
 			array.add("&6Ally Requests [&b" + allyRequests.size() + "&6]");
@@ -974,6 +987,12 @@ public class ClanUtil extends StringLibrary {
 		return main.getConfig().getInt("Clans.land-claiming.clearance");
 	}
 
+	public int viewPassClearance() {
+		DataManager dm = new DataManager("Config", "Configuration");
+		Config main = dm.getFile(ConfigType.MISC_FILE);
+		return main.getConfig().getInt("Clans.password-visible-clearance");
+	}
+
 	public int baseClearance() {
 		DataManager dm = new DataManager("Config", "Configuration");
 		Config main = dm.getFile(ConfigType.MISC_FILE);
@@ -1018,7 +1037,12 @@ public class ClanUtil extends StringLibrary {
 
 	public boolean isNight(String world, int on, int off) {
 		Server server = Bukkit.getServer();
-		long time = Objects.requireNonNull(server.getWorld(world)).getTime();
+		long time = 0;
+		try {
+			time = Objects.requireNonNull(server.getWorld(world)).getTime();
+		} catch (NullPointerException e) {
+			HempfestClans.getInstance().getLogger().severe("- World not found in configuration. Raid-shield will not work properly.");
+		}
 
 		return time <= on || time >= off;
 	}

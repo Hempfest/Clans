@@ -57,7 +57,9 @@ public class PlayerShootPlayerEvent extends ClanEventBuilder {
                 if (clanUtil.getClan(shooter).equals(clanUtil.getClan(shot))) {
                     Clan at = HempfestClans.clanManager(shooter);
                     setCanHurt(at.isFriendlyFire());
-                    clanUtil.sendMessage(shooter, "&c&oYou cannot hurt allies!");
+                    if (!at.isFriendlyFire()) {
+                        clanUtil.sendMessage(shooter, "&c&oYou cannot hurt allies!");
+                    }
                     return;
                 }
                 if (clanUtil.getAllies(clanUtil.getClan(shooter)).contains(clanUtil.getClan(shot))) {

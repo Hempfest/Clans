@@ -18,6 +18,8 @@ public class Resident {
 
 	private boolean comingBack;
 
+	private Claim claim;
+
 	private final ConcurrentMap<Block, Long> lastPlaced = new MapMaker().
 			weakKeys().
 			weakValues().
@@ -37,7 +39,15 @@ public class Resident {
 		return inhabitant;
 	}
 
+	public void setClaim(Claim claim) {
+		this.claim = claim;
+	}
+
 	public Claim getClaim() {
+		return claim;
+	}
+
+	public Claim getAccurateClaim() {
 		return new Claim(Claim.claimUtil.getClaimID(inhabitant.getLocation()));
 	}
 

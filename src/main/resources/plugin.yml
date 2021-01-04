@@ -1,5 +1,5 @@
 name: Clans
-version: 2.0.9
+version: 2.1.1
 author: Hempfest
 api-version: 1.13
 depend: [ HempCore ]

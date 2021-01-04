@@ -44,6 +44,11 @@ public class DataManager {
         return result;
     }
 
+    public static Config playerData(Player p) {
+        DataManager dm = new DataManager(p.getUniqueId().toString());
+        return dm.getFile(ConfigType.USER_FILE);
+    }
+
     private static final Config main = Config.get("Config", "Configuration");
 
     public static boolean titlesAllowed() {
@@ -66,6 +71,10 @@ public class DataManager {
 
     public boolean prefixedTagsAllowed() {
         return HempfestClans.getMain().getConfig().getBoolean("Formatting.nametag-prefix");
+    }
+
+    public boolean claimEffect() {
+        return HempfestClans.getMain().getConfig().getBoolean("Clans.claim-influence.allow");
     }
 
     public boolean symbolsAllowed() {

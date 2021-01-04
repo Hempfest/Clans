@@ -1,6 +1,7 @@
 package com.youtube.hempfest.clans.util.timers;
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.util.Member;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
@@ -26,7 +27,10 @@ public class SyncClanStatus extends BukkitRunnable {
                             Config user = dm.getFile(ConfigType.USER_FILE);
                             user.getConfig().set("Clan", null);
                             user.saveConfig();
-                            HempfestClans.playerClan.remove(p.getUniqueId());
+                            if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+                                Member.removePrefix(p);
+                            }
+                            HempfestClans.getInstance().playerClan.remove(p.getUniqueId());
                             p.sendMessage(clanUtil.color(clanUtil.getPrefix() + " Your clan was disbanded due to owner dismissal.."));
                             return;
                         }

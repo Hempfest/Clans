@@ -1,6 +1,7 @@
 package com.youtube.hempfest.clans.util.listener;
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.Update;
 import com.youtube.hempfest.clans.util.Member;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
@@ -22,6 +23,8 @@ import java.util.Arrays;
 import java.util.List;
 import net.milkbowl.vault.economy.EconomyResponse;
 import org.bukkit.Bukkit;
+import org.bukkit.block.Block;
+import org.bukkit.entity.Creeper;
 import org.bukkit.entity.Player;
 import org.bukkit.entity.Projectile;
 import org.bukkit.event.EventHandler;
@@ -29,8 +32,11 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.Action;
 import org.bukkit.event.block.BlockBreakEvent;
+import org.bukkit.event.block.BlockPistonExtendEvent;
+import org.bukkit.event.block.BlockPistonRetractEvent;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityExplodeEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.entity.ProjectileHitEvent;
 import org.bukkit.event.player.AsyncPlayerChatEvent;
@@ -52,18 +58,30 @@ public class EventListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         if (playerData(p).getConfig().getString("Clan") != null) {
-            HempfestClans.playerClan.put(p.getUniqueId(), playerData(p).getConfig().getString("Clan"));
-            DataManager dm = new DataManager(Clan.clanUtil.getClan(p), null);
+            HempfestClans.getInstance().playerClan.put(p.getUniqueId(), playerData(p).getConfig().getString("Clan"));
+            DataManager dm = new DataManager(Clan.clanUtil.getClan(p));
             Config clan = dm.getFile(ConfigType.CLAN_FILE);
             HempfestClans.clanEnemies.put(Clan.clanUtil.getClan(p), new ArrayList<>(clan.getConfig().getStringList("enemies")));
             HempfestClans.clanAllies.put(Clan.clanUtil.getClan(p), new ArrayList<>(clan.getConfig().getStringList("allies")));
             if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
-                Member.setPrefix(p, "&7[&6&l" + HempfestClans.clanManager(p).getClanTag() + "&7]");
+                Clan c = HempfestClans.clanManager(p);
+                Member.setPrefix(p, "&7[" + Clan.clanUtil.getColor(c.getChatColor()) + c.getClanTag() + "&7] ");
             }
         }
         ClanUtil.updateUsername(p);
         HempfestClans.chatMode.put(p, "GLOBAL");
-
+        if (p.isOp()) {
+            Update check = new Update(HempfestClans.getInstance());
+            try {
+                if (check.hasUpdate()) {
+                    Clan.clanUtil.sendMessage(p, "&a&l&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬oO[&fUpdate&a&l&m]Oo▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+                    Clan.clanUtil.sendMessage(p, "&eNew version: &6Clans [Free] &f" + check.getLatestVersion());
+                    Clan.clanUtil.sendMessage(p, "&e&oDownload: &f&n" + check.getResourceURL());
+                    Clan.clanUtil.sendMessage(p, "&a&l&m▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬▬");
+                }
+            } catch (Exception ignored) {
+            }
+        }
     }
 
     @EventHandler
@@ -82,14 +100,14 @@ public class EventListener implements Listener {
                     HempfestClans.clanAllies.clear();
                 }
             }
-            if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
-                Member.removePrefix(p);
-            }
         }
         HempfestClans.wildernessInhabitants.remove(p);
         HempfestClans.clanManager.remove(p.getUniqueId());
         HempfestClans.residents.removeIf(resident -> resident.getPlayer().getName().equals(p.getName()));
-        HempfestClans.playerClan.remove(p.getUniqueId());
+        HempfestClans.getInstance().playerClan.remove(p.getUniqueId());
+        if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+            Member.removePrefix(p);
+        }
     }
 
     private String chatMode(Player p) {
@@ -99,11 +117,13 @@ public class EventListener implements Listener {
     @EventHandler
     public void onClanBuy(ClanCreateEvent event) {
         Player p = event.getMaker();
-        double amount = HempfestClans.getMain().getConfig().getDouble("Clans.creation.amount");
-        EconomyResponse takeMoney = VaultHook.getEconomy().withdrawPlayer(p, amount);
-        if (!takeMoney.transactionSuccess()) {
-            event.setCancelled(true);
-            event.stringLibrary().sendMessage(p, "&c&oYou don't have enough money. Amount needed: &6" + amount);
+        if (HempfestClans.getMain().getConfig().getBoolean("Clans.creation.charge")) {
+            double amount = HempfestClans.getMain().getConfig().getDouble("Clans.creation.amount");
+            EconomyResponse takeMoney = VaultHook.getEconomy().withdrawPlayer(p, amount);
+            if (!takeMoney.transactionSuccess()) {
+                event.setCancelled(true);
+                event.stringLibrary().sendMessage(p, "&c&oYou don't have enough money. Amount needed: &6" + amount);
+            }
         }
     }
 
@@ -179,6 +199,42 @@ public class EventListener implements Listener {
     }
 
     @EventHandler(priority = EventPriority.NORMAL)
+    public void onTNTExplode(EntityExplodeEvent e) {
+        if (e.getEntity() instanceof Creeper) {
+            for (Block exploded : e.blockList()) {
+                if (Claim.claimUtil.isInClaim(exploded.getLocation())) {
+                    e.setCancelled(true);
+                    break;
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPistonExtend(BlockPistonExtendEvent e) {
+        Block piston = e.getBlock();
+        if (!Claim.claimUtil.isInClaim(piston.getLocation())) {
+            for (Block pushed : e.getBlocks()) {
+                if (Claim.claimUtil.isInClaim(pushed.getLocation())) {
+                    e.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
+    public void onPistonRetract(BlockPistonRetractEvent e) {
+        Block piston = e.getBlock();
+        if (!Claim.claimUtil.isInClaim(piston.getLocation())) {
+            for (Block pushed : e.getBlocks()) {
+                if (Claim.claimUtil.isInClaim(pushed.getLocation())) {
+                    e.setCancelled(true);
+                }
+            }
+        }
+    }
+
+    @EventHandler(priority = EventPriority.NORMAL)
     public void onBucketRelease(PlayerBucketEmptyEvent event) {
         ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
         Bukkit.getPluginManager().callEvent(e);
@@ -216,8 +272,10 @@ public class EventListener implements Listener {
             event.setCancelled(e.isCancelled());
         } else {
             if (Claim.claimUtil.isInClaim(event.getBlock().getLocation())) {
-                Resident r = Claim.getResident(event.getPlayer());
-                r.addBroken(event.getBlock());
+                if (Claim.claimUtil.isInClaim(event.getPlayer().getLocation())) {
+                    Resident r = Claim.getResident(event.getPlayer());
+                    r.addBroken(event.getBlock());
+                }
             }
         }
     }
@@ -230,7 +288,7 @@ public class EventListener implements Listener {
         if (e.isCancelled()) {
             event.setCancelled(e.isCancelled());
         } else {
-            if (Claim.claimUtil.isInClaim(event.getBlock().getLocation())) {
+            if (Claim.claimUtil.isInClaim(event.getPlayer().getLocation())) {
                 Resident r = Claim.getResident(event.getPlayer());
                 r.addPlaced(event.getBlock());
             }

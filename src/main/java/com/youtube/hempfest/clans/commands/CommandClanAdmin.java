@@ -1,6 +1,7 @@
 package com.youtube.hempfest.clans.commands;
 
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.util.Member;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
@@ -29,6 +30,8 @@ public class CommandClanAdmin extends BukkitCommand {
     StringLibrary lib = new StringLibrary();
     private List<String> helpMenu() {
         List<String> help = new ArrayList<>();
+        help.add("&7|&e) &6/clanadmin &fclearname <&7playerName&f>");
+        help.add("&7|&e) &6/clanadmin &fgivename <&7playerName&f>");
         help.add("&7|&e) &6/clanadmin &freload <&7configName&f>");
         help.add("&7|&e) &6/clanadmin &eupdate");
         help.add("&7|&e) &6/clanadmin &fgetid <&7clanNamef>");
@@ -150,6 +153,33 @@ public class CommandClanAdmin extends BukkitCommand {
                 }
                 
                 lib.sendMessage(p, "&7|&e) &6&l" + target.getName() + "'s &e&oclan ID is &f" + getUtil().getClan(target));
+                return true;
+            }
+            if (args0.equalsIgnoreCase("clearname")) {
+                Player target = Bukkit.getPlayer(args1);
+                if (target != null) {
+                    Member.removePrefix(target);
+                    lib.sendMessage(p, "&a&oAll target team data cleared.");
+                } else {
+                    lib.sendMessage(p, "&c&oThe player was not found.");
+                    return true;
+                }
+                return true;
+            }
+            if (args0.equalsIgnoreCase("givename")) {
+                Player target = Bukkit.getPlayer(args1);
+                if (target != null) {
+                    if (Clan.clanUtil.getClan(target) == null) {
+                        lib.sendMessage(p, "&c&oThe player is not in a caln.");
+                        return true;
+                    }
+                    Clan c = HempfestClans.clanManager(target);
+                    Member.setPrefix(target, "&7[" + Clan.clanUtil.getColor(c.getChatColor()) + c.getClanTag() + "&7] ");
+                    lib.sendMessage(p, "&a&oTarget prefix reapplied.");
+                } else {
+                    lib.sendMessage(p, "&c&oThe player was not found.");
+                    return true;
+                }
                 return true;
             }
             if (args0.equalsIgnoreCase("reload")) {

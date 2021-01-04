@@ -57,6 +57,7 @@ public class Config {
     }
 
     public boolean delete() {
+        Config.configs.removeIf(config -> config.getName().equals(getName()));
         return this.getFile().delete();
     }
 
@@ -107,7 +108,6 @@ public class Config {
     }
 
     public void reload() {
-        if (this.file == null) {
             this.file = new File(getDataFolder(), getName() + ".yml");
             if (!this.file.exists())
                 try {
@@ -116,10 +116,10 @@ public class Config {
                     e.printStackTrace();
                 }
             this.fc = YamlConfiguration.loadConfiguration(this.file);
-            File defConfigStream = new File(this.plugin.getDataFolder(), getName() + ".yml");
+            File defConfigStream = new File(getDataFolder(), getName() + ".yml");
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
             this.fc.setDefaults(defConfig);
-        }
+            Config.configs.removeIf(c -> c.getName().equals(n));
     }
 
     public void saveConfig() {

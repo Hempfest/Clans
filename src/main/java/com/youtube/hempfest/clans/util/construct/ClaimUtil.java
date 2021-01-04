@@ -27,8 +27,18 @@ public class ClaimUtil extends StringLibrary {
 	public void obtain(Player p) {
 		if (!isInClaim(p.getLocation())) {
 			Clan clan = HempfestClans.clanManager(p);
+			if (!HempfestClans.getInstance().dataManager.claimEffect()) {
+				if (clan.getOwnedClaims().length == maxClaims(p)) {
+					sendMessage(p, "&c&oMax claim limit reached, contact a staff member for more info.");
+					return;
+				}
+			}
+			if (HempfestClans.getInstance().dataManager.claimEffect() && clan.getOwnedClaims().length >= clan.maxClaims()) {
+				sendMessage(p, "&c&oMax claim limit reached grow your clan power and size to obtain more land.");
+				return;
+			}
 			if (clan.getOwnedClaims().length == maxClaims(p)) {
-				sendMessage(p, "&c&oMax claim limit reached, contact a staff member for more info.");
+				sendMessage(p, "&c&oClaim hardcap reached. You have as much land as you can get!");
 				return;
 			}
 			int x = p.getLocation().getChunk().getX();

@@ -38,7 +38,9 @@ public class PlayerPunchPlayerEvent extends ClanEventBuilder {
                 if (clanUtil.getClan(attacker).equals(clanUtil.getClan(victim))) {
                     Clan at = HempfestClans.clanManager(attacker);
                     setCanHurt(at.isFriendlyFire());
-                    clanUtil.sendMessage(attacker, "&c&oYou cannot hurt allies!");
+                    if (!at.isFriendlyFire()) {
+                        clanUtil.sendMessage(attacker, "&c&oYou cannot hurt allies!");
+                    }
                     return;
                 }
                 if (clanUtil.getAllies(clanUtil.getClan(attacker)).contains(clanUtil.getClan(victim))) {

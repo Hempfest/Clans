@@ -299,6 +299,13 @@ public class Clan implements Serializable {
 		}
 	}
 
+	public int maxClaims() {
+		if (!HempfestClans.getInstance().dataManager.claimEffect()) {
+			return 0;
+		}
+		return (int) (getMembers().length + getPower() / (getMembers().length));
+	}
+
 	/**
 	 * @param amount Format a number to ##.## format
 	 * @return Gets the formatted result as a string.
@@ -373,7 +380,7 @@ public class Clan implements Serializable {
 		double bonus = c.getConfig().getDouble("bonus");
 		if (bal != 0) {
 			if (HempfestClans.getMain().getConfig().getBoolean("Clans.bank-influence")) {
-				bonus = bonus + (bal / 6.17);
+				bonus = bonus + (bal / 48.94);
 			}
 		}
 		return result + bonus;

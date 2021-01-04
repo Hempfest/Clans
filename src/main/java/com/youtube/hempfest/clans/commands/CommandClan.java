@@ -3,6 +3,7 @@ package com.youtube.hempfest.clans.commands;
 import com.google.common.collect.MapMaker;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.Color;
+import com.youtube.hempfest.clans.util.Member;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.construct.ClaimUtil;
@@ -737,6 +738,15 @@ public class CommandClan extends BukkitCommand {
 							return true;
 						}
 						clan.changeTag(args1);
+						for (String s : clan.getMembers()) {
+							Player target = Bukkit.getPlayer(s);
+							if (target != null) {
+								if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+									Clan c = HempfestClans.clanManager(target);
+									Member.updatePrefix(target, "&7[" + Clan.clanUtil.getColor(c.getChatColor()) + c.getClanTag() + "&7] ");
+								}
+							}
+						}
 					} else {
 						lib.sendMessage(p, "&c&oYou do not have clan clearance.");
 					}
@@ -758,7 +768,16 @@ public class CommandClan extends BukkitCommand {
 							lib.sendMessage(p, "&c&oSymbols are allowed. Use '&' to color your clans tag.");
 							return true;
 						}
-						clan.changeColor(args1.replaceAll("_", ""));
+						clan.changeColor(args1.replaceAll("_", "").toLowerCase());
+						for (String s : clan.getMembers()) {
+							Player target = Bukkit.getPlayer(s);
+							if (target != null) {
+								if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+									Clan c = HempfestClans.clanManager(target);
+									Member.updatePrefix(target, "&7[" + Clan.clanUtil.getColor(c.getChatColor()) + c.getClanTag() + "&7] ");
+								}
+							}
+						}
 					} else {
 						lib.sendMessage(p, "&c&oYou do not have clan clearance.");
 					}
