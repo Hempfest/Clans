@@ -58,9 +58,15 @@ public class EventListener implements Listener {
     public void onPlayerJoin(PlayerJoinEvent e) {
         Player p = e.getPlayer();
         if (playerData(p).getConfig().getString("Clan") != null) {
-            HempfestClans.getInstance().playerClan.put(p.getUniqueId(), playerData(p).getConfig().getString("Clan"));
             DataManager dm = new DataManager(Clan.clanUtil.getClan(p));
             Config clan = dm.getFile(ConfigType.CLAN_FILE);
+            if (!clan.exists()) {
+                playerData(p).getConfig().set("Clan", null);
+                playerData(p).saveConfig();
+                p.sendMessage(Clan.clanUtil.color(Clan.clanUtil.getPrefix() + " Your clan was disbanded due to owner dismissal.."));
+                return;
+            }
+            HempfestClans.getInstance().playerClan.put(p.getUniqueId(), playerData(p).getConfig().getString("Clan"));
             HempfestClans.clanEnemies.put(Clan.clanUtil.getClan(p), new ArrayList<>(clan.getConfig().getStringList("enemies")));
             HempfestClans.clanAllies.put(Clan.clanUtil.getClan(p), new ArrayList<>(clan.getConfig().getStringList("allies")));
             if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
