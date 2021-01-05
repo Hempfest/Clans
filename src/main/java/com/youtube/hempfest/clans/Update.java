@@ -45,16 +45,13 @@ public class Update {
 		if (zstart > vstart) {
 			return true;
 		}
-		if (zstart == vstart && zmid > vmid) {
-			if (zlast > vlast) {
-				return true;
-			}
-			return true;
-		}
 		if (zstart == vstart && zmid == vmid) {
 			if (zlast == vlast) {
 				return false;
 			}
+			return zlast > vlast;
+		}
+		if (zstart == vstart && zmid > vmid) {
 			if (zlast > vlast) {
 				return true;
 			}

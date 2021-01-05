@@ -303,7 +303,7 @@ public class Clan implements Serializable {
 		if (!HempfestClans.getInstance().dataManager.claimEffect()) {
 			return 0;
 		}
-		return (int) (getMembers().length + getPower() / (getMembers().length));
+		return (int) (getMembers().length + Math.cbrt(getPower()));
 	}
 
 	/**

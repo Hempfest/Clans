@@ -597,9 +597,9 @@ public class CommandClan extends BukkitCommand {
 								click.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (new Text("§3Click to accept the request from '" + p.getName() + "'."))));
 								click2.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (new Text("§3Click to deny the request from '" + p.getName() + "'."))));
 								if (Clan.clanUtil.getClanPassword(Clan.clanUtil.getClan(p)) != null) {
-									click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/c join " + HempfestClans.clanManager(p).getClanTag() + " " + Clan.clanUtil.getClanPassword(Clan.clanUtil.getClan(p))));
+									click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/clan join " + HempfestClans.clanManager(p).getClanTag() + " " + Clan.clanUtil.getClanPassword(Clan.clanUtil.getClan(p))));
 								} else {
-									click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/c join " + HempfestClans.clanManager(p).getClanTag()));
+									click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/clan join " + HempfestClans.clanManager(p).getClanTag()));
 								}
 								click2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/msg " + p.getName() + " Nah im good, thank you though."));
 								text.addExtra(click);
@@ -614,9 +614,9 @@ public class CommandClan extends BukkitCommand {
 								click.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (new ComponentBuilder("§3Click to accept the request from '" + p.getName() + "'.")).create()));
 								click2.setHoverEvent(new HoverEvent(HoverEvent.Action.SHOW_TEXT, (new ComponentBuilder("§3Click to deny the request from '" + p.getName() + "'.")).create()));
 								if (Clan.clanUtil.getClanPassword(Clan.clanUtil.getClan(p)) != null) {
-									click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/c join " + HempfestClans.clanManager(p).getClanTag() + " " + Clan.clanUtil.getClanPassword(Clan.clanUtil.getClan(p))));
+									click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/clan join " + HempfestClans.clanManager(p).getClanTag() + " " + Clan.clanUtil.getClanPassword(Clan.clanUtil.getClan(p))));
 								} else {
-									click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/c join " + HempfestClans.clanManager(p).getClanTag()));
+									click.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/clan join " + HempfestClans.clanManager(p).getClanTag()));
 								}
 								click2.setClickEvent(new ClickEvent(ClickEvent.Action.RUN_COMMAND, "/msg " + p.getName() + " Nah im good, thank you though."));
 								text.addExtra(click);

@@ -74,10 +74,12 @@ public class ClanUtil extends StringLibrary {
 			fc.set("owner", p.getName());
 			clanFile.saveConfig();
 			getClans.add(new Clan(newID));
-			if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
-				Clan c = HempfestClans.clanManager(p);
-				Member.setPrefix(p, "&7[" + Clan.clanUtil.getColor(c.getChatColor()) + c.getClanTag() + "&7] ");
-			}
+			Bukkit.getScheduler().scheduleSyncDelayedTask(HempfestClans.getInstance(), () -> {
+				if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
+					Clan c = HempfestClans.clanManager(p);
+					Member.setPrefix(p, "&7[" + Clan.clanUtil.getColor(c.getChatColor()) + c.getClanTag() + "&7] ");
+				}
+			}, 2);
 		} else {
 			sendMessage(p, alreadyInClan());
 		}
