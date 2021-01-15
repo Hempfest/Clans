@@ -11,11 +11,13 @@ public class Member {
 	private static Scoreboard scoreboard;
 
 	public static Team getTeam(Player player) {
-		Clan c = HempfestClans.clanManager(player);
 		scoreboard = player.getScoreboard();
 		org.bukkit.scoreboard.Team result = null;
-		if (scoreboard.getTeam(c.getClanID()) != null) {
-			result = scoreboard.getTeam(c.getClanID());
+		if (Clan.clanUtil.getClan(player) != null) {
+			Clan c = HempfestClans.clanManager(player);
+			if (scoreboard.getTeam(c.getClanID()) != null) {
+				result = scoreboard.getTeam(c.getClanID());
+			}
 		}
 		return result;
 	}
@@ -61,6 +63,13 @@ public class Member {
 				} else {
 					team.unregister();
 				}
+			} else {
+				if (scoreboard.getTeam(player.getName()) != null) {
+					team = scoreboard.getTeam(player.getName());
+				} else {
+					team = scoreboard.registerNewTeam(player.getName());
+				}
+				team.unregister();
 			}
 		} catch (IllegalArgumentException e) {
 			if (scoreboard.getTeam(player.getName()) != null) {

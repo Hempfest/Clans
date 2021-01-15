@@ -37,7 +37,7 @@ public class ClaimUtil extends StringLibrary {
 				sendMessage(p, "&c&oMax claim limit reached grow your clan power and size to obtain more land.");
 				return;
 			}
-			if (clan.getOwnedClaims().length == maxClaims(p)) {
+			if (clan.getOwnedClaims().length >= maxClaims(p)) {
 				sendMessage(p, "&c&oClaim hardcap reached. You have as much land as you can get!");
 				return;
 			}

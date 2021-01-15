@@ -23,6 +23,7 @@ public class SyncClanStatus extends BukkitRunnable {
                         DataManager cm = new DataManager(clanUtil.getClan(p), null);
                         Config cl = cm.getFile(ConfigType.CLAN_FILE);
                         if (!cl.exists()) {
+                            HempfestClans.getInstance().playerClan.remove(p.getUniqueId());
                             DataManager dm = new DataManager(p.getUniqueId().toString(), null);
                             Config user = dm.getFile(ConfigType.USER_FILE);
                             user.getConfig().set("Clan", null);
@@ -30,7 +31,6 @@ public class SyncClanStatus extends BukkitRunnable {
                             if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
                                 Member.removePrefix(p);
                             }
-                            HempfestClans.getInstance().playerClan.remove(p.getUniqueId());
                             p.sendMessage(clanUtil.color(clanUtil.getPrefix() + " Your clan was disbanded due to owner dismissal.."));
                             return;
                         }
