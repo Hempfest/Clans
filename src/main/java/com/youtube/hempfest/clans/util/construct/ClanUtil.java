@@ -508,34 +508,38 @@ public class ClanUtil extends StringLibrary {
 		}
 	}
 
-	public void kickPlayer(Player target) {
-		DataManager dm = new DataManager(target.getUniqueId().toString(), null);
+	public void kickPlayer(String target) {
+		UUID tid = getUserID(target);
+		DataManager dm = new DataManager(tid.toString(), null);
 		Config user = dm.getFile(ConfigType.USER_FILE);
-		DataManager data = new DataManager(getClan(target), null);
+		DataManager data = new DataManager(user.getConfig().getString("Clan"), null);
 		Config clan = data.getFile(ConfigType.CLAN_FILE);
 		FileConfiguration fc = clan.getConfig();
 		List<String> members = fc.getStringList("members");
 		List<String> admins = fc.getStringList("admins");
 		List<String> moderators = fc.getStringList("moderators");
 		if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
-			Member.removePrefix(target);
+			OfflinePlayer player = Bukkit.getOfflinePlayer(tid);
+			if (player.isOnline()) {
+				Member.removePrefix(player.getPlayer());
+			}
 		}
-		if (fc.getStringList("members").contains(target.getName())) {
-			members.remove(target.getName());
+		if (fc.getStringList("members").contains(target)) {
+			members.remove(target);
 			fc.set("members", members);
 		}
-		if (fc.getStringList("moderators").contains(target.getName())) {
-			moderators.remove(target.getName());
+		if (fc.getStringList("moderators").contains(target)) {
+			moderators.remove(target);
 			fc.set("moderators", moderators);
 		}
-		if (fc.getStringList("admins").contains(target.getName())) {
-			admins.remove(target.getName());
+		if (fc.getStringList("admins").contains(target)) {
+			admins.remove(target);
 			fc.set("admins", admins);
 		}
 		clan.saveConfig();
 		user.getConfig().set("Clan", null);
 		user.saveConfig();
-		HempfestClans.getInstance().playerClan.remove(target.getUniqueId());
+		HempfestClans.getInstance().playerClan.remove(tid);
 	}
 
 	public void teleportBase(Player p) {
@@ -628,6 +632,32 @@ public class ClanUtil extends StringLibrary {
 	}
 
 	/**
+	 * @param p Target to check
+	 * @return Gets the rank of the specified player in default format.
+	 */
+	public String getRank(OfflinePlayer p) {
+		DataManager dm = new DataManager(p.getUniqueId().toString(), null);
+		Config user = dm.getFile(ConfigType.USER_FILE);
+		DataManager dm2 = new DataManager(user.getConfig().getString("Clan"));
+		Config clan = dm2.getFile(ConfigType.CLAN_FILE);
+		String rank = "";
+		FileConfiguration fc = clan.getConfig();
+		if (fc.getStringList("members").contains(p.getName())) {
+			rank = "Member";
+		}
+		if (fc.getStringList("moderators").contains(p.getName())) {
+			rank = "Moderator";
+		}
+		if (fc.getStringList("admins").contains(p.getName())) {
+			rank = "Admin";
+		}
+		if (Objects.equals(fc.getString("owner"), p.getName())) {
+			rank = "Owner";
+		}
+		return rank;
+	}
+
+	/**
 	 * @param rank The default rank to check
 	 * @return Gets the configured rank tag for the specifed default rank
 	 * See getRank(Player p) for online usage.
@@ -678,6 +708,10 @@ public class ClanUtil extends StringLibrary {
 	}
 
 	public int getRankPower(Player p) {
+		return getRankPriority(getRank(p)).toInt();
+	}
+
+	public int getRankPower(OfflinePlayer p) {
 		return getRankPriority(getRank(p)).toInt();
 	}
 

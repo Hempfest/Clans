@@ -31,6 +31,7 @@ import net.md_5.bungee.api.chat.TextComponent;
 import net.md_5.bungee.api.chat.hover.content.Text;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.OfflinePlayer;
 import org.bukkit.command.CommandSender;
 import org.bukkit.command.defaults.BukkitCommand;
 import org.bukkit.entity.Player;
@@ -907,11 +908,11 @@ public class CommandClan extends BukkitCommand {
 				}
 				if (getUtil().getClan(p) != null) {
 					if (getUtil().getRankPower(p) >= getUtil().kickClearance()) {
-						Player target = Bukkit.getPlayer(args1);
-						if (target == null) {
-							lib.sendMessage(p, "&c&oThis player doesn't exist or isn't online.");
+						if (Clan.clanUtil.getUserID(args1) == null) {
+							lib.sendMessage(p, "&c&oThis player doesn't exist.");
 							return true;
 						}
+						OfflinePlayer target = Bukkit.getOfflinePlayer(Clan.clanUtil.getUserID(args1));
 						Clan clan = HempfestClans.clanManager(p);
 						if (!Arrays.asList(clan.getMembers()).contains(target.getName())) {
 							lib.sendMessage(p, "&c&oThis player isn't a member of your clan.");
@@ -921,11 +922,13 @@ public class CommandClan extends BukkitCommand {
 							lib.sendMessage(p, "&c&oThis player has more power than you.");
 							return true;
 						}
-						getUtil().kickPlayer(target);
+						getUtil().kickPlayer(args1);
 						String format = String.format(HempfestClans.getMain().getConfig().getString("Response.kick-out"), target.getName());
 						String format1 = String.format(HempfestClans.getMain().getConfig().getString("Response.kick-in"), getUtil().getClanTag(getUtil().getClan(p)));
 						clan.messageClan(format);
-						lib.sendMessage(target, format1);
+						if (target.isOnline()) {
+							lib.sendMessage(target.getPlayer(), format1);
+						}
 					} else {
 						lib.sendMessage(p, "&c&oYou do not have clan clearance.");
 						return true;
