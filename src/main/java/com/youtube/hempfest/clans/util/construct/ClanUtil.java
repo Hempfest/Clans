@@ -100,6 +100,14 @@ public class ClanUtil extends StringLibrary {
 						if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
 							Member.removePrefix(p);
 						}
+						Clan c = HempfestClans.clanManager(p);
+						for (String ally : c.getAllies()) {
+							removeAlly(ally, c.getClanID());
+						}
+						for (String enemy : c.getEnemies()) {
+							removeEnemy(enemy, c.getClanID());
+						}
+
 						DataManager dataManager = new DataManager("Regions", "Configuration");
 						Config regions = dataManager.getFile(ConfigType.MISC_FILE);
 						regions.getConfig().set(getClan(p), null);

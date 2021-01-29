@@ -278,7 +278,7 @@ public class EventListener implements Listener {
             event.setCancelled(e.isCancelled());
         } else {
             if (Claim.claimUtil.isInClaim(event.getBlock().getLocation())) {
-                if (Claim.claimUtil.isInClaim(event.getPlayer().getLocation())) {
+                if (Claim.claimUtil.isInClaim(event.getPlayer().getLocation()) && Claim.claimUtil.isInClaim(event.getBlock().getLocation())) {
                     Resident r = Claim.getResident(event.getPlayer());
                     r.addBroken(event.getBlock());
                 }
@@ -294,7 +294,7 @@ public class EventListener implements Listener {
         if (e.isCancelled()) {
             event.setCancelled(e.isCancelled());
         } else {
-            if (Claim.claimUtil.isInClaim(event.getPlayer().getLocation())) {
+            if (Claim.claimUtil.isInClaim(event.getPlayer().getLocation()) && Claim.claimUtil.isInClaim(event.getBlock().getLocation())) {
                 Resident r = Claim.getResident(event.getPlayer());
                 r.addPlaced(event.getBlock());
             }

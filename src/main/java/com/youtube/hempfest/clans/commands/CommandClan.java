@@ -743,8 +743,7 @@ public class CommandClan extends BukkitCommand {
 							Player target = Bukkit.getPlayer(s);
 							if (target != null) {
 								if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
-									Clan c = HempfestClans.clanManager(target);
-									Member.updatePrefix(target, "&7[" + Clan.clanUtil.getColor(c.getChatColor()) + c.getClanTag() + "&7] ");
+									Member.updatePrefix(target, "&7[" + Clan.clanUtil.getColor(clan.getChatColor()) + clan.getClanTag() + "&7] ");
 								}
 							}
 						}
@@ -774,8 +773,7 @@ public class CommandClan extends BukkitCommand {
 							Player target = Bukkit.getPlayer(s);
 							if (target != null) {
 								if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {
-									Clan c = HempfestClans.clanManager(target);
-									Member.updatePrefix(target, "&7[" + Clan.clanUtil.getColor(c.getChatColor()) + c.getClanTag() + "&7] ");
+									Member.updatePrefix(target, "&7[" + Clan.clanUtil.getColor(clan.getChatColor()) + clan.getClanTag() + "&7] ");
 								}
 							}
 						}
@@ -1080,6 +1078,17 @@ public class CommandClan extends BukkitCommand {
 							lib.sendMessage(p, "&c&oYou are already enemies with this clan.\nTo become neutral type &7/clan enemy remove " + args2);
 							return true;
 						}
+						List<String> online = new ArrayList<>();
+						for (String mem : Clan.clanUtil.getClan(targetClan).getMembers()) {
+							Player t = Bukkit.getPlayer(mem);
+							if (t != null) {
+								online.add(t.getName());
+							}
+						}
+						if (online.isEmpty()) {
+							lib.sendMessage(p, "&c&oThis clan has no members online, unable to mark as enemy.");
+							return true;
+						}
 						if (getUtil().isNeutral(getUtil().getClan(p), targetClan)) {
 							getUtil().addEnemy(getUtil().getClan(p), targetClan);
 							return true;
@@ -1108,6 +1117,17 @@ public class CommandClan extends BukkitCommand {
 						}
 						if (!getUtil().getEnemies(getUtil().getClan(p)).contains(targetClan)) {
 							lib.sendMessage(p, "&f&oYou are not enemies with this clan.");
+							return true;
+						}
+						List<String> online = new ArrayList<>();
+						for (String mem : Clan.clanUtil.getClan(targetClan).getMembers()) {
+							Player t = Bukkit.getPlayer(mem);
+							if (t != null) {
+								online.add(t.getName());
+							}
+						}
+						if (online.isEmpty()) {
+							lib.sendMessage(p, "&c&oThis clan has no members online, unable to mark as enemy.");
 							return true;
 						}
 						getUtil().removeEnemy(getUtil().getClan(p), targetClan);

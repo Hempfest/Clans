@@ -80,7 +80,12 @@ public class ClaimUtil extends StringLibrary {
 						Claim claim = new Claim(getClaimID(p.getLocation()));
 						Clan clan2 = claim.getClan();
 						if (clan.getPower() > clan2.getPower()) {
-
+							if (HempfestClans.getMain().getConfig().getBoolean("Clans.raid-shield.claiming-only-enemy")) {
+								if (!clan.getEnemies().contains(clan2.getClanID())) {
+									sendMessage(p, "&c&oYou are not enemies with this clan. Unable to overpower ally claim.");
+									return;
+								}
+							}
 							d.set(claim.getOwner() + ".Claims." + getClaimID(p.getLocation()), null);
 							regions.saveConfig();
 							int x = p.getLocation().getChunk().getX();
@@ -99,6 +104,12 @@ public class ClaimUtil extends StringLibrary {
 					Claim claim = new Claim(getClaimID(p.getLocation()));
 					Clan clan2 = new Clan(claim.getOwner());
 					if (clan.getPower() > clan2.getPower()) {
+						if (HempfestClans.getMain().getConfig().getBoolean("Clans.raid-shield.claiming-only-enemy")) {
+							if (!clan.getEnemies().contains(clan2.getClanID())) {
+								sendMessage(p, "&c&oYou are not enemies with this clan. Unable to overpower ally claim.");
+								return;
+							}
+						}
 						d.set(claim.getOwner() + ".Claims." + getClaimID(p.getLocation()), null);
 						regions.saveConfig();
 						int x = p.getLocation().getChunk().getX();
