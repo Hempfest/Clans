@@ -33,7 +33,7 @@
     <orderEntry type="library" name="Maven: junit:junit:4.10" level="project" />
     <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.ms5984.api:MenuMan:1.0.3-SNAPSHOT" level="project" />
-    <orderEntry type="library" name="Maven: com.github.ms5984:ClansBanks:1.1.3" level="project" />
-    <orderEntry type="library" name="Maven: org.bstats:bstats-bukkit:1.8" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.ms5984:ClansBanks:1.1.4" level="project" />
+    <orderEntry type="library" scope="PROVIDED" name="Maven: org.bstats:bstats-bukkit:1.8" level="project" />
   </component>
 </module>

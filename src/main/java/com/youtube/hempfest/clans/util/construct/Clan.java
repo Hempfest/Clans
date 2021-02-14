@@ -77,6 +77,7 @@ public class Clan implements Serializable {
 			for (String d : clan.getConfig().getConfigurationSection("Data").getKeys(false)) {
 				if (clan.getConfig().getInt("Data." + d) == id) {
 					result = HUID.fromString(d);
+					break;
 				}
 			}
 		} catch (NullPointerException ignored) {

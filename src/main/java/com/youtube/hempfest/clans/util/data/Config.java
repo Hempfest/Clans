@@ -58,7 +58,7 @@ public class Config {
     }
 
     public boolean delete() {
-        Config.configs.removeIf(config -> config.equals(this));
+        Config.configs.remove(this);
         return this.getFile().delete();
     }
 
@@ -70,8 +70,7 @@ public class Config {
         return n.equals(config.n) &&
                 d.equals(config.d) &&
                 Objects.equals(fc, config.fc) &&
-                Objects.equals(getFile(), config.getFile()) &&
-                Objects.equals(plugin, config.plugin);
+                Objects.equals(getFile(), config.getFile());
     }
 
     @Override
