@@ -1,12 +1,11 @@
 package com.youtube.hempfest.clans.util;
 
+import com.github.sanctum.labyrinth.library.StringUtils;
+import com.github.sanctum.labyrinth.library.TextLib;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.hempcore.formatting.component.Text;
-import com.youtube.hempfest.hempcore.formatting.component.Text_R2;
-import com.youtube.hempfest.hempcore.formatting.string.ColoredString;
 import java.util.List;
 import java.util.Random;
 import net.md_5.bungee.api.chat.TextComponent;
@@ -22,10 +21,7 @@ public class StringLibrary {
 	}
 
 	public String color(String text) {
-		if (Bukkit.getServer().getVersion().contains("1.16")) {
-			return new ColoredString(text, ColoredString.ColorType.HEX).toString();
-		} else
-			return new ColoredString(text, ColoredString.ColorType.MC).toString();
+		return StringUtils.translate(text);
 	}
 
 	public void sendComponent(CommandSender s, TextComponent text) {
@@ -130,28 +126,16 @@ public class StringLibrary {
 					point = point + 1;
 					p.sendMessage(color("&7&o&m============================"));
 					if (page < (totalPageCount - 1)) {
-						if (Bukkit.getServer().getVersion().contains("1.16")) {
-							sendComponent(p, new Text().textRunnable("&7Navigate &b&o&m--&b> &7[", "&c&oBACK&7]", "&7 : [", "&b&oNEXT&7]", "&b&oClick to go &d&oback a page", "&b&oClick to goto the &5&onext page", command + " " + last, command + " " + point));
-						} else {
-							sendComponent(p, Text_R2.textRunnable("&7Navigate &b&o&m--&b> &7[", "&c&oBACK&7]", "&7 : [", "&b&oNEXT&7]", "&b&oClick to go &d&oback a page", "&b&oClick to goto the &5&onext page", command + " " + last, command + " " + point));
-						}
+						sendComponent(p, TextLib.getInstance().textRunnable("&7Navigate &b&o&m--&b> &7[", "&c&oBACK&7]", "&7 : [", "&b&oNEXT&7]", "&b&oClick to go &d&oback a page", "&b&oClick to goto the &5&onext page", command + " " + last, command + " " + point));
 					}
 					if (page == (totalPageCount - 1)) {
-						if (Bukkit.getServer().getVersion().contains("1.16")) {
-							sendComponent(p, new Text().textRunnable("&7Navigate &b&o&m--&b> &7[", "&c&oBACK", "&7]", "&b&oClick to go &d&oback a page", command + " " + last));
-						} else {
-							sendComponent(p, Text_R2.textRunnable("&7Navigate &b&o&m--&b> &7[", "&c&oBACK", "&7]", "&b&oClick to go &d&oback a page", command + " " + last));
-						}
+						sendComponent(p, TextLib.getInstance().textRunnable("&7Navigate &b&o&m--&b> &7[", "&c&oBACK", "&7]", "&b&oClick to go &d&oback a page", command + " " + last));
 					}
 				}
 				if (page == 0) {
 					point = page + 1 + 1;
 					p.sendMessage(color("&7&o&m============================"));
-					if (Bukkit.getServer().getVersion().contains("1.16")) {
-						sendComponent(p, new Text().textRunnable("&7Navigate &b&o&m--&b> &7[", "&b&oNEXT", "&7]", "&b&oClick to goto the &5&onext page", command + " " + point));
-					} else {
-						sendComponent(p, Text_R2.textRunnable("&7Navigate &b&o&m--&b> &7[", "&b&oNEXT", "&7]", "&b&oClick to goto the &5&onext page", command + " " + point));
-					}
+					sendComponent(p, TextLib.getInstance().textRunnable("&7Navigate &b&o&m--&b> &7[", "&b&oNEXT", "&7]", "&b&oClick to goto the &5&onext page", command + " " + point));
 				}
 			}
 		} else {
@@ -181,11 +165,8 @@ public class StringLibrary {
 					k++;
 					if ((((page * 6) + i + 1) == k) && (k != ((page * 6) + 6 + 1))) {
 						i++;
-						if (Bukkit.getServer().getVersion().contains("1.16")) {
-							sendComponent(p, new Text().textHoverable("&f- ", "&#2eab92&l" + entry, "&rRank: " + '"' + "&b" + clanUtil.getRankTag(clanUtil.getMemberRank(clanUtil.getClan(p), entry)) + "&r" + '"' + "\nK/D: &b&o" + clanUtil.getKD(clanUtil.getUserID(entry)) + "\n&rOnline: &b" + Bukkit.getOfflinePlayer(clanUtil.getUserID(entry)).isOnline()));
-						} else {
-							sendComponent(p, Text_R2.textHoverable("&f- ", "&b&l" + entry, "&rRank: " + '"' + "&b" + clanUtil.getRankTag(clanUtil.getMemberRank(clanUtil.getClan(p), entry)) + "&r" + '"' + "\nK/D: &b&o" + clanUtil.getKD(clanUtil.getUserID(entry)) + "\n&rOnline: &b" + Bukkit.getOfflinePlayer(clanUtil.getUserID(entry)).isOnline()));
-						}
+						sendComponent(p, TextLib.getInstance().textHoverable("&f- ", "&#2eab92&l" + entry, "&rRank: " + '"' + "&b" + clanUtil.getRankTag(clanUtil.getMemberRank(clanUtil.getClan(p), entry)) + "&r" + '"' + "\nK/D: &b&o" + clanUtil.getKD(clanUtil.getUserID(entry)) + "\n&rOnline: &b" + Bukkit.getOfflinePlayer(clanUtil.getUserID(entry)).isOnline()));
+
 					}
 				}
 				int point;
@@ -194,19 +175,13 @@ public class StringLibrary {
 					int last;
 					last = point - 1;
 					point = point + 1;
-					if (Bukkit.getServer().getVersion().contains("1.16")) {
-						sendComponent(p, new Text().textRunnable("&7Navigate &b&o&m--&b> &7[", "&c&oBACK&7]", "&7 : [", "&b&oNEXT&7]", "&b&oClick to go &d&oback a page", "&b&oClick to goto the &5&onext page", "c members" + " " + last, "c members" + " " + point));
-					} else {
-						sendComponent(p, Text_R2.textRunnable("&7Navigate &b&o&m--&b> &7[", "&c&oBACK&7]", "&7 : [", "&b&oNEXT&7]", "&b&oClick to go &d&oback a page", "&b&oClick to goto the &5&onext page", "c members" + " " + last, "c members" + " " + point));
-					}
+					sendComponent(p, TextLib.getInstance().textRunnable("&7Navigate &b&o&m--&b> &7[", "&c&oBACK&7]", "&7 : [", "&b&oNEXT&7]", "&b&oClick to go &d&oback a page", "&b&oClick to goto the &5&onext page", "c members" + " " + last, "c members" + " " + point));
+
 				}
 				if (listToPaginate.size() > 6 && page == 0) {
 					point = page + 1 + 1;
-					if (Bukkit.getServer().getVersion().contains("1.16")) {
-						sendComponent(p, new Text().textRunnable("&7Navigate &b&o&m--&b> &7[", "&b&oNEXT", "&7]", "&b&oClick to goto the &5&onext page", "c members" + " " + point));
-					} else {
-						sendComponent(p, Text_R2.textRunnable("&7Navigate &b&o&m--&b> &7[", "&b&oNEXT", "&7]", "&b&oClick to goto the &5&onext page", "c members" + " " + point));
-					}
+					sendComponent(p, TextLib.getInstance().textRunnable("&7Navigate &b&o&m--&b> &7[", "&b&oNEXT", "&7]", "&b&oClick to goto the &5&onext page", "c members" + " " + point));
+
 				}
 			}
 		} else {

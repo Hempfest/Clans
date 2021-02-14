@@ -1,12 +1,11 @@
 package com.youtube.hempfest.clans.util.events;
 
+import com.github.sanctum.labyrinth.library.TextLib;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.listener.AsyncClanEventBuilder;
-import com.youtube.hempfest.hempcore.formatting.component.Text;
-import com.youtube.hempfest.hempcore.formatting.component.Text_R2;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
@@ -158,11 +157,7 @@ public class AllyChatEvent extends AsyncClanEventBuilder implements Cancellable 
     public void sendAllyMessage() {
         Player p = getChatting();
         for (Player toGet : getReceivers()) {
-            if (Bukkit.getServer().getVersion().contains("1.16")) {
-                getUtil().sendComponent(toGet, new Text().textHoverable(static1, String.format(highlight, getUtil().getClanNickname(p)), static2 + getMessage(), String.format(playerMeta, p.getName())));
-            } else {
-                getUtil().sendComponent(toGet, Text_R2.textHoverable(static1, String.format(highlight, p.getName()), static2 + getMessage(), String.format(playerMeta, p.getName())));
-            }
+            getUtil().sendComponent(toGet, TextLib.getInstance().textHoverable(static1, String.format(highlight, getUtil().getClanNickname(p)), static2 + getMessage(), String.format(playerMeta, p.getName())));
             toGet.playSound(toGet.getLocation(), pingSound, 10, 1);
         }
     }

@@ -1,8 +1,8 @@
 name: Clans
-version: 2.1.4
+version: 2.1.5
 author: Hempfest
 api-version: 1.13
-depend: [ HempCore ]
+depend: [ Labyrinth ]
 soft-depend: [ PlaceholderAPI ]
 description: A simple player grouping plugin with alliance / enemy implementations.
 main: com.youtube.hempfest.clans.HempfestClans

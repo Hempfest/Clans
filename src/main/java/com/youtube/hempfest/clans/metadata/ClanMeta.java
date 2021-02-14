@@ -1,7 +1,7 @@
 package com.youtube.hempfest.clans.metadata;
 
+import com.github.sanctum.labyrinth.library.HUID;
 import com.youtube.hempfest.clans.util.construct.Clan;
-import com.youtube.hempfest.hempcore.library.HUID;
 import java.io.Serializable;
 
 public abstract class ClanMeta implements Serializable {

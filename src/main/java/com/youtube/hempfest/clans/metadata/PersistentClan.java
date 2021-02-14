@@ -1,12 +1,12 @@
 package com.youtube.hempfest.clans.metadata;
 
+import com.github.sanctum.labyrinth.library.HFEncoded;
+import com.github.sanctum.labyrinth.library.HUID;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.hempcore.library.HFEncoded;
-import com.youtube.hempfest.hempcore.library.HUID;
 import java.io.File;
 import java.io.IOException;
 import java.io.Serializable;

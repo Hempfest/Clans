@@ -1,4 +1,4 @@
-package com.youtube.hempfest.clans.util;
+package com.youtube.hempfest.clans.util.misc;
 
 import com.google.gson.Gson;
 import com.google.gson.JsonElement;

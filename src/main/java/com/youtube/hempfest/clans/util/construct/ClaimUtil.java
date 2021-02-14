@@ -1,16 +1,19 @@
 package com.youtube.hempfest.clans.util.construct;
 
+import com.github.sanctum.labyrinth.formatting.string.RandomID;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.hempcore.formatting.string.RandomID;
+import com.youtube.hempfest.clans.util.events.LandPreClaimEvent;
+import com.youtube.hempfest.clans.util.events.LandUnClaimEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
@@ -25,8 +28,11 @@ public class ClaimUtil extends StringLibrary {
 	}
 
 	public void obtain(Player p) {
+		LandPreClaimEvent event = new LandPreClaimEvent(p);
+		Bukkit.getPluginManager().callEvent(event);
 		if (!isInClaim(p.getLocation())) {
 			Clan clan = HempfestClans.clanManager(p);
+
 			if (!HempfestClans.getInstance().dataManager.claimEffect()) {
 				if (clan.getOwnedClaims().length == maxClaims(p)) {
 					sendMessage(p, "&c&oMax claim limit reached, contact a staff member for more info.");
@@ -41,17 +47,19 @@ public class ClaimUtil extends StringLibrary {
 				sendMessage(p, "&c&oClaim hardcap reached. You have as much land as you can get!");
 				return;
 			}
-			int x = p.getLocation().getChunk().getX();
-			int z = p.getLocation().getChunk().getZ();
-			String world = p.getWorld().getName();
-			FileConfiguration d = regions.getConfig();
-			String claimID = serial(6);
-			d.set(getUtil().getClan(p) + ".Claims." + claimID + ".X", x);
-			d.set(getUtil().getClan(p) + ".Claims." + claimID + ".Z", z);
-			d.set(getUtil().getClan(p) + ".Claims." + claimID + ".World", world);
-			regions.saveConfig();
-			clan.messageClan("&3&oNew land was claimed @ Chunk position: &7X:&b" + x + " &7Z:&b" + z + " &3&oin world &7" + world);
-			chunkBorderHint(p);
+			if (!event.isCancelled()) {
+				int x = p.getLocation().getChunk().getX();
+				int z = p.getLocation().getChunk().getZ();
+				String world = p.getWorld().getName();
+				FileConfiguration d = regions.getConfig();
+				String claimID = serial(6);
+				d.set(getUtil().getClan(p) + ".Claims." + claimID + ".X", x);
+				d.set(getUtil().getClan(p) + ".Claims." + claimID + ".Z", z);
+				d.set(getUtil().getClan(p) + ".Claims." + claimID + ".World", world);
+				regions.saveConfig();
+				clan.messageClan("&3&oNew land was claimed @ Chunk position: &7X:&b" + x + " &7Z:&b" + z + " &3&oin world &7" + world);
+				chunkBorderHint(p);
+			}
 		} else if (isInClaim(p.getLocation())){
 			Claim claim = new Claim(getClaimID(p.getLocation()));
 			if (claim.getOwner().equals(getUtil().getClan(p))) {
@@ -66,18 +74,23 @@ public class ClaimUtil extends StringLibrary {
 	public void remove(Player p) {
 		FileConfiguration d = regions.getConfig();
 		Clan clan = HempfestClans.clanManager(p);
+		Claim claim = new Claim(getClaimID(p.getLocation()));
 		if (isInClaim(p.getLocation())) {
+			LandUnClaimEvent event = new LandUnClaimEvent(p, claim);
+			Bukkit.getPluginManager().callEvent(event);
 			if (Arrays.asList(clan.getOwnedClaims()).contains(getClaimID(p.getLocation()))) {
-				d.set(getUtil().getClan(p) + ".Claims." + getClaimID(p.getLocation()), null);
-				regions.saveConfig();
-				int x = p.getLocation().getChunk().getX();
-				int z = p.getLocation().getChunk().getZ();
-				String world = p.getWorld().getName();
-				clan.messageClan("&e&oLand was un-claimed @ Chunk position: &7X:&3" + x + " &7Z:&3" + z + " &e&oin world &7" + world);
+				if (!event.isCancelled()) {
+					d.set(getUtil().getClan(p) + ".Claims." + getClaimID(p.getLocation()), null);
+					regions.saveConfig();
+					int x = p.getLocation().getChunk().getX();
+					int z = p.getLocation().getChunk().getZ();
+					String world = p.getWorld().getName();
+					clan.messageClan("&e&oLand was un-claimed @ Chunk position: &7X:&3" + x + " &7Z:&3" + z + " &e&oin world &7" + world);
+				}
 			} else {
 				if (getUtil().shieldStatus()) {
 					if (getUtil().overPowerBypass()) {
-						Claim claim = new Claim(getClaimID(p.getLocation()));
+
 						Clan clan2 = claim.getClan();
 						if (clan.getPower() > clan2.getPower()) {
 							if (HempfestClans.getMain().getConfig().getBoolean("Clans.raid-shield.claiming-only-enemy")) {
@@ -86,14 +99,16 @@ public class ClaimUtil extends StringLibrary {
 									return;
 								}
 							}
-							d.set(claim.getOwner() + ".Claims." + getClaimID(p.getLocation()), null);
-							regions.saveConfig();
-							int x = p.getLocation().getChunk().getX();
-							int z = p.getLocation().getChunk().getZ();
-							String world = p.getWorld().getName();
-							Clan result = new Clan(claim.getOwner());
-							result.messageClan("&7[&4CLAIM-BREACH&7] &6Clan &d&o" + getUtil().getClanTag(getUtil().getClan(p)) + "&r&o:");
-							result.messageClan("&7&oLand was &4&nover-powered&7&o @ Chunk position: &7X:&c" + x + " &7Z:&c" + z + " &7&oin world &4" + world);
+							if (!event.isCancelled()) {
+								d.set(claim.getOwner() + ".Claims." + getClaimID(p.getLocation()), null);
+								regions.saveConfig();
+								int x = p.getLocation().getChunk().getX();
+								int z = p.getLocation().getChunk().getZ();
+								String world = p.getWorld().getName();
+								Clan result = new Clan(claim.getOwner());
+								result.messageClan("&7[&4CLAIM-BREACH&7] &6Clan &d&o" + getUtil().getClanTag(getUtil().getClan(p)) + "&r&o:");
+								result.messageClan("&7&oLand was &4&nover-powered&7&o @ Chunk position: &7X:&c" + x + " &7Z:&c" + z + " &7&oin world &4" + world);
+							}
 						} else {
 							sendMessage(p, "&cYour clans power is too weak in comparison.");
 						}
@@ -101,7 +116,6 @@ public class ClaimUtil extends StringLibrary {
 						sendMessage(p, "&5&oYou cannot attempt anything right now.. The shield is resilient.");
 					}
 				} else {
-					Claim claim = new Claim(getClaimID(p.getLocation()));
 					Clan clan2 = new Clan(claim.getOwner());
 					if (clan.getPower() > clan2.getPower()) {
 						if (HempfestClans.getMain().getConfig().getBoolean("Clans.raid-shield.claiming-only-enemy")) {

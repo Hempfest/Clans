@@ -1,14 +1,14 @@
 package com.youtube.hempfest.clans.commands;
 
+import com.github.sanctum.labyrinth.formatting.string.PaginatedAssortment;
 import com.youtube.hempfest.clans.HempfestClans;
-import com.youtube.hempfest.clans.util.Member;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
+import com.youtube.hempfest.clans.util.misc.Member;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;

@@ -1,4 +1,4 @@
-package com.youtube.hempfest.clans.util;
+package com.youtube.hempfest.clans.util.misc;
 
 public enum Color {
 

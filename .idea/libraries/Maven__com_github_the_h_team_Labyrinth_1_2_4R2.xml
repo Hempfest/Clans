@@ -1,0 +1,13 @@
+<component name="libraryTable">
+  <library name="Maven: com.github.the-h-team:Labyrinth:1.2.4R2">
+    <CLASSES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/the-h-team/Labyrinth/1.2.4R2/Labyrinth-1.2.4R2.jar!/" />
+    </CLASSES>
+    <JAVADOC>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/the-h-team/Labyrinth/1.2.4R2/Labyrinth-1.2.4R2-javadoc.jar!/" />
+    </JAVADOC>
+    <SOURCES>
+      <root url="jar://$MAVEN_REPOSITORY$/com/github/the-h-team/Labyrinth/1.2.4R2/Labyrinth-1.2.4R2-sources.jar!/" />
+    </SOURCES>
+  </library>
+</component>

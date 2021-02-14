@@ -1,9 +1,8 @@
 package com.youtube.hempfest.clans.commands;
 
+import com.github.sanctum.labyrinth.formatting.string.PaginatedAssortment;
 import com.google.common.collect.MapMaker;
 import com.youtube.hempfest.clans.HempfestClans;
-import com.youtube.hempfest.clans.util.Color;
-import com.youtube.hempfest.clans.util.Member;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.construct.ClaimUtil;
@@ -17,7 +16,8 @@ import com.youtube.hempfest.clans.util.events.ClanCreateEvent;
 import com.youtube.hempfest.clans.util.events.CommandHelpEvent;
 import com.youtube.hempfest.clans.util.events.SubCommandEvent;
 import com.youtube.hempfest.clans.util.events.TabInsertEvent;
-import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
+import com.youtube.hempfest.clans.util.misc.Color;
+import com.youtube.hempfest.clans.util.misc.Member;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IllegalFormatException;

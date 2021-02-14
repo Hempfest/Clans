@@ -1,4 +1,4 @@
-package com.youtube.hempfest.clans.util;
+package com.youtube.hempfest.clans.util.misc;
 
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.construct.Clan;

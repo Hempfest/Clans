@@ -1,8 +1,8 @@
 package com.youtube.hempfest.clans.util.listener;
 
+import com.github.sanctum.labyrinth.data.VaultHook;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.Update;
-import com.youtube.hempfest.clans.util.Member;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.construct.Clan;
@@ -17,7 +17,7 @@ import com.youtube.hempfest.clans.util.events.CustomChatEvent;
 import com.youtube.hempfest.clans.util.events.PlayerKillPlayerEvent;
 import com.youtube.hempfest.clans.util.events.PlayerPunchPlayerEvent;
 import com.youtube.hempfest.clans.util.events.PlayerShootPlayerEvent;
-import com.youtube.hempfest.hempcore.data.VaultHook;
+import com.youtube.hempfest.clans.util.misc.Member;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;

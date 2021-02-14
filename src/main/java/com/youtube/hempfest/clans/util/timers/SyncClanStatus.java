@@ -1,12 +1,12 @@
 package com.youtube.hempfest.clans.util.timers;
 
 import com.youtube.hempfest.clans.HempfestClans;
-import com.youtube.hempfest.clans.util.Member;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
+import com.youtube.hempfest.clans.util.misc.Member;
 import java.util.List;
 import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;

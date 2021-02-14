@@ -1,9 +1,10 @@
 package com.youtube.hempfest.clans.util.construct;
 
+import com.github.sanctum.labyrinth.formatting.string.PaginatedAssortment;
+import com.github.sanctum.labyrinth.formatting.string.RandomID;
+import com.github.sanctum.labyrinth.library.HUID;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.metadata.PersistentClan;
-import com.youtube.hempfest.clans.util.Color;
-import com.youtube.hempfest.clans.util.Member;
 import com.youtube.hempfest.clans.util.RankPriority;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.data.Config;
@@ -12,9 +13,8 @@ import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.clans.util.events.ClanInformationAdaptEvent;
 import com.youtube.hempfest.clans.util.events.ClanJoinEvent;
 import com.youtube.hempfest.clans.util.events.ClanLeaveEvent;
-import com.youtube.hempfest.hempcore.formatting.string.PaginatedAssortment;
-import com.youtube.hempfest.hempcore.formatting.string.RandomID;
-import com.youtube.hempfest.hempcore.library.HUID;
+import com.youtube.hempfest.clans.util.misc.Color;
+import com.youtube.hempfest.clans.util.misc.Member;
 import java.io.File;
 import java.util.ArrayList;
 import java.util.Arrays;
