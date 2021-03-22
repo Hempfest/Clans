@@ -58,7 +58,7 @@ public class Config {
     }
 
     public boolean delete() {
-        Config.configs.remove(this);
+        Config.configs.removeIf(c -> c.equals(this));
         return this.getFile().delete();
     }
 
@@ -125,6 +125,7 @@ public class Config {
     }
 
     public void reload() {
+        Config.configs.removeIf(c -> c.getName().equals(n));
             this.file = new File(getDataFolder(), getName() + ".yml");
             if (!this.file.exists())
                 try {
@@ -136,7 +137,7 @@ public class Config {
             File defConfigStream = new File(getDataFolder(), getName() + ".yml");
             YamlConfiguration defConfig = YamlConfiguration.loadConfiguration(defConfigStream);
             this.fc.setDefaults(defConfig);
-            Config.configs.removeIf(c -> c.getName().equals(n));
+        Config.configs.removeIf(c -> c.getName().equals(n));
     }
 
     public void saveConfig() {

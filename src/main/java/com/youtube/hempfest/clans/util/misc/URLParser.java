@@ -8,14 +8,13 @@ import java.io.InputStream;
 import java.net.HttpURLConnection;
 import java.net.URL;
 import java.util.Scanner;
-public class JSONUrlParser {
+public class URLParser {
 
-    private static String streamToString(InputStream inputStream) {
-        String text = new Scanner(inputStream, "UTF-8").useDelimiter("\\Z").next();
-        return text;
+    private static String formatObject(InputStream inputStream) {
+        return new Scanner(inputStream, "UTF-8").useDelimiter("\\Z").next();
     }
 
-    public static JsonObject jsonGetRequest(String urlQueryString) {
+    public static JsonObject getJson(String urlQueryString) {
         String json = null;
         JsonObject jsonObject = null;
         try {
@@ -28,7 +27,7 @@ public class JSONUrlParser {
             connection.setRequestProperty("charset", "utf-8");
             connection.connect();
             InputStream inStream = connection.getInputStream();
-            json = streamToString(inStream); // input stream to string
+            json = formatObject(inStream); // input stream to string
             Gson gson = new Gson();
             JsonElement element = gson.fromJson(json, JsonElement.class);
             jsonObject = element.getAsJsonObject();

@@ -2,6 +2,7 @@ package com.youtube.hempfest.clans;
 
 import com.github.sanctum.labyrinth.command.CommandBuilder;
 import com.github.sanctum.labyrinth.event.EventBuilder;
+import com.github.sanctum.labyrinth.task.Schedule;
 import com.google.gson.JsonObject;
 import com.youtube.hempfest.clans.metadata.PersistentClan;
 import com.youtube.hempfest.clans.util.Metrics;
@@ -12,8 +13,8 @@ import com.youtube.hempfest.clans.util.construct.Resident;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
-import com.youtube.hempfest.clans.util.misc.JSONUrlParser;
-import com.youtube.hempfest.clans.util.timers.SyncRaidShield;
+import com.youtube.hempfest.clans.util.events.RaidShieldEvent;
+import com.youtube.hempfest.clans.util.misc.URLParser;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -71,8 +72,8 @@ public class HempfestClans extends JavaPlugin {
 		} catch (InterruptedException e) {
 			e.printStackTrace();
 		}
-		if(JSONUrlParser.jsonGetRequest("https://clans-startstop-messages.herokuapp.com/") != null) {
-			JsonObject startMessageObject = JSONUrlParser.jsonGetRequest("https://clans-startstop-messages.herokuapp.com/");
+		if (URLParser.getJson("https://clans-startstop-messages.herokuapp.com/") != null) {
+			JsonObject startMessageObject = URLParser.getJson("https://clans-startstop-messages.herokuapp.com/");
 			String startMessage = "";
 			ArrayList<String> messages = new ArrayList<>();
 			for (int i = 0; i < startMessageObject.getAsJsonArray("startMessages").size(); i++) {
@@ -87,14 +88,12 @@ public class HempfestClans extends JavaPlugin {
 		builder.compileFields("com.youtube.hempfest.clans.util.listener");
 		CommandBuilder commandBuilder = new CommandBuilder(this);
 		commandBuilder.compileFields("com.youtube.hempfest.clans.commands");
-		dataManager.runCleaner();
 		Clan.clanUtil.setRaidShield(true);
 		refreshChat();
 		runShieldTimer();
 		log.info(String.format("[%s] - Beginning claim resident event", getDescription().getName()));
 		Claim.claimUtil.loadClaims();
 		Clan.clanUtil.loadClans();
-		dataManager.performResidentEvent();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			DataManager data = new DataManager(p.getUniqueId().toString(), null);
 			Config user = data.getFile(ConfigType.USER_FILE);
@@ -140,8 +139,8 @@ public class HempfestClans extends JavaPlugin {
 	}
 
 	public void onDisable() {
-		if(JSONUrlParser.jsonGetRequest("https://clans-startstop-messages.herokuapp.com/") != null) {
-			JsonObject stopMessageObject = JSONUrlParser.jsonGetRequest("https://clans-startstop-messages.herokuapp.com/");
+		if (URLParser.getJson("https://clans-startstop-messages.herokuapp.com/") != null) {
+			JsonObject stopMessageObject = URLParser.getJson("https://clans-startstop-messages.herokuapp.com/");
 			String stopMessage = "";
 			ArrayList<String> messages = new ArrayList<>();
 			for (int i = 0; i < stopMessageObject.getAsJsonArray("stopMessages").size(); i++) {
@@ -197,8 +196,15 @@ public class HempfestClans extends JavaPlugin {
 	private void runShieldTimer() {
 		boolean configAllow = getMain().getConfig().getBoolean("Clans.raid-shield.allow");
 		if (configAllow) {
-			SyncRaidShield shield = new SyncRaidShield();
-			shield.runTaskTimer(this, 10L, 10L);
+			Schedule.sync(() -> {
+				if (Bukkit.getOnlinePlayers().size() > 0) {
+					RaidShieldEvent e = new RaidShieldEvent();
+					Bukkit.getPluginManager().callEvent(e);
+					if (!e.isCancelled()) {
+						e.handleUpdate();
+					}
+				}
+			}).debug().repeat(10, 10);
 			log.info(String.format("[%s] - Running allowance for RaidShield event", getDescription().getName()));
 		} else {
 			log.info(String.format("[%s] - RaidShield disabled. Denying runnable.", getDescription().getName()));

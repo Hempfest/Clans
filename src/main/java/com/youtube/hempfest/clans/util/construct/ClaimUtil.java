@@ -1,6 +1,7 @@
 package com.youtube.hempfest.clans.util.construct;
 
 import com.github.sanctum.labyrinth.formatting.string.RandomID;
+import com.github.sanctum.labyrinth.library.TimeUtils;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.data.Config;
@@ -10,9 +11,12 @@ import com.youtube.hempfest.clans.util.events.LandPreClaimEvent;
 import com.youtube.hempfest.clans.util.events.LandUnClaimEvent;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 import java.util.Objects;
+import java.util.UUID;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.configuration.file.FileConfiguration;
@@ -20,8 +24,8 @@ import org.bukkit.entity.Player;
 
 public class ClaimUtil extends StringLibrary {
 
-	static DataManager dm = new DataManager("Regions", "Configuration");
-	static Config regions = dm.getFile(ConfigType.MISC_FILE);
+	public static DataManager dm = new DataManager("Regions", "Configuration");
+	public static Config regions = dm.getFile(ConfigType.MISC_FILE);
 
 	public ClanUtil getUtil() {
 		return Clan.clanUtil;
@@ -60,7 +64,7 @@ public class ClaimUtil extends StringLibrary {
 				clan.messageClan("&3&oNew land was claimed @ Chunk position: &7X:&b" + x + " &7Z:&b" + z + " &3&oin world &7" + world);
 				chunkBorderHint(p);
 			}
-		} else if (isInClaim(p.getLocation())){
+		} else if (isInClaim(p.getLocation())) {
 			Claim claim = new Claim(getClaimID(p.getLocation()));
 			if (claim.getOwner().equals(getUtil().getClan(p))) {
 				sendMessage(p, alreadyOwnClaim());
@@ -70,6 +74,9 @@ public class ClaimUtil extends StringLibrary {
 			}
 		}
 	}
+
+	public final Map<String, Integer> claimsOverPowered = new HashMap<>();
+	public final Map<UUID, Date> cooldown = new HashMap<>();
 
 	public void remove(Player p) {
 		FileConfiguration d = regions.getConfig();
@@ -91,23 +98,45 @@ public class ClaimUtil extends StringLibrary {
 				if (getUtil().shieldStatus()) {
 					if (getUtil().overPowerBypass()) {
 
-						Clan clan2 = claim.getClan();
-						if (clan.getPower() > clan2.getPower()) {
+						Clan owner = claim.getClan();
+						if (clan.getPower() > owner.getPower()) {
 							if (HempfestClans.getMain().getConfig().getBoolean("Clans.raid-shield.claiming-only-enemy")) {
-								if (!clan.getEnemies().contains(clan2.getClanID())) {
+								if (!clan.getEnemies().contains(owner.getClanID())) {
 									sendMessage(p, "&c&oYou are not enemies with this clan. Unable to overpower ally claim.");
 									return;
 								}
 							}
 							if (!event.isCancelled()) {
+								if (HempfestClans.getMain().getConfig().getBoolean("Clans.land-claiming.over-powering.cooldown.enabled")) {
+									if (cooldown.containsKey(p.getUniqueId())) {
+										long mins = HempfestClans.getMain().getConfig().getInt("Clans.land-claiming.over-powering.cooldown.length");
+										if (TimeUtils.isMinutesSince(cooldown.get(p.getUniqueId()), mins)) {
+											cooldown.remove(p.getUniqueId());
+										} else {
+											sendMessage(p, "&c&oYou cannot do this right now, your clan is on cooldown.");
+											return;
+										}
+									} else {
+										if (!claimsOverPowered.containsKey(clan.getClanID()))
+											claimsOverPowered.putIfAbsent(clan.getClanID(), 1);
+
+										int i = claimsOverPowered.get(clan.getClanID()) + 1;
+										if (claimsOverPowered.get(clan.getClanID()) <= HempfestClans.getMain().getConfig().getInt("Clans.land-claiming.over-powering.cooldown.after-uses")) {
+											claimsOverPowered.put(clan.getClanID(), i);
+										} else {
+											cooldown.put(p.getUniqueId(), new Date());
+											claimsOverPowered.remove(clan.getClanID());
+											return;
+										}
+									}
+								}
 								d.set(claim.getOwner() + ".Claims." + getClaimID(p.getLocation()), null);
 								regions.saveConfig();
 								int x = p.getLocation().getChunk().getX();
 								int z = p.getLocation().getChunk().getZ();
 								String world = p.getWorld().getName();
-								Clan result = new Clan(claim.getOwner());
-								result.messageClan("&7[&4CLAIM-BREACH&7] &6Clan &d&o" + getUtil().getClanTag(getUtil().getClan(p)) + "&r&o:");
-								result.messageClan("&7&oLand was &4&nover-powered&7&o @ Chunk position: &7X:&c" + x + " &7Z:&c" + z + " &7&oin world &4" + world);
+								owner.messageClan("&7[&4CLAIM-BREACH&7] &6Clan &d&o" + getUtil().getClanTag(getUtil().getClan(p)) + "&r&o:");
+								owner.messageClan("&7&oLand was &4&nover-powered&7&o @ Chunk position: &7X:&c" + x + " &7Z:&c" + z + " &7&oin world &4" + world);
 							}
 						} else {
 							sendMessage(p, "&cYour clans power is too weak in comparison.");
@@ -116,12 +145,35 @@ public class ClaimUtil extends StringLibrary {
 						sendMessage(p, "&5&oYou cannot attempt anything right now.. The shield is resilient.");
 					}
 				} else {
-					Clan clan2 = new Clan(claim.getOwner());
-					if (clan.getPower() > clan2.getPower()) {
+					Clan owner = claim.getClan();
+					if (clan.getPower() > owner.getPower()) {
 						if (HempfestClans.getMain().getConfig().getBoolean("Clans.raid-shield.claiming-only-enemy")) {
-							if (!clan.getEnemies().contains(clan2.getClanID())) {
+							if (!clan.getEnemies().contains(owner.getClanID())) {
 								sendMessage(p, "&c&oYou are not enemies with this clan. Unable to overpower ally claim.");
 								return;
+							}
+						}
+						if (HempfestClans.getMain().getConfig().getBoolean("Clans.land-claiming.over-powering.cooldown.enabled")) {
+							if (cooldown.containsKey(p.getUniqueId())) {
+								long mins = HempfestClans.getMain().getConfig().getInt("Clans.land-claiming.over-powering.cooldown.length");
+								if (TimeUtils.isMinutesSince(cooldown.get(p.getUniqueId()), mins)) {
+									cooldown.remove(p.getUniqueId());
+								} else {
+									sendMessage(p, "&c&oYou cannot do this right now, your clan is on cooldown.");
+									return;
+								}
+							} else {
+								if (!claimsOverPowered.containsKey(clan.getClanID()))
+									claimsOverPowered.putIfAbsent(clan.getClanID(), 1);
+
+								int i = claimsOverPowered.get(clan.getClanID()) + 1;
+								if (claimsOverPowered.get(clan.getClanID()) <= HempfestClans.getMain().getConfig().getInt("Clans.land-claiming.over-powering.cooldown.after-uses")) {
+									claimsOverPowered.put(clan.getClanID(), i);
+								} else {
+									cooldown.put(p.getUniqueId(), new Date());
+									claimsOverPowered.remove(clan.getClanID());
+									return;
+								}
 							}
 						}
 						d.set(claim.getOwner() + ".Claims." + getClaimID(p.getLocation()), null);
@@ -129,9 +181,8 @@ public class ClaimUtil extends StringLibrary {
 						int x = p.getLocation().getChunk().getX();
 						int z = p.getLocation().getChunk().getZ();
 						String world = p.getWorld().getName();
-						Clan result = new Clan(claim.getOwner());
-						result.messageClan("&7[&4HIGHER-POWER&7] &d&o" + getUtil().getClanTag(getUtil().getClan(p)) + "&r&o:");
-						result.messageClan("&7&oLand was &4&nover-powered&7&0 @ Chunk position: &7X:&3" + x + " &7Z:&3" + z + " &7&oin world &4" + world);
+						owner.messageClan("&7[&4HIGHER-POWER&7] &d&o" + getUtil().getClanTag(getUtil().getClan(p)) + "&r&o:");
+						owner.messageClan("&7&oLand was &4&nover-powered&7&o @ Chunk position: &7X:&3" + x + " &7Z:&3" + z + " &7&oin world &4" + world);
 					} else {
 						sendMessage(p, "&cYour clans power is too weak in comparison.");
 					}

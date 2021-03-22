@@ -2,11 +2,8 @@ package com.youtube.hempfest.clans.util.data;
 
 
 import com.youtube.hempfest.clans.HempfestClans;
-import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.events.AllyChatEvent;
 import com.youtube.hempfest.clans.util.events.ClanChatEvent;
-import com.youtube.hempfest.clans.util.timers.SyncClaimResident;
-import com.youtube.hempfest.clans.util.timers.SyncClanStatus;
 import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
@@ -44,7 +41,7 @@ public class DataManager {
         return result;
     }
 
-    public static Config playerData(Player p) {
+    public Config get(Player p) {
         DataManager dm = new DataManager(p.getUniqueId().toString());
         return dm.getFile(ConfigType.USER_FILE);
     }
@@ -53,12 +50,6 @@ public class DataManager {
 
     public static boolean titlesAllowed() {
        return main.getConfig().getBoolean("Clans.land-claiming.send-titles");
-    }
-
-    public void runCleaner() {
-        HempfestClans.getInstance().getLogger().info("- Running data cache cleaner.");
-        SyncClanStatus syncClanStatus = new SyncClanStatus();
-        syncClanStatus.runTaskTimer(HempfestClans.getInstance(), 10L, 10L);
     }
 
     public List<World> getAllowedWorlds() {
@@ -79,13 +70,6 @@ public class DataManager {
 
     public boolean symbolsAllowed() {
         return HempfestClans.getMain().getConfig().getBoolean("Formatting.symbols");
-    }
-
-    public void performResidentEvent(){
-            if (Claim.claimUtil.claimingAllowed()) {
-                SyncClaimResident syncClaimResident = new SyncClaimResident();
-                syncClaimResident.runTaskTimer(HempfestClans.getInstance(), 2L, 20L);
-            }
     }
 
     public void formatClanChat(Player p, Set<Player> receivers, String message) {

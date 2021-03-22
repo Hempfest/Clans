@@ -1,9 +1,14 @@
 package com.youtube.hempfest.clans.util;
 
+import com.github.ms5984.clans.clansbanks.ClansBanks;
+import com.github.ms5984.clans.clansbanks.api.BanksAPI;
+import com.github.ms5984.clans.clansbanks.api.ClanBank;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
+import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
+import org.jetbrains.annotations.NotNull;
 
 public class Placeholders extends PlaceholderExpansion {
 
@@ -43,7 +48,7 @@ public class Placeholders extends PlaceholderExpansion {
      * @return The name of the author as a String.
      */
     @Override
-    public String getAuthor(){
+    public @NotNull String getAuthor(){
         return plugin.getDescription().getAuthors().toString();
     }
 
@@ -57,7 +62,7 @@ public class Placeholders extends PlaceholderExpansion {
      * @return The identifier in {@code %<identifier>_<value>%} as String.
      */
     @Override
-    public String getIdentifier(){
+    public @NotNull String getIdentifier(){
         return "clans";
     }
 
@@ -70,7 +75,7 @@ public class Placeholders extends PlaceholderExpansion {
      * @return The version as a String.
      */
     @Override
-    public String getVersion(){
+    public @NotNull String getVersion(){
         return plugin.getDescription().getVersion();
     }
 
@@ -96,7 +101,7 @@ public class Placeholders extends PlaceholderExpansion {
 
         // %someplugin_placeholder1%
         if(identifier.equals("name")){
-            String result = "None";
+            String result = "";
             if (Clan.clanUtil.getClan(player) != null) {
                 if (Clan.clanUtil.getClanTag(Clan.clanUtil.getClan(player)) == null) {
                     result = "&4Error";
@@ -106,8 +111,38 @@ public class Placeholders extends PlaceholderExpansion {
             return result;
         }
 
+        if(identifier.equals("power")){
+            String result = "0";
+            if (Clan.clanUtil.getClan(player) != null) {
+                if (Clan.clanUtil.getClanTag(Clan.clanUtil.getClan(player)) == null) {
+                    result = "&4Error";
+                } else
+                    result = "" + HempfestClans.clanManager(player).getPower();
+            }
+            return result;
+        }
+
+        if(identifier.equals("bank")){
+            String result = "0";
+            if (Clan.clanUtil.getClan(player) != null) {
+                if (Clan.clanUtil.getClanTag(Clan.clanUtil.getClan(player)) == null) {
+                    result = "&4Error";
+                } else {
+                    if (Bukkit.getPluginManager().isPluginEnabled("ClansBanks")) {
+                        BanksAPI api = ClansBanks.getAPI();
+                        ClanBank bank = api.getBank(HempfestClans.clanManager(player));
+                        double bal = bank.getBalance().doubleValue();
+                        result = "" + bal;
+                    } else {
+                        result = "&4Error";
+                    }
+                }
+            }
+            return result;
+        }
+
         if (identifier.equals("rank")) {
-            String result = "N/A";
+            String result = "";
             if (Clan.clanUtil.getClan(player) != null) {
                 if (Clan.clanUtil.getClanTag(Clan.clanUtil.getClan(player)) == null) {
                     result = "&4Error";

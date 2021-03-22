@@ -41,6 +41,15 @@ Clans:
     # Turn on or off titles as players traverse land-scape.
     # Warning: REQUIRES a full server restart.
     send-titles: true
+    # Set a cooldown for when players over-power a specified amount of land.
+    over-powering:
+      cooldown:
+        # Use cooldown?
+        enabled: true
+        # How many minutes will the cooldown last?
+        length: 5
+        # After how many un-claims will the cooldown trigger?
+        after-uses: 4
 
   # Change the minimum clearance required to change the clans name.
   rename-clearance: 3
@@ -149,6 +158,6 @@ Response:
 ## -- DO NOT EDIT BELOW --
 # Authors: Hempfest, Modify
 # Contributors: Coolmike35
-# Pro link: https://www.spigotmc.org/resources/clans-pro-official-launch-1-12-1-16.87515/
+# Pro link: https://www.spigotmc.org/resources/clans-pro-modular-configurable-1-14-1-16.87515/
 ##------------------------
-Version: 2.1.6
+Version: 2.1.7
