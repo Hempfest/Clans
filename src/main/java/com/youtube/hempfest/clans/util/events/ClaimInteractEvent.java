@@ -1,5 +1,6 @@
 package com.youtube.hempfest.clans.util.events;
 
+import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.construct.ClaimUtil;
@@ -62,7 +63,7 @@ public class ClaimInteractEvent extends ClanEventBuilder {
     }
 
     public Claim getClaim() {
-        return new Claim(getClaimUtil().getClaimID(location));
+        return Claim.from(location);
     }
 
     public Block getBlock() {
@@ -74,7 +75,7 @@ public class ClaimInteractEvent extends ClanEventBuilder {
     }
 
     public void handleCheck() {
-        if (getClaimUtil().isInClaim(location)) {
+        if (HempfestClans.getInstance().claimManager.isInClaim(location)) {
             if (getUtil().getClan(p) != null) {
                 if (!getClaim().getOwner().equals(getUtil().getClan(p))) {
                     if (!p.hasPermission("clans.claim.bypass")) {

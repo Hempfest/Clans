@@ -33,7 +33,7 @@ public class ClaimResidentEvent extends ClanEventBuilder implements Cancellable 
 
 	public ClaimResidentEvent(Player p) {
 		this.p = p;
-		this.claim = new Claim(Claim.claimUtil.getClaimID(p.getLocation()));
+		this.claim = Claim.from(p.getLocation());
 		if (HempfestClans.residents.stream().noneMatch(r -> r.getPlayer().getName().equals(p.getName()))) {
 			Resident res = new Resident(p);
 			res.setClaim(this.claim);

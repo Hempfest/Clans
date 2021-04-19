@@ -36,9 +36,9 @@ public class BlockEventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPistonExtend(BlockPistonExtendEvent e) {
 		Block piston = e.getBlock();
-		if (!Claim.claimUtil.isInClaim(piston.getLocation())) {
+		if (!HempfestClans.getInstance().claimManager.isInClaim(piston.getLocation())) {
 			for (Block pushed : e.getBlocks()) {
-				if (Claim.claimUtil.isInClaim(pushed.getLocation())) {
+				if (HempfestClans.getInstance().claimManager.isInClaim(pushed.getLocation())) {
 					e.setCancelled(true);
 				}
 			}
@@ -48,9 +48,9 @@ public class BlockEventListener implements Listener {
 	@EventHandler(priority = EventPriority.NORMAL)
 	public void onPistonRetract(BlockPistonRetractEvent e) {
 		Block piston = e.getBlock();
-		if (!Claim.claimUtil.isInClaim(piston.getLocation())) {
+		if (!HempfestClans.getInstance().claimManager.isInClaim(piston.getLocation())) {
 			for (Block pushed : e.getBlocks()) {
-				if (Claim.claimUtil.isInClaim(pushed.getLocation())) {
+				if (HempfestClans.getInstance().claimManager.isInClaim(pushed.getLocation())) {
 					e.setCancelled(true);
 				}
 			}
@@ -66,8 +66,8 @@ public class BlockEventListener implements Listener {
 		if (e.isCancelled()) {
 			event.setCancelled(true);
 		} else {
-			if (Claim.claimUtil.isInClaim(event.getBlock().getLocation())) {
-				if (Claim.claimUtil.isInClaim(event.getPlayer().getLocation()) && Claim.claimUtil.isInClaim(event.getBlock().getLocation())) {
+			if (HempfestClans.getInstance().claimManager.isInClaim(event.getBlock().getLocation())) {
+				if (HempfestClans.getInstance().claimManager.isInClaim(event.getPlayer().getLocation()) && HempfestClans.getInstance().claimManager.isInClaim(event.getBlock().getLocation())) {
 					Schedule.sync(() -> Claim.getResident(event.getPlayer()).addBroken(event.getBlock())).run();
 				}
 			}
@@ -82,7 +82,7 @@ public class BlockEventListener implements Listener {
 		if (e.isCancelled()) {
 			event.setCancelled(true);
 		} else {
-			if (Claim.claimUtil.isInClaim(event.getPlayer().getLocation()) && Claim.claimUtil.isInClaim(event.getBlock().getLocation())) {
+			if (HempfestClans.getInstance().claimManager.isInClaim(event.getPlayer().getLocation()) && HempfestClans.getInstance().claimManager.isInClaim(event.getBlock().getLocation())) {
 				Schedule.sync(() -> Claim.getResident(event.getPlayer()).addPlaced(event.getBlock())).run();
 			}
 		}

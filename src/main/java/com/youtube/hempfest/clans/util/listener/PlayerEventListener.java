@@ -3,7 +3,7 @@ package com.youtube.hempfest.clans.util.listener;
 import com.github.sanctum.labyrinth.task.Schedule;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.Update;
-import com.youtube.hempfest.clans.util.construct.Claim;
+import com.youtube.hempfest.clans.util.construct.ClaimManager;
 import com.youtube.hempfest.clans.util.construct.ClaimUtil;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.ClanUtil;
@@ -50,8 +50,7 @@ public class PlayerEventListener implements Listener {
 					Config region = ClaimUtil.regions;
 					region.getConfig().set(cl.getName(), null);
 					region.saveConfig();
-					HempfestClans.getInstance().claimMap.clear();
-					Claim.claimUtil.loadClaims();
+					HempfestClans.getInstance().claimManager.refresh();
 					cl.delete();
 					if (p.isOp()) {
 						Clan.clanUtil.sendMessage(p, "&c&oERROR &8> &4Clan tag cannot be null.");
@@ -87,7 +86,7 @@ public class PlayerEventListener implements Listener {
 			}
 		}).debug().cancelAfter(p).repeat(10, 10);
 		Schedule.sync(() -> {
-			if (!Claim.claimUtil.isInClaim(p.getLocation())) {
+			if (!ClaimManager.getInstance().isInClaim(p.getLocation())) {
 				WildernessInhabitantEvent event = new WildernessInhabitantEvent(p);
 				Bukkit.getPluginManager().callEvent(event);
 				if (!event.isCancelled()) {

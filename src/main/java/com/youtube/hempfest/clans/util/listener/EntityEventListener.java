@@ -1,6 +1,6 @@
 package com.youtube.hempfest.clans.util.listener;
 
-import com.youtube.hempfest.clans.util.construct.Claim;
+import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.events.ClaimInteractEvent;
 import com.youtube.hempfest.clans.util.events.PlayerPunchPlayerEvent;
 import com.youtube.hempfest.clans.util.events.PlayerShootPlayerEvent;
@@ -23,7 +23,7 @@ public class EntityEventListener implements Listener {
 	public void onTNTExplode(EntityExplodeEvent e) {
 		if (e.getEntity() instanceof Creeper) {
 			for (Block exploded : e.blockList()) {
-				if (Claim.claimUtil.isInClaim(exploded.getLocation())) {
+				if (HempfestClans.getInstance().claimManager.isInClaim(exploded.getLocation())) {
 					e.setCancelled(true);
 					break;
 				}

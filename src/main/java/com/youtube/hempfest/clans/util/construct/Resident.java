@@ -48,7 +48,7 @@ public class Resident {
 	}
 
 	public Claim getAccurateClaim() {
-		return new Claim(Claim.claimUtil.getClaimID(inhabitant.getLocation()));
+		return Claim.from(inhabitant.getLocation());
 	}
 
 	public boolean isNotificationSent() {

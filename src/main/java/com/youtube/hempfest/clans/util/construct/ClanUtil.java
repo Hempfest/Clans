@@ -131,8 +131,7 @@ public class ClanUtil extends StringLibrary {
 						String format = String.format(HempfestClans.getMain().getConfig().getString("Response.deletion"), clanName);
 						Bukkit.broadcastMessage(color(getPrefix() + " " + format));
 						HempfestClans.getInstance().playerClan.remove(p.getUniqueId());
-						HempfestClans.getInstance().claimMap.clear();
-						Claim.claimUtil.loadClaims();
+						ClaimManager.getInstance().refresh();
 						break;
 					case "Admin":
 						if (HempfestClans.getInstance().dataManager.prefixedTagsAllowed()) {

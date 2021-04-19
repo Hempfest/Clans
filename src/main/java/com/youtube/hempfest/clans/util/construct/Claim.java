@@ -1,12 +1,8 @@
 package com.youtube.hempfest.clans.util.construct;
 
 import com.youtube.hempfest.clans.HempfestClans;
-import com.youtube.hempfest.clans.util.data.Config;
-import com.youtube.hempfest.clans.util.data.ConfigType;
-import com.youtube.hempfest.clans.util.data.DataManager;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 import org.bukkit.Bukkit;
 import org.bukkit.Chunk;
 import org.bukkit.Location;
@@ -16,29 +12,43 @@ import org.bukkit.block.BlockFace;
 import org.bukkit.entity.Player;
 
 public class Claim {
-	private final String claimID;
-
-	private Player p;
-
-	private final DataManager dm = new DataManager("Regions", "Configuration");
-
-	private final Config regions = this.dm.getFile(ConfigType.MISC_FILE);
 
 	public static ClaimUtil claimUtil = new ClaimUtil();
 
-	public Claim(String claimID) {
-		this.claimID = claimID;
+	private final String[] key;
+	private final int[] pos;
+
+	protected Claim(String[] key, int[] pos) {
+		this.key = key;
+		this.pos = pos;
 	}
 
 	/**
-	 * @param p variable constructor access is deprecated and replaced by
-	 *          {@link #Claim(String claimID)}
-	 * @deprecated As of version 2.0.6
+	 * Attempt converting a given location to a claim.
+	 *
+	 * @param loc The location to convert
+	 * @return A clan claim or null if the location has no id.
 	 */
-	@Deprecated
-	public Claim(String claimID, Player p) {
-		this.p = p;
-		this.claimID = claimID;
+	public static Claim from(Location loc) {
+		return claimUtil.getClaimID(loc) != null ? HempfestClans.getInstance().claimManager.getClaim(claimUtil.getClaimID(loc)) : null;
+	}
+
+	/**
+	 * Attempt converting a given location to a claim.
+	 *
+	 * @param chunk The chunk to convert
+	 * @return A clan claim or null if the location has no id.
+	 */
+	public static Claim from(Chunk chunk) {
+		return HempfestClans.getInstance().claimManager.getId(chunk.getX(), chunk.getZ(), chunk.getWorld().getName()) != null ? HempfestClans.getInstance().claimManager.getClaim(HempfestClans.getInstance().claimManager.getId(chunk.getX(), chunk.getZ(), chunk.getWorld().getName())) : null;
+	}
+
+	public String[] getKey() {
+		return this.key;
+	}
+
+	public int[] getPos() {
+		return this.pos;
 	}
 
 	/**
@@ -52,23 +62,14 @@ public class Claim {
 	 * @return Gets the claimID from the claim object
 	 */
 	public String getClaimID() {
-		return this.claimID;
+		return this.key[1];
 	}
 
 	/**
 	 * @return Gets the clanID of the claim object.
 	 */
 	public String getOwner() {
-		String owner = "";
-		for (Map.Entry<String[], int[]> entry : HempfestClans.getInstance().claimMap.entrySet()) {
-			String[] id = entry.getKey();
-			int[] pos = entry.getValue();
-			if (id[1].equals(claimID)) {
-				owner = id[0];
-				break;
-			}
-		}
-		return owner;
+		return this.key[0];
 	}
 
 	/**
@@ -84,7 +85,7 @@ public class Claim {
 	public List<Resident> getResidents() {
 		List<Resident> query = new ArrayList<>();
 		for (Resident r : HempfestClans.residents) {
-			if (r.getClaim().getClaimID().equals(claimID)) {
+			if (r.getClaim().getClaimID().equals(getClaimID())) {
 				query.add(r);
 			}
 		}
@@ -103,12 +104,10 @@ public class Claim {
 	 * @return Gets the centered location of the claim objects chunk.
 	 */
 	public Location getLocation() {
-		String[] ID = claimUtil.getClaimInfo(this.claimID);
-		int[] pos = claimUtil.getClaimPosition(ID);
-		int x = pos[0];
+		int x = this.pos[0];
 		int y = 110;
-		int z = pos[1];
-		String world = ID[2];
+		int z = this.pos[1];
+		String world = this.key[2];
 		Location teleportLocation = (new Location(Bukkit.getWorld(world), (x << 4), y, (z << 4))).add(7.0D, 0.0D, 7.0D);
 		if (Bukkit.getVersion().contains("1.12"))
 			return teleportLocation;

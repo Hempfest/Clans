@@ -342,8 +342,7 @@ public class CommandClan extends BukkitCommand {
 					if (getUtil().getClan(p) != null) {
 						if (getUtil().getRankPower(p) >= getUtil().claimingClearance()) {
 							getClaim().obtain(p);
-							HempfestClans.getInstance().claimMap.clear();
-							Claim.claimUtil.loadClaims();
+							HempfestClans.getInstance().claimManager.refresh();
 						} else {
 							lib.sendMessage(p, "&c&oYou do not have clan clearance.");
 							return true;
@@ -368,8 +367,7 @@ public class CommandClan extends BukkitCommand {
 					if (getUtil().getClan(p) != null) {
 						if (getUtil().getRankPower(p) >= getUtil().claimingClearance()) {
 							getClaim().remove(p);
-							HempfestClans.getInstance().claimMap.clear();
-							Claim.claimUtil.loadClaims();
+							HempfestClans.getInstance().claimManager.refresh();
 						} else {
 							lib.sendMessage(p, "&c&oYou do not have clan clearance.");
 						}
@@ -858,8 +856,7 @@ public class CommandClan extends BukkitCommand {
 						if (getUtil().getClan(p) != null) {
 							if (getUtil().getRankPower(p) >= getUtil().unclaimAllClearance()) {
 								getClaim().removeAll(p);
-								HempfestClans.getInstance().claimMap.clear();
-								Claim.claimUtil.loadClaims();
+								HempfestClans.getInstance().claimManager.refresh();
 							} else {
 								lib.sendMessage(p, "&c&oYou do not have clan clearance.");
 								return true;

@@ -8,6 +8,7 @@ import com.youtube.hempfest.clans.metadata.PersistentClan;
 import com.youtube.hempfest.clans.util.Metrics;
 import com.youtube.hempfest.clans.util.Placeholders;
 import com.youtube.hempfest.clans.util.construct.Claim;
+import com.youtube.hempfest.clans.util.construct.ClaimManager;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import com.youtube.hempfest.clans.util.construct.Resident;
 import com.youtube.hempfest.clans.util.data.Config;
@@ -37,13 +38,13 @@ public class HempfestClans extends JavaPlugin {
 
 	public DataManager dataManager = new DataManager();
 
+	public final ClaimManager claimManager = new ClaimManager();
+
 	public HashMap<UUID, String> playerClan = new HashMap<>();
 
 	public static HashMap<UUID, Clan> clanManager = new HashMap<>();
 
 	public static HashMap<Player, String> idMode = new HashMap<>();
-
-	public HashMap<String[], int[]> claimMap = new HashMap<>();
 
 	public static HashMap<Player, String> chatMode = new HashMap<>();
 
@@ -92,7 +93,7 @@ public class HempfestClans extends JavaPlugin {
 		refreshChat();
 		runShieldTimer();
 		log.info(String.format("[%s] - Beginning claim resident event", getDescription().getName()));
-		Claim.claimUtil.loadClaims();
+		claimManager.refresh();
 		Clan.clanUtil.loadClans();
 		for (Player p : Bukkit.getOnlinePlayers()) {
 			DataManager data = new DataManager(p.getUniqueId().toString(), null);
@@ -152,7 +153,6 @@ public class HempfestClans extends JavaPlugin {
 		residents.clear();
 		idMode.clear();
 		playerClan.clear();
-		claimMap.clear();
 		chatMode.clear();
 		clanAllies.clear();
 		clanEnemies.clear();
