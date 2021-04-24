@@ -1,5 +1,6 @@
 package com.youtube.hempfest.clans.util.events;
 
+import com.github.sanctum.labyrinth.library.TextLib;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
@@ -9,7 +10,6 @@ import com.youtube.hempfest.clans.util.construct.ClanUtil;
 import com.youtube.hempfest.clans.util.construct.Resident;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.clans.util.listener.ClanEventBuilder;
-import java.util.Arrays;
 import java.util.HashMap;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Cancellable;
@@ -23,7 +23,7 @@ public class ClaimResidentEvent extends ClanEventBuilder implements Cancellable 
 
 	private final Player p;
 
-	private Resident r;
+	private final Resident r;
 
 	private final Claim claim;
 
@@ -123,86 +123,36 @@ public class ClaimResidentEvent extends ClanEventBuilder implements Cancellable 
 		if (titlesAllowed) {
 			p.sendTitle(getClaimUtil().color(String.format(titleContext.get("TITLE"), clanName)), getClaimUtil().color(String.format(titleContext.get("SUB-TITLE"), color + clanName)), 10, 25, 10);
 		}
-		getClaimUtil().sendMessage(p, "Now entering &a" + color + clanName + "'s&7 land @ &f(&eX:" + color + getClaim().getLocation().getChunk().getX() + " &eZ:" + color + getClaim().getLocation().getChunk().getZ() + "&f)");
+		getClaimUtil().sendComponent(p, TextLib.getInstance().textHoverable(getClaimUtil().getPrefix() + " Now entering &a" + color + clanName + "'s&7 land @ ", "&f(&eHover&f)", "&eX:" + color + getClaim().getLocation().getChunk().getX() + " &eZ:" + color + getClaim().getLocation().getChunk().getZ()));
 	}
 
 	public void handleUpdate() {
 		HempfestClans.wildernessInhabitants.remove(p);
 		if (!getClaim().getClaimID().equals(r.getClaim().getClaimID())) {
-			if (Clan.clanUtil.getClan(p) != null) {
-				if (!HempfestClans.clanManager(p).getClanID().equals(claim.getOwner())) {
-					for (Resident r : HempfestClans.residents) {
-						if (r.getPlayer().getName().equals(p.getName())) {
-							Resident add = new Resident(p);
-							add.setNotificationSent(true);
-							add.setTraversedDifferent(true);
-							add.setComingBack(true);
-							add.setClaim(this.claim);
-							this.r = add;
-							HempfestClans.residents.remove(r);
-							HempfestClans.residents.add(this.r);
-							break;
+			if (r.isNotificationSent()) {
+				if (!r.getClaim().getOwner().equals(r.getAccurateClaim().getOwner())) {
+					this.r.setNotificationSent(false);
+					if (HempfestClans.clanManager(p) != null) {
+						if (r.getClaim().getOwner().equals(HempfestClans.clanManager(p).getClanID())) {
+							this.r.setTraversedDifferent(true);
 						}
 					}
-				}
-			} else {
-				for (Resident r : HempfestClans.residents) {
-					if (r.getPlayer().getName().equals(p.getName())) {
-						Resident add = new Resident(p);
-						add.setClaim(this.claim);
-						this.r = add;
-						HempfestClans.residents.remove(r);
-						HempfestClans.residents.add(this.r);
-						break;
-					}
-				}
-			}
-			if (Arrays.asList(getClaim().getClan().getMembers()).contains(p.getName())) {
-				if (r.isComingBack()) {
-					for (Resident r : HempfestClans.residents) {
-						if (r.getPlayer().getName().equals(p.getName())) {
-							Resident add = new Resident(p);
-							add.setNotificationSent(false);
-							add.setTraversedDifferent(true);
-							add.setComingBack(false);
-							add.setClaim(this.claim);
-							this.r = add;
-							HempfestClans.residents.remove(r);
-							HempfestClans.residents.add(this.r);
-							break;
-						}
-					}
-				}
-				if (r.isComingBack() && r.isNotificationSent()) {
-					HempfestClans.residents.removeIf(r -> r.getPlayer().getName().equals(p.getName()));
-					Resident add = new Resident(p);
-					add.setNotificationSent(false);
-					add.setTraversedDifferent(false);
-					add.setComingBack(false);
-					add.setClaim(this.claim);
-					this.r = add;
+					this.r.setClaim(this.claim);
+					HempfestClans.residents.remove(this.r);
 					HempfestClans.residents.add(this.r);
 				}
 			}
 		}
-		if (!r.isNotificationSent()) {
+		if (!this.r.isNotificationSent()) {
 			playTitle();
-			if (Clan.clanUtil.getClan(p) != null) {
-				if (!HempfestClans.clanManager(p).getClanID().equals(claim.getOwner())) {
-					r.setComingBack(true);
-				}
-			}
-			r.setNotificationSent(true);
+			this.r.setNotificationSent(true);
 		} else {
-			if (r.hasTraversedDifferent()) {
-				if (Clan.clanUtil.getClan(p) != null) {
-					if (!HempfestClans.clanManager(p).getClanID().equals(claim.getOwner())) {
-						r.setNotificationSent(false);
-						r.setTraversedDifferent(false);
-					}
-				} else {
-					r.setTraversedDifferent(false);
-					r.setNotificationSent(false);
+			if (this.r.hasTraversedDifferent()) {
+				if (HempfestClans.clanManager(p) == null) {
+					this.r.setTraversedDifferent(false);
+					this.r.setNotificationSent(false);
+					HempfestClans.residents.remove(this.r);
+					HempfestClans.residents.add(this.r);
 				}
 			}
 		}

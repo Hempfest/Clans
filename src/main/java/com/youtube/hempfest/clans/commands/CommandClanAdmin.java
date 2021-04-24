@@ -9,6 +9,7 @@ import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
 import com.youtube.hempfest.clans.util.misc.Member;
+import java.io.File;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,7 @@ public class CommandClanAdmin extends BukkitCommand {
         help.add("&7|&e) &6/clanadmin &eupdate");
         help.add("&7|&e) &6/clanadmin &fgetid <&7clanNamef>");
         help.add("&7|&e) &6/clanadmin &fidmode");
+        help.add("&2&oThere is much more in-house staff control with the pro version! Check it out on spigot.");
         return help;
     }
 
@@ -80,7 +82,16 @@ public class CommandClanAdmin extends BukkitCommand {
         if (length == 1) {
             String args0 = args[0];
             if (args0.equalsIgnoreCase("reload")) {
-                lib.sendMessage(p, "&7|&e) &fInvalid usage : /clanadmin reload <fileName>");
+                lib.sendMessage(p, "&7|&e) &fUsage : /clanadmin reload <fileName>");
+                Config main = Config.get("Config", "Configuration");
+                Config regions = Config.get("Regions", "Configuration");
+                main.reload();
+                regions.reload();
+                for (File f : HempfestClans.getInstance().dataManager.getClanFolder().listFiles()) {
+                    String name = f.getName().replace(".yml", "");
+                    Config.get(name, "Clans").reload();
+                }
+                lib.sendMessage(p, "&aAll configuration & clan data files have been reloaded.");
                 return true;
             }
             if (args0.equalsIgnoreCase("getid")) {

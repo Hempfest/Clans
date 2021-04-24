@@ -93,20 +93,44 @@ public class Placeholders extends PlaceholderExpansion {
      * @return possibly-null String of the requested identifier.
      */
     @Override
-    public String onPlaceholderRequest(Player player, String identifier){
+    public String onPlaceholderRequest(Player player, @NotNull String identifier) {
 
-        if(player == null){
+        if (player == null) {
             return "";
         }
 
+        for (int i = 0; i < 51; i++) {
+            if (identifier.equals("top_slot_" + i)) {
+                if (i > Clan.clanUtil.getTop().size()) {
+                    return "Empty";
+                }
+                Clan target = Clan.clanUtil.getTop().get(i - 1);
+                return target != null ? target.getClanTag() : "Empty";
+            }
+            if (identifier.equals("top_slot_" + i + "_power")) {
+                if (i > Clan.clanUtil.getTop().size()) {
+                    return "Empty";
+                }
+                Clan target = Clan.clanUtil.getTop().get(i - 1);
+                return target != null ? target.format(String.valueOf(target.getPower())) + "" : "Empty";
+            }
+            if (identifier.equals("top_slot_" + i + "_color")) {
+                if (i > Clan.clanUtil.getTop().size()) {
+                    return "&r";
+                }
+                Clan target = Clan.clanUtil.getTop().get(i - 1);
+                return target != null ? target.getChatColor() + "" : "&r";
+            }
+        }
+
         // %someplugin_placeholder1%
-        if(identifier.equals("name")){
+        if (identifier.equals("name")) {
             String result = "";
             if (Clan.clanUtil.getClan(player) != null) {
                 if (Clan.clanUtil.getClanTag(Clan.clanUtil.getClan(player)) == null) {
                     result = "&4Error";
                 } else
-                result = Clan.clanUtil.getClanTag(Clan.clanUtil.getClan(player));
+                    result = Clan.clanUtil.getClanTag(Clan.clanUtil.getClan(player));
             }
             return result;
         }
