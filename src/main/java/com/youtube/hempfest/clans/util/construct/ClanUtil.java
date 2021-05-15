@@ -362,19 +362,12 @@ public class ClanUtil extends StringLibrary {
 	}
 
 	public UUID getUserID(String playerName) {
-		UUID result = null;
-		for (UUID player : getAllUsers()) {
-			DataManager dm = new DataManager(player.toString(), null);
-			Config user = dm.getFile(ConfigType.USER_FILE);
-			if (user.getConfig().getString("username") == null) {
-				user.getConfig().set("username", Bukkit.getOfflinePlayer(player).getName());
-				user.saveConfig();
-			}
-			if (Objects.equals(user.getConfig().getString("username"), playerName)) {
-				result = player;
+		for (OfflinePlayer op : Bukkit.getOfflinePlayers()) {
+			if (op.getName().equalsIgnoreCase(playerName)) {
+				return op.getUniqueId();
 			}
 		}
-		return result;
+		return null;
 	}
 
 	public List<UUID> getAllUsers() {

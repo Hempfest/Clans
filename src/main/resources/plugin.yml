@@ -1,5 +1,5 @@
 name: Clans
-version: 2.1.8
+version: 2.2.0
 author: Hempfest
 api-version: 1.13
 depend: [ Labyrinth ]

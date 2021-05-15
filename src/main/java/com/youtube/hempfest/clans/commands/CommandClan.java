@@ -227,7 +227,7 @@ public class CommandClan extends BukkitCommand {
 			}
 			return result;
 		}
-		return null;
+		return super.tabComplete(sender, alias, args);
 	}
 
 	@Override
