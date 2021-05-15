@@ -171,7 +171,7 @@ public class PlayerEventListener implements Listener {
 		ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
 		Bukkit.getPluginManager().callEvent(e);
 		e.handleCheck();
-		event.setCancelled(e.isCancelled());
+		if (e.isCancelled()) event.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
@@ -179,7 +179,7 @@ public class PlayerEventListener implements Listener {
 		ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
 		Bukkit.getPluginManager().callEvent(e);
 		e.handleCheck();
-		event.setCancelled(e.isCancelled());
+		if (e.isCancelled()) event.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
