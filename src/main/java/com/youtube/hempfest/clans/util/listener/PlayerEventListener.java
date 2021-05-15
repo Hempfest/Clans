@@ -166,20 +166,20 @@ public class PlayerEventListener implements Listener {
 		}
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBucketRelease(PlayerBucketEmptyEvent event) {
 		ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
 		Bukkit.getPluginManager().callEvent(e);
 		e.handleCheck();
-		event.setCancelled(e.isCancelled());
+		if (e.isCancelled()) event.setCancelled(true);
 	}
 
-	@EventHandler(priority = EventPriority.HIGHEST)
+	@EventHandler(priority = EventPriority.HIGH, ignoreCancelled = true)
 	public void onBucketFill(PlayerBucketFillEvent event) {
 		ClaimInteractEvent e = new ClaimInteractEvent(event.getPlayer(), event.getBlock().getLocation());
 		Bukkit.getPluginManager().callEvent(e);
 		e.handleCheck();
-		event.setCancelled(e.isCancelled());
+		if (e.isCancelled()) event.setCancelled(true);
 	}
 
 	@EventHandler(priority = EventPriority.NORMAL)
