@@ -1,10 +1,9 @@
 package com.youtube.hempfest.clans.util.construct;
 
-import com.github.ms5984.clans.clansbanks.ClansBanks;
-import com.github.ms5984.clans.clansbanks.api.BanksAPI;
-import com.github.ms5984.clans.clansbanks.api.ClanBank;
 import com.github.sanctum.labyrinth.library.HUID;
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.bank.api.BankAPI;
+import com.youtube.hempfest.clans.bank.api.ClanBank;
 import com.youtube.hempfest.clans.util.data.Config;
 import com.youtube.hempfest.clans.util.data.ConfigType;
 import com.youtube.hempfest.clans.util.data.DataManager;
@@ -367,9 +366,9 @@ public class Clan implements Serializable {
 	 */
 	public double getPower() {
 		double bal = 0;
-		if (Bukkit.getPluginManager().isPluginEnabled("ClansBanks")) {
-			BanksAPI api = ClansBanks.getAPI();
-			ClanBank bank = api.getBank(Clan.clanUtil.getClan(clanID));
+		final BankAPI bankApi = HempfestClans.getBankAPI();
+		if (HempfestClans.getInstance().isBankingEnabled() && bankApi != null) {
+			ClanBank bank = bankApi.getBank(Clan.clanUtil.getClan(clanID));
 			bal = bank.getBalance().doubleValue();
 		}
 		Config c = dm().getFile(ConfigType.CLAN_FILE);

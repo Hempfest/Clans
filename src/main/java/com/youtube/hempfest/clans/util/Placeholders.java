@@ -1,12 +1,10 @@
 package com.youtube.hempfest.clans.util;
 
-import com.github.ms5984.clans.clansbanks.ClansBanks;
-import com.github.ms5984.clans.clansbanks.api.BanksAPI;
-import com.github.ms5984.clans.clansbanks.api.ClanBank;
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.bank.api.BankAPI;
+import com.youtube.hempfest.clans.bank.api.ClanBank;
 import com.youtube.hempfest.clans.util.construct.Clan;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
-import org.bukkit.Bukkit;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
@@ -152,9 +150,9 @@ public class Placeholders extends PlaceholderExpansion {
                 if (Clan.clanUtil.getClanTag(Clan.clanUtil.getClan(player)) == null) {
                     result = "&4Error";
                 } else {
-                    if (Bukkit.getPluginManager().isPluginEnabled("ClansBanks")) {
-                        BanksAPI api = ClansBanks.getAPI();
-                        ClanBank bank = api.getBank(HempfestClans.clanManager(player));
+                    final BankAPI bankApi = HempfestClans.getBankAPI();
+                    if (HempfestClans.getInstance().isBankingEnabled() && bankApi != null) {
+                        ClanBank bank = bankApi.getBank(HempfestClans.clanManager(player));
                         double bal = bank.getBalance().doubleValue();
                         result = "" + bal;
                     } else {

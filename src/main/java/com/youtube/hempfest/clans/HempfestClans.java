@@ -4,6 +4,9 @@ import com.github.sanctum.labyrinth.command.CommandRegistration;
 import com.github.sanctum.labyrinth.data.Registry;
 import com.github.sanctum.labyrinth.task.Schedule;
 import com.google.gson.JsonObject;
+import com.youtube.hempfest.clans.bank.api.BankAPI;
+import com.youtube.hempfest.clans.bank.api.ClanBank;
+import com.youtube.hempfest.clans.bank.model.BankMeta;
 import com.youtube.hempfest.clans.metadata.PersistentClan;
 import com.youtube.hempfest.clans.util.Metrics;
 import com.youtube.hempfest.clans.util.Placeholders;
@@ -30,11 +33,14 @@ import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.jetbrains.annotations.Nullable;
 
 
 public class HempfestClans extends JavaPlugin {
 
 	private static HempfestClans instance;
+
+	private BankAPI bankApi = null;
 
 	private final Logger log = Logger.getLogger("Minecraft");
 
@@ -197,6 +203,27 @@ public class HempfestClans extends JavaPlugin {
 		} else {
 			log.info(String.format("[%s] - RaidShield disabled. Denying runnable.", getDescription().getName()));
 		}
+	}
+
+	public boolean isBankingEnabled() {
+		return false; // TODO: config flag
+	}
+
+	public static @Nullable BankAPI getBankAPI() {
+		if (instance.isBankingEnabled() && instance.bankApi == null) {
+			return instance.bankApi = new BankAPI() {
+				@Override
+				public ClanBank getBank(Clan clan) {
+					return BankMeta.get(clan).getBank().orElseThrow(NullPointerException::new);
+				}
+
+				@Override
+				public boolean isBankingEnabled() {
+					return true;
+				}
+			};
+		}
+		return null;
 	}
 
 	public static HempfestClans getInstance() {
