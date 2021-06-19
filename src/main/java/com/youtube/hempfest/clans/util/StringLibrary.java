@@ -21,7 +21,7 @@ public class StringLibrary {
 	}
 
 	public String color(String text) {
-		return StringUtils.translate(text);
+		return StringUtils.use(text).translate();
 	}
 
 	public void sendComponent(CommandSender s, TextComponent text) {

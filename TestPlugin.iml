@@ -25,12 +25,37 @@
     <orderEntry type="library" name="Maven: com.google.code.gson:gson:2.8.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: net.md-5:bungeecord-chat:1.16-R0.3" level="project" />
     <orderEntry type="library" name="Maven: org.yaml:snakeyaml:1.26" level="project" />
-    <orderEntry type="library" name="Maven: com.github.the-h-team:Labyrinth:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.the-h-team:Labyrinth:1.5.7" level="project" />
+    <orderEntry type="library" name="Maven: com.github.the-h-team.Labyrinth:Labyrinth-AFK:1.5.7" level="project" />
     <orderEntry type="library" name="Maven: com.github.MilkBowl:VaultAPI:1.7" level="project" />
+    <orderEntry type="library" name="Maven: org.bukkit:bukkit:1.13.1-R0.1-SNAPSHOT" level="project" />
     <orderEntry type="library" name="Maven: com.googlecode.json-simple:json-simple:1.1.1" level="project" />
     <orderEntry type="library" name="Maven: junit:junit:4.10" level="project" />
     <orderEntry type="library" name="Maven: org.hamcrest:hamcrest-core:1.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest:AnvilGUI:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_10_R1:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_11_R1:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_12_R1:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_13_R1:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_13_R2:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_14_4_R1:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_14_R1:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_15_R1:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_16_R1:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_16_R2:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_16_R3:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_16_R5:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_7_R4:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_8_R1:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_8_R2:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_8_R3:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_9_R1:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-1_9_R2:1.5.1" level="project" />
+    <orderEntry type="library" name="Maven: com.github.Hempfest.AnvilGUI:anvilgui-abstraction:1.5.1" level="project" />
     <orderEntry type="library" name="Maven: com.github.the-h-team:Enterprise:1.5" level="project" />
+    <orderEntry type="library" name="Maven: com.github.the-h-team.Labyrinth:Labyrinth-GUI:1.5.7" level="project" />
+    <orderEntry type="library" name="Maven: com.github.the-h-team.Labyrinth:Labyrinth-plugin:1.5.7" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: me.clip:placeholderapi:2.10.9" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: org.jetbrains:annotations:19.0.0" level="project" />
     <orderEntry type="library" scope="PROVIDED" name="Maven: com.github.ms5984:ClansBanks:1.1.4" level="project" />

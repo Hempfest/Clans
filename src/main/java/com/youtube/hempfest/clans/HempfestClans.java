@@ -1,7 +1,7 @@
 package com.youtube.hempfest.clans;
 
-import com.github.sanctum.labyrinth.command.CommandBuilder;
-import com.github.sanctum.labyrinth.event.EventBuilder;
+import com.github.sanctum.labyrinth.command.CommandRegistration;
+import com.github.sanctum.labyrinth.data.Registry;
 import com.github.sanctum.labyrinth.task.Schedule;
 import com.google.gson.JsonObject;
 import com.youtube.hempfest.clans.metadata.PersistentClan;
@@ -26,7 +26,9 @@ import java.util.UUID;
 import java.util.logging.Logger;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.command.Command;
 import org.bukkit.entity.Player;
+import org.bukkit.event.Listener;
 import org.bukkit.plugin.java.JavaPlugin;
 
 
@@ -85,10 +87,8 @@ public class HempfestClans extends JavaPlugin {
 		}
 		setInstance(this);
 		dataManager.copyDefaults();
-		EventBuilder builder = new EventBuilder(this);
-		builder.compileFields("com.youtube.hempfest.clans.util.listener");
-		CommandBuilder commandBuilder = new CommandBuilder(this);
-		commandBuilder.compileFields("com.youtube.hempfest.clans.commands");
+		new Registry<>(Listener.class).source(this).pick("com.youtube.hempfest.clans.util.listener").operate(l -> getServer().getPluginManager().registerEvents(l, this));
+		new Registry<>(Command.class).source(this).pick("com.youtube.hempfest.clans.commands").operate(CommandRegistration::use);
 		Clan.clanUtil.setRaidShield(true);
 		refreshChat();
 		runShieldTimer();
@@ -168,19 +168,7 @@ public class HempfestClans extends JavaPlugin {
 	}
 
 	public static Clan clanManager(Player p) {
-		Clan clan;
-		if (!HempfestClans.clanManager.containsKey(p.getUniqueId())) {
-			clan = new Clan(Clan.clanUtil.getClan(p));
-			HempfestClans.clanManager.put(p.getUniqueId(), clan);
-			return clan;
-		} else {
-			if (!HempfestClans.clanManager.get(p.getUniqueId()).getClanID().equals(instance.playerClan.get(p.getUniqueId()))) {
-				clan = new Clan(Clan.clanUtil.getClan(p));
-				HempfestClans.clanManager.put(p.getUniqueId(), clan);
-				return clan;
-			}
-			return HempfestClans.clanManager.get(p.getUniqueId());
-		}
+		return Clan.clanUtil.getClans.stream().filter(c -> Arrays.asList(c.getMembers()).contains(p.getName())).findFirst().orElse(null);
 	}
 
 	public static Config getMain() {
