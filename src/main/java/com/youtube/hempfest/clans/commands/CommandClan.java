@@ -24,6 +24,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.List;
+import java.util.Locale;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -42,6 +43,7 @@ public class CommandClan extends BukkitCommand {
 
 	private final String helpPrefix = "&7|&e) ";
 	private final ImmutableList<String> defaultHelp;
+	private final ImmutableList<String> bankFunctions;
 
 	public CommandClan() {
 		super("clan");
@@ -86,6 +88,13 @@ public class CommandClan extends BukkitCommand {
 		        .add("&7|&e) &6/clan &fenemy <&7clanName&f>")
 		        .add("&7|&e) &6/clan &fenemy <&aadd&7,&cremove&f> <&7clanName&f>")
 				.build();
+		this.bankFunctions = new ImmutableList.Builder<String>()
+				.add("balance")
+				.add("deposit")
+				.add("withdraw")
+				.add("viewlog")
+				.add("setperm")
+				.build();
 	}
 
 	private final ConcurrentMap<Player, List<UUID>> blockedUsers = new MapMaker().
@@ -129,7 +138,7 @@ public class CommandClan extends BukkitCommand {
 		List<String> result = new ArrayList<>();
 		if (args.length == 1) {
 			arguments.clear();
-			arguments.addAll(Arrays.asList("create", "request", "block", "friendlyfire", "color", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
+			arguments.addAll(Arrays.asList("create", "request", "bank", "block", "friendlyfire", "color", "password", "kick", "leave", "message", "chat", "info", "promote", "demote", "tag", "nickname", "list", "base", "setbase", "top", "claim", "unclaim", "passowner", "ally", "enemy"));
 			TabInsertEvent event = new TabInsertEvent(args);
 			Bukkit.getPluginManager().callEvent(event);
 			arguments.addAll(event.getArgs(1));
@@ -205,6 +214,16 @@ public class CommandClan extends BukkitCommand {
 				}
 				return result;
 			}
+			if (args[0].equalsIgnoreCase("bank")) {
+				arguments.clear();
+				arguments.addAll(bankFunctions);
+				arguments.add("viewperms");
+				for (String a : arguments) {
+					if (a.startsWith(args[1].toLowerCase(Locale.ROOT)))
+						result.add(a);
+				}
+				return result;
+			}
 			return result;
 		}
 		if (args.length == 3) {
@@ -234,6 +253,26 @@ public class CommandClan extends BukkitCommand {
 						result.add(a);
 				}
 				return result;
+			}
+
+			if (args[0].equalsIgnoreCase("bank")) {
+				if ("deposit".equalsIgnoreCase(args[1]) || "withdraw".equalsIgnoreCase(args[1])) {
+					arguments.clear();
+					arguments.add("10");
+					for (String a : arguments) {
+						if (a.startsWith(args[2]))
+							result.add(a);
+					}
+					return result;
+				} else if ("setperm".equalsIgnoreCase(args[1])) {
+					arguments.clear();
+					arguments.addAll(bankFunctions);
+					for (String a : arguments) {
+						if (a.startsWith(args[2].toLowerCase()))
+							result.add(a);
+					}
+					return result;
+				}
 			}
 			return result;
 		}
