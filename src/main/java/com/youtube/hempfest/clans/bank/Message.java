@@ -83,4 +83,9 @@ public enum Message implements ProvidedMessage {
     public @Nullable String get() {
         return text;
     }
+
+    @Override
+    public String toString() {
+        return color();
+    }
 }

@@ -87,4 +87,12 @@ public final class Bank implements ClanBank, Serializable {
         ClanBank.super.setBalance(newBalance);
         PM.callEvent(new BankSetBalanceEvent(this, clanId, newBalance));
     }
+
+    public void _setBalanceInternal(BigDecimal newBalance) {
+        this.balance = newBalance;
+    }
+
+    public String _getClanIdInternal() {
+        return clanId;
+    }
 }
