@@ -1,6 +1,7 @@
 package com.youtube.hempfest.clans.commands;
 
 import com.github.sanctum.labyrinth.formatting.string.PaginatedAssortment;
+import com.google.common.collect.ImmutableList;
 import com.google.common.collect.MapMaker;
 import com.youtube.hempfest.clans.HempfestClans;
 import com.youtube.hempfest.clans.util.StringLibrary;
@@ -18,6 +19,7 @@ import com.youtube.hempfest.clans.util.events.SubCommandEvent;
 import com.youtube.hempfest.clans.util.events.TabInsertEvent;
 import com.youtube.hempfest.clans.util.misc.Color;
 import com.youtube.hempfest.clans.util.misc.Member;
+
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.IllegalFormatException;
@@ -38,12 +40,52 @@ import org.bukkit.entity.Player;
 
 public class CommandClan extends BukkitCommand {
 
+	private final String helpPrefix = "&7|&e) ";
+	private final ImmutableList<String> defaultHelp;
 
 	public CommandClan() {
 		super("clan");
 		setDescription("Base command for clans.");
 		setAliases(Arrays.asList("clans", "cl", "c"));
 		setPermission("clans.use");
+		this.defaultHelp = new ImmutableList.Builder<String>()
+				.add("&7|&e) &6/clan &fcreate <&7clanName&f> <&7password&f>")
+		        .add("&7|&e) &6/clan &fjoin <&7clanName&f>")
+		        .add("&7|&e) &6/clan &frequest <&7playerName&f>")
+		        // <bank lines>
+				.add("&7|&e) &6/clan &fbank")
+				.add("&7|&e) &6/clan &fbank &f<&adeposit&7,&cwithdraw&f> <&7amount&f>")
+				// <end bank lines>
+		        .add("&7|&e) &6/clan &fblock <&7playerName&f>")
+		        .add("&7|&e) &6/clan &fjoin <&7clanName&f> <&7password?&f>")
+		        .add("&7|&e) &6/clan &fpassword <&7newPassword&f>")
+		        .add("&7|&e) &6/clan &fleave")
+		        .add("&7|&e) &6/clan &fkick <&7playerName&f>")
+		        .add("&7|&e) &6/clan &fmessage <&7message&f>")
+		        .add("&7|&e) &6/clan &fchat")
+		        .add("&7|&e) &6/clan &finfo <&7clanName&f>")
+		        .add("&7|&e) &6/clan &finfo <&7playerName&f>")
+		        .add("&7|&e) &6/clan &finfo")
+		        .add("&7|&e) &6/clan &fpromote <&7playerName&f>")
+		        .add("&7|&e) &6/clan &fdemote <&7playerName&f>")
+		        .add("&7|&e) &6/clan &ftag <&7newTag&f>")
+		        .add("&7|&e) &6/clan &fnickname <&7nickName&f>")
+		        .add("&7|&e) &6/clan &flist")
+		        .add("&7|&e) &6/clan &fbase")
+		        .add("&7|&e) &6/clan &fsetbase")
+		        .add("&7|&e) &6/clan &ftop")
+		        .add("&7|&e) &6/clan &fclaim")
+		        .add("&7|&e) &6/clan &funclaim")
+		        .add("&7|&e) &6/clan &funclaim all")
+		        .add("&7|&e) &6/clan &fmap")
+		        .add("&7|&e) &6/clan &ffriendlyfire")
+		        .add("&7|&e) &6/clan &funmap")
+		        .add("&7|&e) &6/clan &fpassowner <&7playerName&f>")
+		        .add("&7|&e) &6/clan &fally <&7clanName&f>")
+		        .add("&7|&e) &6/clan &fally <&aadd&7,&cremove&f> <&7clanName&f>")
+		        .add("&7|&e) &6/clan &fenemy <&7clanName&f>")
+		        .add("&7|&e) &6/clan &fenemy <&aadd&7,&cremove&f> <&7clanName&f>")
+				.build();
 	}
 
 	private final ConcurrentMap<Player, List<UUID>> blockedUsers = new MapMaker().
@@ -60,39 +102,7 @@ public class CommandClan extends BukkitCommand {
 	}
 
 	private List<String> helpMenu() {
-		List<String> help = new ArrayList<>();
-		help.add("&7|&e) &6/clan &fcreate <&7clanName&f> <&7password&f>");
-		help.add("&7|&e) &6/clan &fjoin <&7clanName&f>");
-		help.add("&7|&e) &6/clan &frequest <&7playerName&f>");
-		help.add("&7|&e) &6/clan &fblock <&7playerName&f>");
-		help.add("&7|&e) &6/clan &fjoin <&7clanName&f> <&7password?&f>");
-		help.add("&7|&e) &6/clan &fpassword <&7newPassword&f>");
-		help.add("&7|&e) &6/clan &fleave");
-		help.add("&7|&e) &6/clan &fkick <&7playerName&f>");
-		help.add("&7|&e) &6/clan &fmessage <&7message&f>");
-		help.add("&7|&e) &6/clan &fchat");
-		help.add("&7|&e) &6/clan &finfo <&7clanName&f>");
-		help.add("&7|&e) &6/clan &finfo <&7playerName&f>");
-		help.add("&7|&e) &6/clan &finfo");
-		help.add("&7|&e) &6/clan &fpromote <&7playerName&f>");
-		help.add("&7|&e) &6/clan &fdemote <&7playerName&f>");
-		help.add("&7|&e) &6/clan &ftag <&7newTag&f>");
-		help.add("&7|&e) &6/clan &fnickname <&7nickName&f>");
-		help.add("&7|&e) &6/clan &flist");
-		help.add("&7|&e) &6/clan &fbase");
-		help.add("&7|&e) &6/clan &fsetbase");
-		help.add("&7|&e) &6/clan &ftop");
-		help.add("&7|&e) &6/clan &fclaim");
-		help.add("&7|&e) &6/clan &funclaim");
-		help.add("&7|&e) &6/clan &funclaim all");
-		help.add("&7|&e) &6/clan &fmap");
-		help.add("&7|&e) &6/clan &ffriendlyfire");
-		help.add("&7|&e) &6/clan &funmap");
-		help.add("&7|&e) &6/clan &fpassowner <&7playerName&f>");
-		help.add("&7|&e) &6/clan &fally <&7clanName&f>");
-		help.add("&7|&e) &6/clan &fally <&aadd&7,&cremove&f> <&7clanName&f>");
-		help.add("&7|&e) &6/clan &fenemy <&7clanName&f>");
-		help.add("&7|&e) &6/clan &fenemy <&aadd&7,&cremove&f> <&7clanName&f>");
+		List<String> help = new ArrayList<>(defaultHelp);
 		CommandHelpEvent e = new CommandHelpEvent(help);
 		Bukkit.getPluginManager().callEvent(e);
 		return e.getHelpMenu();
