@@ -1,9 +1,17 @@
 package com.youtube.hempfest.clans.commands;
 
+import com.github.sanctum.labyrinth.formatting.string.ColoredString;
 import com.github.sanctum.labyrinth.formatting.string.PaginatedAssortment;
+import com.github.sanctum.labyrinth.library.TextLib;
 import com.google.common.collect.ImmutableList;
 import com.google.common.collect.MapMaker;
 import com.youtube.hempfest.clans.HempfestClans;
+import com.youtube.hempfest.clans.bank.BankPermission;
+import com.youtube.hempfest.clans.bank.Message;
+import com.youtube.hempfest.clans.bank.api.BankAPI;
+import com.youtube.hempfest.clans.bank.api.ClanBank;
+import com.youtube.hempfest.clans.bank.model.BankAction;
+import com.youtube.hempfest.clans.bank.model.BankLog;
 import com.youtube.hempfest.clans.util.StringLibrary;
 import com.youtube.hempfest.clans.util.construct.Claim;
 import com.youtube.hempfest.clans.util.construct.ClaimUtil;
@@ -25,6 +33,7 @@ import java.util.Arrays;
 import java.util.IllegalFormatException;
 import java.util.List;
 import java.util.Locale;
+import java.util.Optional;
 import java.util.UUID;
 import java.util.concurrent.ConcurrentMap;
 import net.md_5.bungee.api.chat.ClickEvent;
@@ -44,6 +53,7 @@ public class CommandClan extends BukkitCommand {
 	private final String helpPrefix = "&7|&e) ";
 	private final ImmutableList<String> defaultHelp;
 	private final ImmutableList<String> bankFunctions;
+	private final TextLib textLib = TextLib.getInstance();
 
 	public CommandClan() {
 		super("clan");
@@ -361,6 +371,63 @@ public class CommandClan extends BukkitCommand {
 				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan request <playerName>");
 				return true;
 			}
+			if (args0.equalsIgnoreCase("bank")) {
+				if (BankPermission.USE.check(p)) {
+					final Optional<Clan> optionalClan = testHasClan(p);
+					if (!optionalClan.isPresent()) return true;
+					final Clan clan = optionalClan.get();
+					final String[] split = Message.GREETING.toString().split("\\{0}");
+					final String greetingHover = Message.GREETING_HOVER.toString();
+					if (BankPermission.USE_BALANCE.check(p)) {
+						p.spigot().sendMessage(textLib.textRunnable(
+								split[0], "&o" + p.getName(), split[1],
+								Message.GREETING_HOVER.replace(clan.getClanTag()),
+								"clan bank balance"
+						));
+					} else {
+						p.spigot().sendMessage(textLib.textHoverable(
+								split[0], "&o" + p.getName(), split[1],
+								greetingHover.substring(0, greetingHover.indexOf("\n"))
+										.replace("{0}", clan.getClanTag())
+						));
+					}
+					sendMessage(p, Message.COMMAND_LISTING.toString());
+					p.spigot().sendMessage(textLib.textSuggestable(Message.HELP_PREFIX + " ",
+							"&7balance", Message.HOVER_BALANCE.toString(),
+							"clan bank balance"
+					));
+					final TextComponent composed = textLib.textSuggestable(
+							Message.HELP_PREFIX + " &f<",
+							"&adeposit", Message.HOVER_DEPOSIT.toString(),
+							"clan bank deposit 1"
+					);
+					composed.addExtra(textLib.textSuggestable(
+							"&7,",
+							"&cwithdraw", Message.HOVER_WITHDRAW.toString(),
+							"clan bank withdraw 1"
+					));
+					composed.addExtra(new ColoredString("&f> <&7" + Message.AMOUNT + "&f>",
+							ColoredString.ColorType.MC_COMPONENT).toComponent());
+					p.spigot().sendMessage(composed);
+					if (BankAction.VIEW_LOG.testForPlayer(clan, p)) {
+						p.spigot().sendMessage(textLib.textSuggestable(
+								Message.HELP_PREFIX + " ",
+								"&7viewlog", Message.HOVER_VIEW_LOG.toString(),
+								"clan bank viewlog"
+						));
+					}
+					if (BankAction.SET_PERM.testForPlayer(clan, p)) {
+						p.spigot().sendMessage(textLib.textSuggestable(
+								Message.HELP_PREFIX + " ",
+								"&7setperm", Message.HOVER_SET_PERM.toString(),
+								"clan bank viewlog"
+						));
+					}
+				} else {
+					sendMessage(p, Message.NO_PERM_PLAYER_COMMAND.toString());
+				}
+				return true;
+			}
 			if (args0.equalsIgnoreCase("block")) {
 				lib.sendMessage(p, "&7|&e) &fInvalid usage : /clan block <playerName>");
 				return true;
@@ -584,6 +651,65 @@ public class CommandClan extends BukkitCommand {
 		if (length == 2) {
 			String args0 = args[0];
 			String args1 = args[1];
+			if (args0.equalsIgnoreCase("bank")) {
+				if (BankPermission.USE.check(p)) {
+					final Optional<Clan> optionalClan = testHasClan(p);
+					if (!optionalClan.isPresent()) return true;
+					final Clan clan = optionalClan.get();
+					final Optional<ClanBank> testBank = optionalClan.map(BankAPI.getInstance()::getBank);
+					if (testBank.isPresent()) {
+						if ("deposit".equalsIgnoreCase(args1)) {
+							if (BankPermission.USE_DEPOSIT.check(p)) {
+								// msg usage (need amount param)
+								sendMessage(p, Message.USAGE.toString());
+								p.spigot().sendMessage(textLib.textHoverable(
+										Message.HELP_PREFIX + " ",
+										"&7<&fdeposit&7>",
+										" ",
+										"&7<&c" + Message.AMOUNT + "&7>",
+										Message.HOVER_DEPOSIT.toString(),
+										Message.HOVER_NO_AMOUNT.toString()
+								));
+								return true;
+							}
+						} else if ("withdraw".equalsIgnoreCase(args1)) {
+							if (BankPermission.USE_WITHDRAW.check(p)) {
+								// msg usage (need amount param)
+								sendMessage(p, Message.USAGE.toString());
+								p.spigot().sendMessage(textLib.textHoverable(
+										Message.HELP_PREFIX + " ",
+										"&7<&fwithdraw&7>",
+										" ",
+										"&7<&c" + Message.AMOUNT + "&7>",
+										Message.HOVER_WITHDRAW.toString(),
+										Message.HOVER_NO_AMOUNT.toString()
+								));
+								return true;
+							}
+						} else if ("viewlog".equalsIgnoreCase(args1)) {
+							if (BankAction.VIEW_LOG.testForPlayer(clan, p)) {
+								// display log
+								p.sendMessage(BankLog.getForClan(clan).getTransactions().stream().map(Object::toString).toArray(String[]::new));
+								return true;
+							}
+						} else if ("viewperms".equalsIgnoreCase(args1)) {
+							// display perms
+							sendMessage(p, "&6Bank perm levels:");
+							sendMessage(p, "Balance&e=&7[&f" + BankAction.BALANCE.getValueInClan(clan) + "&7]");
+							sendMessage(p, "Deposit&e=&7[&f" + BankAction.DEPOSIT.getValueInClan(clan) + "&7]");
+							sendMessage(p, "Withdraw&e=&7[&f" + BankAction.WITHDRAW.getValueInClan(clan) + "&7]");
+							sendMessage(p, "ViewLog&e=&7[&f" + BankAction.VIEW_LOG.getValueInClan(clan) + "&7]");
+							return true;
+						} else {
+							// msg usage (invalid subcommand)
+							sendMessage(p, Message.INVALID_SUBCOMMAND.toString());
+							return true;
+						}
+					}
+				}
+				sendMessage(p, Message.NO_PERM_PLAYER_COMMAND.toString());
+				return true;
+			}
 			if (args0.equalsIgnoreCase("block")) {
 				if (!p.hasPermission(this.getPermission() + ".block")) {
 					lib.sendMessage(p, "&4&oYou don't have permission " + '"' + this.getPermission() + ".block" + '"');
@@ -1267,5 +1393,19 @@ public class CommandClan extends BukkitCommand {
 		return true;
 
 
+	}
+	// Resolves clan; sends message if none
+	private Optional<Clan> testHasClan(Player sender) {
+		final Optional<Clan> optionalClan = optionalClan(sender);
+		if (!optionalClan.isPresent()) {
+			sendMessage(sender, Message.PLAYER_NO_CLAN.toString());
+			return Optional.empty();
+		}
+		return optionalClan;
+	}
+	// Attempts to resolve a player's clan
+	private Optional<Clan> optionalClan(Player player) {
+		return Optional.ofNullable(HempfestClans.getInstance().playerClan.get(player.getUniqueId()))
+				.map(s -> HempfestClans.clanManager(player));
 	}
 }
