@@ -85,11 +85,5 @@
 			<version>2.10.9</version>
 			<scope>provided</scope>
 		</dependency>
-		<dependency>
-			<groupId>com.github.ms5984</groupId>
-			<artifactId>ClansBanks</artifactId>
-			<version>1.1.4</version>
-			<scope>provided</scope>
-		</dependency>
     </dependencies>
 </project>
